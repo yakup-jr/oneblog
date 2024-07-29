@@ -1,0 +1,8 @@
+message-from-application-properties: Hello from application-prod.properties
+
+spring:
+  datasource:
+    url: jdbc:postgresql://oneblog-devdb-10741.7tc.aws-eu-central-1.cockroachlabs.cloud:26257/devdb
+    username: yakup_jr
+    password: OKGNBiaaX4pHc9qtA0GYqg
+    driver-class-name: org.hsqldb.jdbc.JDBCDriver
