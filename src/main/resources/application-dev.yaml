@@ -3,17 +3,23 @@ spring:
     livereload:
       enabled: true
   datasource:
-    url: jdbc:hsqldb:mem:testdb;DB_CLOSE_DELAY=-1
-    username: yakup_jr
-    password: 13579
-    driver-class-name: org.hsqldb.jdbc.JDBCDriver
+    url: jdbc:postgresql://ep-mute-voice-a29cocai.eu-central-1.aws.neon.tech/oneblog
+    username: oneblog_owner
+    password: hBAgwKiMOu62
+    driver-class-name: org.postgresql.Driver
   jpa:
-    hibernate:
-      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+
+
 
 logging:
   level:
     org:
+      hibernate:
+        type: trace
       springframework:
         web:
           DEBUG
