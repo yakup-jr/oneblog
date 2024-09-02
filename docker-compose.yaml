@@ -1,0 +1,25 @@
+version: "3.9"
+
+services:
+  oneblog:
+    container_name: "oneblog-backend"
+    build: ./
+    ports:
+      - "8080:8080"
+    environment:
+      POSTGRES_URL: jdbc:postgresql://oneblog
+      POSTGRES_DB: oneblog
+    restart: no
+    depends_on:
+      - db
+  db:
+    image: "postgres:16.3-alpine"
+    container_name: "oneblog-db"
+    environment:
+      POSTGRES_DB: oneblog
+      POSTGRES_URL: jdbc:postgresql://oneblog
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_USER: yakup_jr
+    restart: always
+    ports:
+      - "5432:5432"
