@@ -24,18 +24,29 @@ repositories {
 }
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
-    implementation("org.springframework.boot:spring-boot-starter-web")
+	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
+	implementation("org.springframework.boot:spring-boot-starter-hateoas")
+	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+	implementation("org.liquibase:liquibase-core")
+	implementation("org.mapstruct:mapstruct:1.5.5.Final")
 	compileOnly("org.projectlombok:lombok")
-    developmentOnly("org.springframework.boot:spring-boot-devtools")
-    runtimeOnly("org.postgresql:postgresql")
-    annotationProcessor("org.projectlombok:lombok")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-    runtimeOnly("org.hsqldb:hsqldb")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+	developmentOnly("org.springframework.boot:spring-boot-devtools")
+	runtimeOnly("org.postgresql:postgresql")
+	annotationProcessor("org.projectlombok:lombok")
+	annotationProcessor("org.mapstruct:mapstruct-processor:1.5.5.Final")
+	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	testImplementation("org.postgresql:postgresql")
+	testImplementation("org.springframework.boot:spring-boot-testcontainers")
+	testImplementation("org.testcontainers:postgresql")
+	testImplementation("org.testcontainers:junit-jupiter")
 }
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+}
+
+tasks.bootJar {
+	archiveFileName = "oneblog.jar"
+	mainClass = "com.oneblog.OneblogApplication"
 }

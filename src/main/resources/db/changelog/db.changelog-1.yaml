@@ -1,0 +1,86 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-table-role
+      author: yakup_jr
+      changes:
+        - createTable:
+            tableName: t_role
+            columns:
+              - column:
+                  name: role_id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    unique: true
+                    primaryKey: true
+                    primaryKeyName: pk_role
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+  - changeSet:
+      id: create-table-user
+      author: yakup_jr
+      changes:
+        - createTable:
+            tableName: t_user
+            columns:
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    unique: true
+                    primaryKey: true
+                    primaryKeyName: pk_user
+              - column:
+                  name: nickname
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: email
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: false
+              - column:
+                  name: password
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: false
+  - changeSet:
+      id: create-table-t_user_role
+      author: yakup_jr
+      changes:
+        - createTable:
+            tableName: t_user_role
+            columns:
+              - column:
+                  name: user_id
+                  type: int
+                  constraints:
+                    unique: false
+                    foreignKeyName: fk_user_role_user
+                    references: t_user(user_id)
+              - column:
+                  name: role_id
+                  type: int
+                  constraints:
+                    unique: false
+                    foreignKeyName: fk_user_role_role
+                    references: t_role(role_id)
+
+
