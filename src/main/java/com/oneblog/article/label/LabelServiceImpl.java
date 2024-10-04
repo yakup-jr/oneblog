@@ -9,7 +9,7 @@ import java.util.Optional;
 @Service
 public class LabelServiceImpl implements LabelService {
 
-	private LabelRepository labelRepository;
+	private final LabelRepository labelRepository;
 
 	public LabelServiceImpl(LabelRepository labelRepository) {
 		this.labelRepository = labelRepository;

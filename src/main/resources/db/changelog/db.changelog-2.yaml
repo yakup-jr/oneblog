@@ -81,6 +81,7 @@ databaseChangeLog:
               - column:
                   name: article_preview_id
                   type: BIGINT
+                  autoIncrement: true
                   constraints:
                     nullable: false
                     unique: true
@@ -126,6 +127,7 @@ databaseChangeLog:
                     unique: false
                     foreignKeyName: fk_label_article
                     references: t_label(label_id)
+                    deleteCascade: true
   - changeSet:
       id: create-table-t_article_paragraph
       author: yakup_jr

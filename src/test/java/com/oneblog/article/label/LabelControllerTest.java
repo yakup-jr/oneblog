@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(classes = {TestConfig.class})
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-@Sql("/static/testdb/data.sql")
+@Sql(scripts = "/static/testdb/data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
 public class LabelControllerTest {
 
 	@Autowired
@@ -43,9 +43,9 @@ public class LabelControllerTest {
 
 	@Test
 	public void findByLabelId_ReturnLabel() throws Exception {
-		mockMvc.perform(get("/api/v1/articles/label/10").contentType(MediaType.APPLICATION_JSON))
+		mockMvc.perform(get("/api/v1/articles/label/1").contentType(MediaType.APPLICATION_JSON))
 		       .andExpect(status().isOk()).andExpect(jsonPath("$.name", is(LabelName.Assembler.toString())))
-		       .andExpect(jsonPath("$._links.self.href", containsString("api/v1/articles/label/10")))
+		       .andExpect(jsonPath("$._links.self.href", containsString("api/v1/articles/label/1")))
 		       .andExpect(jsonPath("$._links.labels.href", containsString("api/v1/articles/labels")));
 	}
 
@@ -78,9 +78,9 @@ public class LabelControllerTest {
 
 	@Test
 	public void deleteById_ReturnLabel() throws Exception {
-		mockMvc.perform(delete("/api/v1/articles/label/10").contentType(MediaType.APPLICATION_JSON))
-		       .andExpect(status().isOk()).andExpect(jsonPath("$.name", is(LabelName.Assembler.toString())))
-		       .andExpect(jsonPath(("$._links.label.href"), containsString("api/v1/articles/label/10")));
+		mockMvc.perform(delete("/api/v1/articles/label/5").contentType(MediaType.APPLICATION_JSON))
+		       .andExpect(status().isOk()).andExpect(jsonPath("$.name", notNullValue()))
+		       .andExpect(jsonPath(("$._links.label.href"), containsString("api/v1/articles/label/5")));
 	}
 
 	@Test

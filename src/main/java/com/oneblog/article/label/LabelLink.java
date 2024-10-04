@@ -9,18 +9,18 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @Component
 public class LabelLink {
 
-	private final Class<LabelController> source = LabelController.class;
+	private final Class<LabelController> controllerClass = LabelController.class;
 
-	WebMvcLinkBuilder findLabelByLabelId(Long id) {
-		return linkTo(methodOn(source).findLabelByLabelId(id));
+	public WebMvcLinkBuilder findLabelByLabelId(Long id) {
+		return linkTo(methodOn(controllerClass).findLabelByLabelId(id));
 	}
 
-	WebMvcLinkBuilder findLabelByLabelName(String labelName) {
-		return linkTo(methodOn(source).findLabelByLabelName(labelName));
+	public WebMvcLinkBuilder findLabelByLabelName(String labelName) {
+		return linkTo(methodOn(controllerClass).findLabelByLabelName(labelName));
 	}
 
-	WebMvcLinkBuilder findAllLabels() {
-		return linkTo(methodOn(source).findAllLabels());
+	public WebMvcLinkBuilder findAllLabels() {
+		return linkTo(methodOn(controllerClass).findAllLabels());
 	}
 
 
