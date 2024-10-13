@@ -100,6 +100,7 @@ databaseChangeLog:
                   constraints:
                     foreignKeyName: fk_article_article_preview
                     references: t_article_preview(article_preview_id)
+                    deleteCascade: true
               - column:
                   name: user_id
                   type: int
@@ -120,6 +121,7 @@ databaseChangeLog:
                     unique: false
                     foreignKeyName: fk_article_label
                     references: t_article(article_id)
+                    deleteCascade: true
               - column:
                   name: label_id
                   type: int
@@ -127,6 +129,31 @@ databaseChangeLog:
                     unique: false
                     foreignKeyName: fk_label_article
                     references: t_label(label_id)
+                    deleteCascade: true
+  - changeSet:
+      id: fk-t_paragraph
+      author: yakup_jr
+      changes:
+        - addColumn:
+            tableName: t_paragraph
+            columns:
+              - column:
+                  name: article_id
+                  type: int
+                  constraints:
+                    nullable: true
+                    unique: false
+                    foreignKeyName: fk_article_paragraph
+                    references: t_article(article_id)
+                    deleteCascade: true
+              - column:
+                  name: article_preview_id
+                  type: int
+                  constraints:
+                    nullable: true
+                    unique: false
+                    foreignKeyName: fk_article_preview_paragraph
+                    references: t_article_preview(article_preview_id)
                     deleteCascade: true
   - changeSet:
       id: create-table-t_article_paragraph
@@ -142,6 +169,7 @@ databaseChangeLog:
                     unique: false
                     foreignKeyName: fk_article_paragraph
                     references: t_article(article_id)
+                    deleteCascade: true
               - column:
                   name: paragraph_id
                   type: int
@@ -149,6 +177,7 @@ databaseChangeLog:
                     unique: false
                     foreignKeyName: fk_paragraph_article
                     references: t_paragraph(paragraph_id)
+                    deleteCascade: true
   - changeSet:
       id: fk-t_article_preview
       author: yakup_jr
@@ -164,6 +193,7 @@ databaseChangeLog:
                     unique: false
                     foreignKeyName: fk_article_preview_paragraph
                     references: t_paragraph(paragraph_id)
+                    deleteCascade: true
               - column:
                   name: article_id
                   type: int
