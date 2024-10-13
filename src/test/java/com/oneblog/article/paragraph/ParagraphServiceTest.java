@@ -32,17 +32,16 @@ public class ParagraphServiceTest {
 		Article article = Article.builder().articleId(1L).title("The Game of Thrones").build();
 		inputParagraph.setArticle(article);
 
-		Paragraph exceptedParagraph = inputParagraph;
-		exceptedParagraph.setParagraphId(1L);
+		inputParagraph.setParagraphId(1L);
 
-		when(paragraphRepository.save(inputParagraph)).thenReturn(exceptedParagraph);
+		when(paragraphRepository.save(inputParagraph)).thenReturn(inputParagraph);
 
 		Paragraph outputParagraph = paragraphService.save(inputParagraph);
 
 		assertThat(outputParagraph).isNotNull().isInstanceOf(Paragraph.class);
-		assertThat(outputParagraph.getParagraphId()).isEqualTo(exceptedParagraph.getParagraphId());
-		assertThat(outputParagraph.getArticle()).isEqualTo(exceptedParagraph.getArticle());
-		assertThat(outputParagraph.getArticlePreview()).isEqualTo(exceptedParagraph.getArticlePreview());
+		assertThat(outputParagraph.getParagraphId()).isEqualTo(inputParagraph.getParagraphId());
+		assertThat(outputParagraph.getArticle()).isEqualTo(inputParagraph.getArticle());
+		assertThat(outputParagraph.getArticlePreview()).isEqualTo(inputParagraph.getArticlePreview());
 	}
 
 	@Test
@@ -94,7 +93,7 @@ public class ParagraphServiceTest {
 		List<Paragraph> outputParagraph = paragraphService.findByArticleId(1L);
 
 		assertThat(outputParagraph.getFirst()).isNotNull().isInstanceOf(Paragraph.class);
-		assertThat(outputParagraph.get(0).getParagraphId()).isEqualTo(inputParagraph.getParagraphId());
+		assertThat(outputParagraph.getFirst().getParagraphId()).isEqualTo(inputParagraph.getParagraphId());
 	}
 
 	@Test
@@ -136,8 +135,6 @@ public class ParagraphServiceTest {
 
 	@Test
 	public void deleteByParagraphId_ThrowParagraphNotFoundException() {
-		Paragraph inputParagraph = Paragraph.builder().paragraphId(1L).build();
-
 		when(paragraphRepository.findById(999L)).thenReturn(Optional.empty());
 
 		assertThatExceptionOfType(ParagraphNotFoundExceptionException.class).isThrownBy(

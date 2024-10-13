@@ -6,14 +6,14 @@ import java.util.List;
 
 public interface ParagraphService {
 
-	public Paragraph save(Paragraph paragraph) throws ApiRequestException;
+	Paragraph save(Paragraph paragraph) throws ApiRequestException;
 
-	public Paragraph findByParagraphId(Long paragraphId) throws ParagraphNotFoundExceptionException;
+	Paragraph findByParagraphId(Long paragraphId) throws ParagraphNotFoundExceptionException;
 
-	public List<Paragraph> findByArticleId(Long articleId) throws ParagraphNotFoundExceptionException;
+	List<Paragraph> findByArticleId(Long articleId) throws ParagraphNotFoundExceptionException;
 
-	public List<Paragraph> findByArticlePreviewId(Long articlePreviewId) throws ParagraphNotFoundExceptionException;
+	List<Paragraph> findByArticlePreviewId(Long articlePreviewId) throws ParagraphNotFoundExceptionException;
 
-	public Paragraph deleteByParagraphId(Long paragraphId) throws ParagraphNotFoundExceptionException;
+	Paragraph deleteByParagraphId(Long paragraphId) throws ParagraphNotFoundExceptionException;
 
 }

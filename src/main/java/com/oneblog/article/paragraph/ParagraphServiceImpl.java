@@ -7,7 +7,7 @@ import java.util.List;
 @Service
 public class ParagraphServiceImpl implements ParagraphService {
 
-	private ParagraphRepository paragraphRepository;
+	private final ParagraphRepository paragraphRepository;
 
 	public ParagraphServiceImpl(ParagraphRepository paragraphRepository) {
 		this.paragraphRepository = paragraphRepository;

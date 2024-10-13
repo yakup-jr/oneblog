@@ -21,7 +21,7 @@ public enum LabelName {
 
 	private final String value;
 
-	private LabelName(String value) {
+	LabelName(String value) {
 		this.value = value;
 	}
 

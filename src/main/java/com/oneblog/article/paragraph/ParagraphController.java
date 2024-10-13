@@ -25,8 +25,8 @@ public class ParagraphController {
 	private final ArticlePreviewLink articlePreviewLink;
 
 	public ParagraphController(
-	ParagraphLink paragraphLink, ParagraphService paragraphService, ParagraphMapper paragraphMapper,
-	ArticleLink articleLink, ArticlePreviewLink articlePreviewLink) {
+		ParagraphLink paragraphLink, ParagraphService paragraphService, ParagraphMapper paragraphMapper,
+		ArticleLink articleLink, ArticlePreviewLink articlePreviewLink) {
 		this.paragraphLink = paragraphLink;
 		this.paragraphService = paragraphService;
 		this.paragraphMapper = paragraphMapper;
@@ -41,7 +41,7 @@ public class ParagraphController {
 			Paragraph paragraph = paragraphService.save(mappedParagraph);
 			return ResponseEntity.status(HttpStatus.CREATED).body(EntityModel.of(paragraphMapper.map(paragraph),
 			                                                                     paragraphLink.findParagraphById(
-			                                                                                  paragraph.getParagraphId())
+				                                                                                  paragraph.getParagraphId())
 			                                                                                  .withSelfRel()));
 		} catch (ParagraphAttacheConflictException e) {
 			throw new ParagraphAttacheConflictException(e.getMessage());
@@ -53,30 +53,30 @@ public class ParagraphController {
 	public ResponseEntity<EntityModel<ParagraphDto>> findParagraphById(@PathVariable Long paragraphId) {
 		Paragraph paragraph = paragraphService.findByParagraphId(paragraphId);
 		return ResponseEntity.status(HttpStatus.OK).body(
-		EntityModel.of(paragraphMapper.map(paragraph), paragraphLink.findParagraphById(paragraphId).withSelfRel()));
+			EntityModel.of(paragraphMapper.map(paragraph), paragraphLink.findParagraphById(paragraphId).withSelfRel()));
 	}
 
 	@GetMapping("/paragraph/article/{articleId}")
 	public ResponseEntity<CollectionModel<EntityModel<ParagraphDto>>> findParagraphsByArticleId(
-	@PathVariable Long articleId) {
+		@PathVariable Long articleId) {
 		CollectionModel<EntityModel<ParagraphDto>> paragraphsDto = CollectionModel.of(
-		paragraphService.findByArticleId(articleId).stream().map(
-		                paragraph -> EntityModel.of(paragraphMapper.map(paragraph),
-		                                            paragraphLink.findParagraphById(paragraph.getParagraphId()).withSelfRel()))
-		                .toList(), articleLink.findArticleByArticleId(articleId).withRel("article"),
-		paragraphLink.findParagraphByArticleId(articleId).withSelfRel());
+			paragraphService.findByArticleId(articleId).stream().map(
+				                paragraph -> EntityModel.of(paragraphMapper.map(paragraph),
+				                                            paragraphLink.findParagraphById(paragraph.getParagraphId()).withSelfRel()))
+			                .toList(), articleLink.findArticleByArticleId(articleId).withRel("article"),
+			paragraphLink.findParagraphByArticleId(articleId).withSelfRel());
 		return ResponseEntity.status(HttpStatus.OK).body(paragraphsDto);
 	}
 
 	@GetMapping("/paragraph/article/preview/{previewId}")
 	public ResponseEntity<CollectionModel<EntityModel<ParagraphDto>>> findParagraphsByArticlePreviewId(
-	@PathVariable Long previewId) {
+		@PathVariable Long previewId) {
 		CollectionModel<EntityModel<ParagraphDto>> paragraphsDto = CollectionModel.of(
-		paragraphService.findByArticlePreviewId(previewId).stream().map(
-		                paragraph -> EntityModel.of(paragraphMapper.map(paragraph),
-		                                            paragraphLink.findParagraphById(paragraph.getParagraphId()).withSelfRel()))
-		                .toList(), paragraphLink.findParagraphByArticlePreviewId(previewId).withSelfRel(),
-		articlePreviewLink.findByPreviewId(previewId).withRel("articlePreview"));
+			paragraphService.findByArticlePreviewId(previewId).stream().map(
+				                paragraph -> EntityModel.of(paragraphMapper.map(paragraph),
+				                                            paragraphLink.findParagraphById(paragraph.getParagraphId()).withSelfRel()))
+			                .toList(), paragraphLink.findParagraphByArticlePreviewId(previewId).withSelfRel(),
+			articlePreviewLink.findByPreviewId(previewId).withRel("articlePreview"));
 		return ResponseEntity.status(HttpStatus.OK).body(paragraphsDto);
 	}
 
@@ -85,14 +85,15 @@ public class ParagraphController {
 		Paragraph paragraph = paragraphService.deleteByParagraphId(paragraphId);
 		EntityModel<ParagraphDto> deleteParagraph = EntityModel.of(paragraphMapper.map(paragraph),
 		                                                           paragraphLink.findParagraphById(
-		                                                           paragraph.getParagraphId()).withSelfRel(),
+			                                                           paragraph.getParagraphId()).withSelfRel(),
 		                                                           paragraph.getArticlePreview() == null ?
-		                                                           articleLink.findArticleByArticleId(
-		                                                                      paragraph.getArticle().getArticleId())
-		                                                                      .withRel("article") :
-		                                                           articlePreviewLink.findByPreviewId(
-		                                                                             paragraph.getArticlePreview().getArticlePreviewId())
-		                                                                             .withRel("articlePreview"));
+			                                                           articleLink.findArticleByArticleId(
+				                                                                      paragraph.getArticle().getArticleId())
+			                                                                      .withRel("article") :
+			                                                           articlePreviewLink.findByPreviewId(
+				                                                                             paragraph.getArticlePreview()
+				                                                                                      .getArticlePreviewId())
+			                                                                             .withRel("articlePreview"));
 		return ResponseEntity.status(HttpStatus.OK).body(deleteParagraph);
 	}
 

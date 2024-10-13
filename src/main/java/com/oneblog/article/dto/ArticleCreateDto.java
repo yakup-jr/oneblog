@@ -1,4 +1,3 @@
 package com.oneblog.article.dto;
 
-public class ArticleCreateDto {
-}
+public class ArticleCreateDto {}

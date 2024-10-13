@@ -2,7 +2,6 @@ package com.oneblog.article.dto;
 
 
 import com.oneblog.article.label.dto.LabelDto;
-import com.oneblog.article.paragraph.Paragraph;
 import com.oneblog.article.paragraph.dto.ParagraphDto;
 import com.oneblog.article.preview.ArticlePreview;
 import com.oneblog.user.dto.UserDto;
