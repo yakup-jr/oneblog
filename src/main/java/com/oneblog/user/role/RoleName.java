@@ -1,4 +1,5 @@
-package com.oneblog.internal.roles;
+package com.oneblog.user.role;
+
 
 public enum RoleName {
     ROLE_USER,

@@ -1,10 +1,9 @@
-package com.oneblog.internal.users;
+package com.oneblog.user;
 
 public interface UserService {
 
 	User createUser(User user);
 
-	User getUser(String username);
 
 	void deleteUser(Long id);
 
