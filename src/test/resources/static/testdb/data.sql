@@ -18,46 +18,6 @@ insert into t_label(name)
 values ('Kotlin');
 
 
-insert into t_paragraph(text)
-values ('Lorem ipsum dolor sit amet, consectetur adipiscing elit. ' ||
-        'Ut id risus ultrices, rutrum nibh ' ||
-        'sit amet, porta nisi. Integer in tortor cursus, hendrerit ex at, placerat nisl. Ut vel quam' ||
-        ' volutpat, interdum nunc sit amet, eleifend nisi. Proin efficitur mauris sit amet sagittis sagittis.' ||
-        ' Phasellus placerat mi in ullamcorper vestibulum. Donec consequat justo sed pharetra tempor.' ||
-        ' Duis sagittis diam ipsum. Nullam vehicula massa id dolor ultricies elementum.' ||
-        ' Sed hendrerit metus sed lorem viverra fermentum.');
-insert into t_paragraph(text)
-values ('Proin ac tempor nisl. Cras tincidunt posuere nisi vel ' ||
-        'lacinia.' ||
-        ' Sed ultrices neque tellus, quis tempor urna ullamcorper vitae. ' ||
-        'Proin venenatis nunc ipsum, in accumsan sapien tincidunt sed. ' ||
-        'Aenean ac tempor metus. Sed lobortis erat ut arcu mattis, ' ||
-        'eget aliquam lectus blandit. Duis dictum leo vel dui ' ||
-        'suscipit feugiat tincidunt.');
-insert into t_paragraph(text)
-values ('Nulla sollicitudin lacus eget urna aliquam, eget fermentum justo vehicula. ' ||
-        'Praesent eleifend placerat justo quis dapibus.' ||
-        ' Ut suscipit arcu quis condimentum efficitur. ' ||
-        'Morbi bibendum rutrum est quis facilisis. Vivamus ac venenatis' ||
-        ' nulla, aliquet venenatis purus. Morbi in tortor a nibh lobortis' ||
-        ' ullamcorper. Integer ante diam, tincidunt hendrerit mi ' ||
-        'sed, pulvinar.');
-insert into t_paragraph(text)
-values ('Maecenas tempus convallis enim, eget vulputate libero consequat eu. ' ||
-        'Sed euismod euismod turpis et egestas. Nunc feugiat eros mi, ' ||
-        'vel condimentum lectus condimentum a. Phasellus purus sapien, ' ||
-        'porta non nisi eget, molestie egestas est. Mauris lacus nulla, ' ||
-        'vulputate a dolor at, posuere lacinia leo. Fusce quam ' ||
-        'ligula, posuere tincidunt lacus.');
-insert into t_paragraph(text)
-values ('Donec eget enim nulla. Donec dignissim quam vel sapien dignissim ' ||
-        'consequat. Sed ac porta mauris. Nam nec turpis bibendum, euismod' ||
-        ' mauris in, commodo neque. Sed pulvinar id lorem at viverra. ' ||
-        'Suspendisse non suscipit mi, nec sollicitudin tellus.' ||
-        ' Etiam ultricies ligula ac porta rhoncus. ' ||
-        'Phasellus sollicitudin id sem ac commodo. Fusce.');
-
-
 insert into t_user(nickname, name, email, password)
 values ('yakup_jr', 'Dima', 'fgrcnyxj@gmail.com', '12345678');
 insert into t_user(nickname, name, email, password)
@@ -102,67 +62,49 @@ values ((select user_id from T_USER where nickname = 'xahe12'),
         (select role_id from T_ROLE where name = 'ROLE_USER'));
 
 
-insert into t_article(title, created_at, user_id)
-values ('The boys 5 season teaser', '2024-09-02 10:34:25', 1);
-insert into t_article(title, created_at, user_id)
-values ('The House of the Dragon 2 season', '2024-05-09 12:00:00', 2);
-insert into t_article(title, created_at, user_id)
-values ('The Peaky blinders film', '2022-06-23 13:00:00', 3);
-insert into t_article(title, created_at, user_id)
-values ('The Games of Thrones 8 season', '2019-02-01', 5);
-insert into t_article(title, created_at, user_id)
-values ('Squid game 2 season', '2014-05-03', 4);
+insert into t_article(article_id, title, body, created_at, user_id)
+values (1, 'The boys 5 season teaser', 'body 1', '2024-09-02 10:34:25', 1);
+insert into t_article(article_id, title, body, created_at, user_id)
+values (2, 'The House of the Dragon 2 season', 'body 2', '2024-05-09 12:00:00', 2);
+insert into t_article(article_id, title, body, created_at, user_id)
+values (3, 'The Peaky blinders film', 'body 3', '2022-06-23 13:00:00', 3);
+insert into t_article(article_id, title, body, created_at, user_id)
+values (4, 'The Games of Thrones 8 season', 'body 4', '2019-02-01', 5);
+insert into t_article(article_id, title, body, created_at, user_id)
+values (5, 'Squid game 2 season', 'body 5', '2014-05-03', 4);
 
-insert into t_article_preview(article_id, paragraph_id)
-values (1, 2);
-insert into t_article_preview(article_id, paragraph_id)
-values (3, 5);
+insert into t_article_preview(article_preview_id, body)
+values (1, 'body 1');
+insert into t_article_preview(article_preview_id, body)
+values (2, 'body 3');
+insert into t_article_preview(article_preview_id, body)
+values (3, 'body 2');
 
 update t_article
 set article_preview_id = 1
-where t_article.article_id = 1;
+where article_id = 1;
 update t_article
 set article_preview_id = 2
-where t_article.article_id = 2;
+where article_id = 2;
 update t_article
-set article_preview_id = 2
-where t_article.article_id = 3;
-update t_article
-set article_preview_id = 1
-where t_article.article_id = 4;
-update t_article
-set article_preview_id = 1
-where t_article.article_id = 5;
-
-
-update t_paragraph
-set article_id = 1
-where t_paragraph.paragraph_id = 3;
-update t_paragraph
-set article_id = 1
-where t_paragraph.paragraph_id = 4;
-
+set article_preview_id = 3
+where article_id = 3;
 
 
 insert into t_article_label(article_id, label_id)
 values (1, 1);
 insert into t_article_label(article_id, label_id)
-values (1, 2);
+values (2, 2);
 insert into t_article_label(article_id, label_id)
 values (2, 3);
 insert into t_article_label(article_id, label_id)
 values (3, 4);
 insert into t_article_label(article_id, label_id)
-values (3, 5);
+values (4, 5);
 insert into t_article_label(article_id, label_id)
-values (4, 6);
+values (5, 6);
 insert into t_article_label(article_id, label_id)
 values (5, 7);
-
-insert into t_article_paragraph(article_id, paragraph_id)
-values (1, 1);
-insert into t_article_paragraph(article_id, paragraph_id)
-values (1, 3);
 
 
 

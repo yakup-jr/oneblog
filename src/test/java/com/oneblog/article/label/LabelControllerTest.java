@@ -1,8 +1,10 @@
 package com.oneblog.article.label;
 
 
+import com.oneblog.DatabaseCleanerExtension;
 import com.oneblog.config.TestConfig;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,7 +22,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(classes = {TestConfig.class})
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-@Sql(scripts = "/static/testdb/data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
+@Sql(scripts = "/static/testdb/data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@ExtendWith(DatabaseCleanerExtension.class)
 public class LabelControllerTest {
 
 	@Autowired
@@ -46,7 +49,7 @@ public class LabelControllerTest {
 		mockMvc.perform(get("/api/v1/articles/label/1").contentType(MediaType.APPLICATION_JSON))
 		       .andExpect(status().isOk()).andExpect(jsonPath("$.name", is(LabelName.Assembler.toString())))
 		       .andExpect(jsonPath("$._links.self.href", containsString("api/v1/articles/label/1")))
-		       .andExpect(jsonPath("$._links.labels.href", containsString("api/v1/articles/labels")));
+		       .andExpect(jsonPath("$._links.labels.href", containsString("labels")));
 	}
 
 	@Test
@@ -60,7 +63,7 @@ public class LabelControllerTest {
 		mockMvc.perform(get("/api/v1/articles/label/name/Java").contentType(MediaType.APPLICATION_JSON))
 		       .andExpect(status().isOk()).andExpect(jsonPath("$.name", is(LabelName.Java.toString())))
 		       .andExpect(jsonPath("$._links.self.href", containsString("api/v1/articles/label/name/Java")))
-		       .andExpect(jsonPath("$._links.labels.href", containsString("api/v1/articles/labels")));
+		       .andExpect(jsonPath("$._links.labels.href", containsString("labels")));
 	}
 
 	@Test
