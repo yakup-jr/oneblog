@@ -1,7 +1,7 @@
 package com.oneblog.article.preview;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.oneblog.article.Article;
-import com.oneblog.article.paragraph.Paragraph;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -10,20 +10,20 @@ import lombok.*;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "T_ARTICLE_PREVIEW")
+@Table(name = "t_article_preview")
 @Entity
 public class ArticlePreview {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "ARTICLE_PREVIEW_ID", nullable = false, updatable = false, unique = true)
+	@SequenceGenerator(name = "preview_seq", sequenceName = "preview_sequence", initialValue = 10, allocationSize = 10)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "preview_seq")
+	@Column(name = "article_preview_id", nullable = false, updatable = false, unique = true)
 	private Long articlePreviewId;
 
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "PARAGRAPH_ID")
-	private Paragraph paragraph;
+	@Column(name = "body")
+	private String body;
 
-	@OneToOne(mappedBy = "articlePreview", cascade = CascadeType.ALL)
-	@JoinColumn(name = "ARTICLE_ID")
+	@JsonBackReference
+	@OneToOne(mappedBy = "articlePreview")
 	private Article article;
 }

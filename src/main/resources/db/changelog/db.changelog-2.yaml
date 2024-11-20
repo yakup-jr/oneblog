@@ -1,26 +1,24 @@
 databaseChangeLog:
   - changeSet:
-      id: create-table-paragraph
+      id: create-article_sequence
       author: yakup_jr
       changes:
-        - createTable:
-            tableName: t_paragraph
-            columns:
-              - column:
-                  name: paragraph_id
-                  type: BIGINT
-                  autoIncrement: true
-                  constraints:
-                    nullable: false
-                    unique: true
-                    primaryKey: true
-                    primaryKeyName: pk_paragraph
-              - column:
-                  name: text
-                  type: VARCHAR(65535)
-                  constraints:
-                    nullable: true
-                    unique: false
+        - createSequence:
+            sequenceName: article_sequence
+            startValue: 10
+            minValue: 1
+            maxValue: 10000
+            incrementBy: 10
+  - changeSet:
+      id: create-preview_sequence
+      author: yakup_jr
+      changes:
+        - createSequence:
+            sequenceName: preview_sequence
+            startValue: 10
+            minValue: 1
+            maxValue: 10000
+            incrementBy: 10
   - changeSet:
       id: create-table-label
       author: yakup_jr
@@ -53,7 +51,6 @@ databaseChangeLog:
               - column:
                   name: article_id
                   type: BIGINT
-                  autoIncrement: true
                   constraints:
                     nullable: false
                     unique: true
@@ -65,6 +62,13 @@ databaseChangeLog:
                   constraints:
                     nullable: false
                     unique: false
+              - column:
+                  name: body
+                  type: varchar(65535)
+                  constraints:
+                    nullable: false
+                    unique: false
+                    primaryKey: false
               - column:
                   name: created_at
                   type: DATETIME
@@ -87,6 +91,13 @@ databaseChangeLog:
                     unique: true
                     primaryKey: true
                     primaryKeyName: pk_article_preview
+              - column:
+                  name: body
+                  type: varchar(65535)
+                  constraints:
+                    nullable: false
+                    unique: false
+                    primaryKey: false
   - changeSet:
       id: fk-t_article
       author: yakup_jr
@@ -107,6 +118,7 @@ databaseChangeLog:
                   constraints:
                     foreignKeyName: fk_article_user
                     references: t_user(user_id)
+                    deleteCascade: true
   - changeSet:
       id: create-table-t_article_label
       author: yakup_jr
@@ -130,75 +142,3 @@ databaseChangeLog:
                     foreignKeyName: fk_label_article
                     references: t_label(label_id)
                     deleteCascade: true
-  - changeSet:
-      id: fk-t_paragraph
-      author: yakup_jr
-      changes:
-        - addColumn:
-            tableName: t_paragraph
-            columns:
-              - column:
-                  name: article_id
-                  type: int
-                  constraints:
-                    nullable: true
-                    unique: false
-                    foreignKeyName: fk_article_paragraph
-                    references: t_article(article_id)
-                    deleteCascade: true
-              - column:
-                  name: article_preview_id
-                  type: int
-                  constraints:
-                    nullable: true
-                    unique: false
-                    foreignKeyName: fk_article_preview_paragraph
-                    references: t_article_preview(article_preview_id)
-                    deleteCascade: true
-  - changeSet:
-      id: create-table-t_article_paragraph
-      author: yakup_jr
-      changes:
-        - createTable:
-            tableName: t_article_paragraph
-            columns:
-              - column:
-                  name: article_id
-                  type: int
-                  constraints:
-                    unique: false
-                    foreignKeyName: fk_article_paragraph
-                    references: t_article(article_id)
-                    deleteCascade: true
-              - column:
-                  name: paragraph_id
-                  type: int
-                  constraints:
-                    unique: false
-                    foreignKeyName: fk_paragraph_article
-                    references: t_paragraph(paragraph_id)
-                    deleteCascade: true
-  - changeSet:
-      id: fk-t_article_preview
-      author: yakup_jr
-      changes:
-        - addColumn:
-            tableName: t_article_preview
-            columns:
-              - column:
-                  name: paragraph_id
-                  type: int
-                  constraints:
-                    nullable: false
-                    unique: false
-                    foreignKeyName: fk_article_preview_paragraph
-                    references: t_paragraph(paragraph_id)
-                    deleteCascade: true
-              - column:
-                  name: article_id
-                  type: int
-                  constraints:
-                    nullable: false
-                    unique: true
-                    foreignKeyName: fk_article_preview_article
-                    references: t_article(article_id)

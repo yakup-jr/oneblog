@@ -75,6 +75,7 @@ databaseChangeLog:
                     unique: false
                     foreignKeyName: fk_user_role_user
                     references: t_user(user_id)
+                    deleteCascade: true
               - column:
                   name: role_id
                   type: int
@@ -82,5 +83,6 @@ databaseChangeLog:
                     unique: false
                     foreignKeyName: fk_user_role_role
                     references: t_role(role_id)
+                    deleteCascade: true
 
 
