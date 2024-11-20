@@ -1,11 +1,11 @@
 package com.oneblog.article;
 
 import com.oneblog.article.label.Label;
-import com.oneblog.article.paragraph.Paragraph;
 import com.oneblog.article.preview.ArticlePreview;
 import com.oneblog.user.User;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,43 +15,41 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "T_ARTICLE")
+@Table(name = "t_article")
 @Entity
 public class Article {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE)
-	@Column(name = "ARTICLE_ID", nullable = false, updatable = false, unique = true)
+	@SequenceGenerator(name = "article_seq", sequenceName = "article_sequence", initialValue = 10, allocationSize = 10)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "article_seq")
+	@Column(name = "article_id", nullable = false, updatable = false, unique = true)
 	private Long articleId;
 
-	@Column(name = "TITLE", nullable = false)
+	@Column(name = "title", nullable = false)
 	private String title;
 
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinTable(name = "t_article_paragraph",
-		joinColumns = @JoinColumn(name = "article_id", foreignKey = @ForeignKey(name = "fk_article_paragraph")),
-		inverseJoinColumns = @JoinColumn(name = "paragraph_id",
-			foreignKey = @ForeignKey(name = "fk_paragraph_article")))
-	private List<Paragraph> paragraphs;
+	@Column(name = "body", nullable = false)
+	private String body;
 
-
-	@Column(name = "CREATED_AT", nullable = false, updatable = false)
+	@Column(name = "created_at", nullable = false, updatable = false)
+	@CreationTimestamp
 	private LocalDateTime createdAt;
 
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "ARTICLE_PREVIEW_ID", foreignKey = @ForeignKey(name = "fk_article_article_preview"))
+	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@JoinColumn(name = "article_preview_id", referencedColumnName = "article_preview_id", nullable = false,
+		unique = true)
 	private ArticlePreview articlePreview;
 
-	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(name = "T_ARTICLE_LABEL",
-		joinColumns = @JoinColumn(name = "ARTICLE_ID", foreignKey = @ForeignKey(name = "fk_article_label"),
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(name = "t_article_label",
+		joinColumns = @JoinColumn(name = "article_id", foreignKey = @ForeignKey(name = "fk_article_label"),
 			referencedColumnName = "article_id"),
-		inverseJoinColumns = @JoinColumn(name = "LABEL_ID", foreignKey = @ForeignKey(name = "fk_label_article"),
+		inverseJoinColumns = @JoinColumn(name = "label_id", foreignKey = @ForeignKey(name = "fk_label_article"),
 			referencedColumnName = "label_id"))
 	private List<Label> labels;
 
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "USER_ID", foreignKey = @ForeignKey(name = "fk_article_user"))
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "fk_article_user"), nullable = false)
 	private User user;
 
 }

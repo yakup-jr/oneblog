@@ -15,4 +15,8 @@ public class ArticleLink {
 		return linkTo(methodOn(controllerClass).findArticleByArticleId(articleId));
 	}
 
+	public WebMvcLinkBuilder findArticleByUserId(Long userId) {
+		return linkTo(methodOn(controllerClass).findArticleByUserId(userId));
+	}
+
 }

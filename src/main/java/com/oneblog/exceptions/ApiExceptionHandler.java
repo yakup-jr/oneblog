@@ -1,7 +1,7 @@
 package com.oneblog.exceptions;
 
+import com.oneblog.article.ArticleNotFoundException;
 import com.oneblog.article.label.LabelNotFoundException;
-import com.oneblog.article.paragraph.ParagraphNotFoundExceptionException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +22,7 @@ public class ApiExceptionHandler {
 		return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(apiException);
 	}
 
-	@ExceptionHandler(value = {LabelNotFoundException.class, ParagraphNotFoundExceptionException.class})
+	@ExceptionHandler(value = {LabelNotFoundException.class, ArticleNotFoundException.class})
 	public ResponseEntity<Object> handleNotFoundException(NotFoundException e) {
 		return ResponseEntity.notFound().build();
 	}
