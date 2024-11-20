@@ -3,6 +3,7 @@ package com.oneblog.article.label;
 import com.oneblog.exceptions.ApiRequestException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,13 +36,29 @@ public class LabelServiceImpl implements LabelService {
 	}
 
 	@Override
-	public Optional<Label> findById(Long labelId) {
-		return labelRepository.findById(labelId);
+	public Label findById(Long labelId) {
+		return labelRepository.findById(labelId)
+		                      .orElseThrow(() -> new LabelNotFoundException("Label with id " + labelId + " not found"));
 	}
 
 	@Override
-	public Optional<Label> findByName(LabelName name) {
-		return labelRepository.findByName(name);
+	public Label findByName(String name) {
+		try {
+			return labelRepository.findByName(LabelName.valueOf(name)).orElseThrow(
+				() -> new LabelNotFoundException("Label with name " + name + " not found"));
+		} catch (IllegalArgumentException e) {
+			throw new LabelNotFoundException("Label with name " + name + " not found");
+		}
+
+	}
+
+	@Override
+	public List<Label> findLabels(List<Label> labels) {
+		List<Label> foundLabels = new ArrayList<>();
+		for (Label label : labels) {
+			foundLabels.add(findById(label.getLabelId()));
+		}
+		return foundLabels;
 	}
 
 	@Override

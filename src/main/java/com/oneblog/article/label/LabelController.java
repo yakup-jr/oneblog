@@ -5,12 +5,12 @@ import com.oneblog.article.label.dto.LabelDto;
 import com.oneblog.exceptions.ApiRequestException;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Links;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/articles")
@@ -44,26 +44,27 @@ public class LabelController {
 
 	@GetMapping("label/{labelId}")
 	public ResponseEntity<EntityModel<LabelDto>> findLabelByLabelId(@PathVariable Long labelId) {
-		Optional<Label> label = labelService.findById(labelId);
-		if (label.isPresent()) {
-			LabelDto labelDto = labelMapper.map(label.get());
-			return ResponseEntity.status(HttpStatus.OK).body(
-				EntityModel.of(labelDto, labelLink.findLabelByLabelId(labelId).withSelfRel(),
-				               labelLink.findAllLabels().withRel("labels")));
+		try {
+			Label label = labelService.findById(labelId);
+			LabelDto labelDto = labelMapper.map(label);
+			Links links = Links.of(labelLink.findLabelByLabelId(labelId).withSelfRel(),
+			                       labelLink.findAllLabels().withRel("labels"));
+			return ResponseEntity.status(200).body(EntityModel.of(labelDto, links));
+		} catch (LabelNotFoundException e) {
+			throw new LabelNotFoundException(e.getMessage());
 		}
-		throw new LabelNotFoundException("label with id " + labelId + " not found");
 	}
 
 	@GetMapping("label/name/{name}")
 	public ResponseEntity<EntityModel<LabelDto>> findLabelByLabelName(@PathVariable String name) {
 		try {
-			Optional<Label> label = labelService.findByName(LabelName.valueOf(name));
-			LabelDto labelDto = labelMapper.map(label.get());
-			return ResponseEntity.status(HttpStatus.OK).body(
-				EntityModel.of(labelDto, labelLink.findLabelByLabelName(name).withSelfRel(),
-				               labelLink.findAllLabels().withRel("labels")));
-		} catch (IllegalArgumentException e) {
-			throw new LabelNotFoundException("label with name " + name + " not found");
+			Label labelByName = labelService.findByName(name);
+			LabelDto labelDto = labelMapper.map(labelByName);
+			Links links = Links.of(labelLink.findLabelByLabelName(name).withSelfRel(),
+			                       labelLink.findAllLabels().withRel("labels"));
+			return ResponseEntity.status(HttpStatus.OK).body(EntityModel.of(labelDto, links));
+		} catch (LabelNotFoundException e) {
+			throw new LabelNotFoundException(e.getMessage());
 		}
 	}
 

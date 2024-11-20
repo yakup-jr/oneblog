@@ -1,18 +1,21 @@
 package com.oneblog.article.label;
 
+import com.oneblog.exceptions.ApiRequestException;
+
 import java.util.List;
-import java.util.Optional;
 
 public interface LabelService {
 
-	Label save(Label label);
+	Label save(Label label) throws ApiRequestException;
 
 	List<Label> findAll();
 
-	Optional<Label> findById(Long labelId);
+	Label findById(Long labelId) throws LabelNotFoundException;
 
-	Optional<Label> findByName(LabelName name);
+	Label findByName(String name) throws LabelNotFoundException;
 
-	Label deleteById(Long labelId);
+	List<Label> findLabels(List<Label> labels) throws LabelNotFoundException;
+
+	Label deleteById(Long labelId) throws LabelNotFoundException;
 
 }

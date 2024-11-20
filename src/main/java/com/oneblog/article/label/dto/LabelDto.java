@@ -9,6 +9,8 @@ import lombok.Setter;
 @Getter
 public class LabelDto {
 
+	private Long labelId;
+
 	private LabelName name;
 
 }
