@@ -1,5 +1,7 @@
 package com.oneblog.user;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.oneblog.article.Article;
 import com.oneblog.user.role.Role;
 import jakarta.persistence.*;
 import lombok.*;
@@ -38,6 +40,10 @@ public class User {
 	@JoinTable(name = "T_USER_ROLE", joinColumns = @JoinColumn(name = "USER_ID"),
 		inverseJoinColumns = @JoinColumn(name = "ROLE_ID"))
 	private List<Role> roles;
+
+	@JsonBackReference
+	@OneToMany(mappedBy = "user")
+	private List<Article> articles;
 
 	@Override
 	public final boolean equals(Object o) {

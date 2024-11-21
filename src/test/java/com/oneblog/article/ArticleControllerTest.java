@@ -34,7 +34,7 @@ public class ArticleControllerTest {
 			                                                                                         		{
 			                                                                                         			"title": "the best president",
 			                                                                                         			"body": "more and more text...",
-			                                                                                         			"articlePreview": {
+			                                                                                         			"preview": {
 			                                                                                         				"body": "Something interesting preview"
 			                                                                                         			},
 			                                                                                         			"labels": [
@@ -51,8 +51,8 @@ public class ArticleControllerTest {
 			                                                                                         		}
 			                                                                                         """))
 		       .andExpect(status().isCreated()).andExpect(jsonPath("$.articleId", notNullValue()))
-		       .andExpect(jsonPath("$.articlePreview.articlePreviewId", notNullValue()))
-		       .andExpect(jsonPath("$.articlePreview.body", notNullValue())).andExpect(jsonPath("$.labels", hasSize(2)))
+		       .andExpect(jsonPath("$.preview.articlePreviewId", notNullValue()))
+		       .andExpect(jsonPath("$.preview.body", notNullValue())).andExpect(jsonPath("$.labels", hasSize(2)))
 		       .andExpect(jsonPath("$.labels[0].labelId", is(1)))
 		       .andExpect(jsonPath("$._links.self.href", notNullValue()));
 	}
@@ -87,7 +87,7 @@ public class ArticleControllerTest {
 			                                                                                         	{
 			                                                                                         			"title": "the best president",
 			                                                                                         			"body": "more and more text...",
-			                                                                                         			"articlePreview": {
+			                                                                                         			"preview": {
 			                                                                                         				"body": "Something interesting preview"
 			                                                                                         			},
 			                                                                                         			"user": {
@@ -105,7 +105,7 @@ public class ArticleControllerTest {
 			                                                                                         	{
 			                                                                                         		"title": "the best president",
 			                                                                                         		"body": "more and more text...",
-			                                                                                         		"articlePreview": {
+			                                                                                         		"preview": {
 			                                                                                         			"body": "Something interesting preview"
 			                                                                                         		},
 			                                                                                         		"labels": [
@@ -125,8 +125,8 @@ public class ArticleControllerTest {
 	void findArticleByArticleId_ReturnArticle() throws Exception {
 		mockMvc.perform(get("/api/v1/article/2").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 		       .andExpect(jsonPath("$.articleId", is(2)))
-		       .andExpect(jsonPath("$.articlePreview.articlePreviewId", is(2)))
-		       .andExpect(jsonPath("$.articlePreview.body", notNullValue())).andExpect(jsonPath("$.labels", hasSize(2)))
+		       .andExpect(jsonPath("$.preview.articlePreviewId", is(2)))
+		       .andExpect(jsonPath("$.preview.body", notNullValue())).andExpect(jsonPath("$.labels", hasSize(2)))
 		       .andExpect(jsonPath("$.labels[0].labelId", is(2))).andExpect(jsonPath("$.user.userId", is(2)))
 		       .andExpect(jsonPath("$._links.self.href", notNullValue()));
 	}
@@ -142,7 +142,7 @@ public class ArticleControllerTest {
 		mockMvc.perform(get("/api/v1/article/user/1").contentType(MediaType.APPLICATION_JSON))
 		       .andExpect(status().isOk()).andExpect(jsonPath("$._embedded.articles[0].articleId", notNullValue()))
 		       .andExpect(jsonPath("$._embedded.articles", hasSize(1)))
-		       .andExpect(jsonPath("$._embedded.articles[0].articlePreview.articlePreviewId", notNullValue()))
+		       .andExpect(jsonPath("$._embedded.articles[0].preview.articlePreviewId", notNullValue()))
 		       .andExpect(jsonPath("$._embedded.articles[0]._links.self.href", notNullValue()));
 	}
 

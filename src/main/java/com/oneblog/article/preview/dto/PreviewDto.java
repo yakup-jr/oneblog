@@ -1,6 +1,6 @@
 package com.oneblog.article.preview.dto;
 
-import com.oneblog.article.dto.ArticleDto;
+
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.hateoas.server.core.Relation;
@@ -8,10 +8,10 @@ import org.springframework.hateoas.server.core.Relation;
 @Setter
 @Getter
 @Relation(collectionRelation = "previews")
-public class ArticlePreviewCreateDto {
+public class PreviewDto {
+
+	private Long articlePreviewId;
 
 	private String body;
-
-	private ArticleDto article;
 
 }

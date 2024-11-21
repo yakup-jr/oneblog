@@ -1,6 +1,6 @@
 package com.oneblog.user;
 
-import com.oneblog.user.role.RoleRepository;
+import com.oneblog.exceptions.ApiRequestException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -10,30 +10,46 @@ public class UserServiceImpl implements UserService {
 
 	private final UserRepository userRepository;
 
-	private final RoleRepository roleRepository;
-
-
-	public UserServiceImpl(
-		UserRepository userRepository, RoleRepository roleRepository) {
+	public UserServiceImpl(UserRepository userRepository) {
 		this.userRepository = userRepository;
-		this.roleRepository = roleRepository;
 	}
 
 	@Override
-	public User createUser(User user) {
-		User savedUser = userRepository.save(user);
-		log.info(savedUser.getUserId().toString());
-		for (int i = 0; i < user.getRoles().size(); i++) {
-			//			Role savedRole = roleRepository.save(user.getRoles().get(i).getName());
-			//						userRoleRepository.save(savedUser.getId(), savedRole.getId());
+	public User save(User user) {
+		if (userRepository.existsByEmailOrNickname(user.getEmail(), user.getNickname())) {
+			throw new ApiRequestException("User nickname and email must be unique");
 		}
-		return null;
+
+		return userRepository.save(user);
 	}
 
 	@Override
-	public void deleteUser(Long id) {
-		//		userRoleRepository.deleteByUserId(id);
+	public boolean existsById(Long userId) {
+		return userRepository.existsById(userId);
+	}
+
+	@Override
+	public User findById(Long id) {
+		return userRepository.findById(id)
+		                     .orElseThrow(() -> new UserNotFoundException("User with id " + id + " not " + "found"));
+	}
+
+	@Override
+	public User findByNickname(String nickname) {
+		return userRepository.findByNickname(nickname).orElseThrow(
+			() -> new UserNotFoundException("User with nickname " + nickname + " not found"));
+	}
+
+	@Override
+	public User findByEmail(String email) throws UserNotFoundException {
+		return userRepository.findByEmail(email)
+		                     .orElseThrow(() -> new UserNotFoundException("User with email " + email + " not found"));
+	}
+
+	@Override
+	public User deleteById(Long id) {
+		User user = findById(id);
 		userRepository.deleteById(id);
-		roleRepository.deleteById(id);
+		return user;
 	}
 }

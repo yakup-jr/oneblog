@@ -1,11 +1,11 @@
 package com.oneblog.user.role;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.oneblog.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -24,15 +24,12 @@ public class Role {
 	private Long roleId;
 
 	@Column(name = "NAME", unique = true, nullable = false)
-	@Enumerated
+	@Enumerated(value = EnumType.STRING)
 	private RoleName name;
 
+	@JsonBackReference
 	@ManyToMany(mappedBy = "roles")
-	private List<User> users = new ArrayList<>();
-
-	public Role(RoleName name) {
-		this.name = name;
-	}
+	private List<User> users;
 
 	@Override
 	public final boolean equals(Object o) {

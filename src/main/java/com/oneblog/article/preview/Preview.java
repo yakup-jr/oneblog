@@ -12,7 +12,7 @@ import lombok.*;
 @NoArgsConstructor
 @Table(name = "t_article_preview")
 @Entity
-public class ArticlePreview {
+public class Preview {
 
 	@Id
 	@SequenceGenerator(name = "preview_seq", sequenceName = "preview_sequence", initialValue = 10, allocationSize = 10)
@@ -24,6 +24,6 @@ public class ArticlePreview {
 	private String body;
 
 	@JsonBackReference
-	@OneToOne(mappedBy = "articlePreview")
+	@OneToOne(mappedBy = "preview")
 	private Article article;
 }

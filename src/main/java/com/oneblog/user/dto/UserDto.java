@@ -10,6 +10,8 @@ import java.util.List;
 @Getter
 public class UserDto {
 
+	private Long userId;
+
 	private String name;
 
 	private String nickname;

@@ -1,7 +1,7 @@
 package com.oneblog.article.dto;
 
 import com.oneblog.article.label.Label;
-import com.oneblog.article.preview.ArticlePreview;
+import com.oneblog.article.preview.Preview;
 import com.oneblog.user.User;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,7 +21,7 @@ public class ArticleCreateDto {
 
 	private LocalDateTime createTime;
 
-	private ArticlePreview articlePreview;
+	private Preview preview;
 
 	private List<Label> labels;
 

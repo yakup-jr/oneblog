@@ -1,7 +1,7 @@
 package com.oneblog.article;
 
 import com.oneblog.article.label.Label;
-import com.oneblog.article.preview.ArticlePreview;
+import com.oneblog.article.preview.Preview;
 import com.oneblog.user.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -38,7 +38,7 @@ public class Article {
 	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name = "article_preview_id", referencedColumnName = "article_preview_id", nullable = false,
 		unique = true)
-	private ArticlePreview articlePreview;
+	private Preview preview;
 
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "t_article_label",

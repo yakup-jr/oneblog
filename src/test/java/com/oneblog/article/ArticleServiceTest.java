@@ -2,8 +2,7 @@ package com.oneblog.article;
 
 import com.oneblog.article.label.Label;
 import com.oneblog.article.label.LabelName;
-import com.oneblog.article.label.LabelService;
-import com.oneblog.article.preview.ArticlePreview;
+import com.oneblog.article.preview.Preview;
 import com.oneblog.user.User;
 import com.oneblog.user.UserNotFoundException;
 import com.oneblog.user.UserService;
@@ -29,17 +28,13 @@ public class ArticleServiceTest {
 	private ArticleRepository articleRepository;
 
 	@Mock
-	private LabelService labelService;
-
-	@Mock
 	private UserService userService;
 
 	@InjectMocks
 	private ArticleServiceImpl articleService;
 
 	private static final Article defaultArticle =
-		Article.builder().title("The new story").body("More and more...").articleId(1L)
-		       .articlePreview(new ArticlePreview())
+		Article.builder().title("The new story").body("More and more...").articleId(1L).preview(new Preview())
 		       .labels(List.of(new Label(1L, LabelName.Assembler, null), new Label(2L, LabelName.Java, null))).user(
 			       new User(1L, "Dima", "yakup_jr", "somemail@mail.com", "strongpass",
 			                List.of(new Role(1L, RoleName.ROLE_ADMIN, null)), null)).build();
@@ -48,7 +43,7 @@ public class ArticleServiceTest {
 	public void save_ReturnArticle() {
 		Article response =
 			new Article(1L, defaultArticle.getTitle(), defaultArticle.getBody(), defaultArticle.getCreatedAt(),
-			            defaultArticle.getArticlePreview(), defaultArticle.getLabels(), defaultArticle.getUser());
+			            defaultArticle.getPreview(), defaultArticle.getLabels(), defaultArticle.getUser());
 		when(userService.findById(defaultArticle.getUser().getUserId())).thenReturn(defaultArticle.getUser());
 		when(articleRepository.save(defaultArticle)).thenReturn(response);
 

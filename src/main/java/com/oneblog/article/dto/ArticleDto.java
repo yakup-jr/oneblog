@@ -2,7 +2,7 @@ package com.oneblog.article.dto;
 
 
 import com.oneblog.article.label.dto.LabelDto;
-import com.oneblog.article.preview.dto.ArticlePreviewDto;
+import com.oneblog.article.preview.dto.PreviewDto;
 import com.oneblog.user.dto.UserDto;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,7 +24,7 @@ public class ArticleDto {
 
 	private LocalDateTime createdAt;
 
-	private ArticlePreviewDto articlePreview;
+	private PreviewDto articlePreview;
 
 	private List<LabelDto> labels;
 

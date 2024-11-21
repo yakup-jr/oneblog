@@ -2,7 +2,6 @@ package com.oneblog.article;
 
 import com.oneblog.article.label.LabelNotFoundException;
 import com.oneblog.article.label.LabelService;
-import com.oneblog.article.preview.ArticlePreviewService;
 import com.oneblog.exceptions.ApiRequestException;
 import com.oneblog.user.UserNotFoundException;
 import com.oneblog.user.UserService;
@@ -13,23 +12,20 @@ import java.util.List;
 @Service
 public class ArticleServiceImpl implements ArticleService {
 
-	private ArticleRepository articleRepository;
-	private UserService userService;
-	private LabelService labelService;
-	private ArticlePreviewService articlePreviewService;
+	private final ArticleRepository articleRepository;
+	private final UserService userService;
+	private final LabelService labelService;
 
 	public ArticleServiceImpl(
-		ArticleRepository articleRepository, UserService userService, LabelService labelService,
-		ArticlePreviewService articlePreviewService) {
+		ArticleRepository articleRepository, UserService userService, LabelService labelService) {
 		this.articleRepository = articleRepository;
 		this.userService = userService;
 		this.labelService = labelService;
-		this.articlePreviewService = articlePreviewService;
 	}
 
 	@Override
 	public Article save(Article article) throws ApiRequestException, UserNotFoundException, LabelNotFoundException {
-		if (article.getArticlePreview() == null) {
+		if (article.getPreview() == null) {
 			throw new ApiRequestException("Preview could not be null");
 		}
 		if (article.getLabels() == null || article.getLabels().isEmpty()) {

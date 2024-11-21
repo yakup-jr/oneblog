@@ -3,7 +3,7 @@ package com.oneblog.user;
 import com.oneblog.article.Article;
 import com.oneblog.article.label.Label;
 import com.oneblog.article.label.LabelName;
-import com.oneblog.article.preview.ArticlePreview;
+import com.oneblog.article.preview.Preview;
 import com.oneblog.exceptions.ApiRequestException;
 import com.oneblog.user.role.Role;
 import com.oneblog.user.role.RoleName;
@@ -31,7 +31,7 @@ public class UserServiceTest {
 
 	private static final User defaultUser = new User(1L, "Dima", "yakup_jr", "somemail@mail.com", "strongPass",
 	                                                 List.of(new Role(1L, RoleName.ROLE_USER, null)), List.of(
-		new Article(1L, "The awesome title", "The awesome body", null, new ArticlePreview(1L, "preview body", null),
+		new Article(1L, "The awesome title", "The awesome body", null, new Preview(1L, "preview body", null),
 		            List.of(new Label(1L, LabelName.Java, null)), null)));
 
 	@Test
