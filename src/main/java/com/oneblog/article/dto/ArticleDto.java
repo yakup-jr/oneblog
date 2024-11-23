@@ -24,7 +24,7 @@ public class ArticleDto {
 
 	private LocalDateTime createdAt;
 
-	private PreviewDto articlePreview;
+	private PreviewDto preview;
 
 	private List<LabelDto> labels;
 

@@ -7,6 +7,7 @@ import com.oneblog.article.preview.Preview;
 import com.oneblog.exceptions.ApiRequestException;
 import com.oneblog.user.role.Role;
 import com.oneblog.user.role.RoleName;
+import com.oneblog.user.role.RoleService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -26,6 +27,9 @@ public class UserServiceTest {
 	@Mock
 	private UserRepository userRepository;
 
+	@Mock
+	private RoleService roleService;
+
 	@InjectMocks
 	private UserServiceImpl userService;
 
@@ -43,9 +47,11 @@ public class UserServiceTest {
 			new User(defaultUser.getUserId(), defaultUser.getName(), defaultUser.getNickname(), defaultUser.getEmail(),
 			         defaultUser.getPassword(), defaultUser.getRoles(), null);
 
-		when(userRepository.existsByEmailOrNickname(defaultUser.getEmail(), defaultUser.getNickname())).thenReturn(
-			false);
+		when(userRepository.existsByNickname(requestUser.getNickname())).thenReturn(false);
+		when(userRepository.existsByEmail(requestUser.getEmail())).thenReturn(false);
 		when(userRepository.save(requestUser)).thenReturn(responseUser);
+		when(roleService.findByName(requestUser.getRoles().getFirst().getName().toString())).thenReturn(
+			defaultUser.getRoles().getFirst());
 
 		User savedUser = userService.save(requestUser);
 
@@ -58,9 +64,7 @@ public class UserServiceTest {
 	void save_ThrowApiRequestException_NicknameExists() {
 		User requestUser = new User(null, defaultUser.getName(), defaultUser.getNickname(), defaultUser.getEmail(),
 		                            defaultUser.getPassword(), defaultUser.getRoles(), null);
-
-		when(userRepository.existsByEmailOrNickname(defaultUser.getEmail(), defaultUser.getNickname())).thenReturn(
-			true);
+		when(userRepository.existsByNickname(requestUser.getNickname())).thenReturn(true);
 
 		assertThatThrownBy(() -> userService.save(requestUser)).isInstanceOf(ApiRequestException.class);
 	}
@@ -69,11 +73,28 @@ public class UserServiceTest {
 	void save_ThrowApiRequestException_EmailExists() {
 		User requestUser = new User(null, defaultUser.getName(), defaultUser.getNickname(), defaultUser.getEmail(),
 		                            defaultUser.getPassword(), defaultUser.getRoles(), null);
-
-		when(userRepository.existsByEmailOrNickname(defaultUser.getEmail(), defaultUser.getNickname())).thenReturn(
-			true);
+		when(userRepository.existsByNickname(requestUser.getNickname())).thenReturn(false);
+		when(userRepository.existsByEmail(requestUser.getEmail())).thenReturn(true);
 
 		assertThatThrownBy(() -> userService.save(requestUser)).isInstanceOf(ApiRequestException.class);
+	}
+
+	@Test
+	void existsById_ReturnTrue() {
+		when(userRepository.existsById(1L)).thenReturn(true);
+
+		boolean userExists = userService.existsById(1L);
+
+		assertThat(userExists).isTrue();
+	}
+
+	@Test
+	void existsById_ReturnFalse() {
+		when(userRepository.existsById(999L)).thenReturn(false);
+
+		boolean userExists = userService.existsById(999L);
+
+		assertThat(userExists).isFalse();
 	}
 
 	@Test
@@ -134,19 +155,15 @@ public class UserServiceTest {
 
 	@Test
 	void deleteById_ReturnUser() {
-		when(userRepository.findById(1L)).thenReturn(Optional.of(defaultUser));
+		when(userRepository.existsById(1L)).thenReturn(true);
 
-		User deletedUser = userService.deleteById(1L);
-
-		assertThat(deletedUser).isNotNull().isInstanceOf(User.class);
-		assertThat(deletedUser.getUserId()).isEqualTo(1L);
-		assertThat(deletedUser).isEqualTo(defaultUser);
+		userService.deleteById(1L);
 	}
 
 	@Test
 	void deleteById_ThrowUserNotFoundException() {
-		when(userRepository.findById(1L)).thenReturn(Optional.empty());
+		when(userRepository.existsById(999L)).thenReturn(false);
 
-		assertThatThrownBy(() -> userService.deleteById(1L)).isInstanceOf(UserNotFoundException.class);
+		assertThatThrownBy(() -> userService.deleteById(999L)).isInstanceOf(UserNotFoundException.class);
 	}
 }

@@ -2,6 +2,7 @@ package com.oneblog.article;
 
 import com.oneblog.article.label.Label;
 import com.oneblog.article.label.LabelName;
+import com.oneblog.article.label.LabelService;
 import com.oneblog.article.preview.Preview;
 import com.oneblog.user.User;
 import com.oneblog.user.UserNotFoundException;
@@ -30,6 +31,9 @@ public class ArticleServiceTest {
 	@Mock
 	private UserService userService;
 
+	@Mock
+	private LabelService labelService;
+
 	@InjectMocks
 	private ArticleServiceImpl articleService;
 
@@ -46,6 +50,7 @@ public class ArticleServiceTest {
 			            defaultArticle.getPreview(), defaultArticle.getLabels(), defaultArticle.getUser());
 		when(userService.findById(defaultArticle.getUser().getUserId())).thenReturn(defaultArticle.getUser());
 		when(articleRepository.save(defaultArticle)).thenReturn(response);
+		when(labelService.findLabels(defaultArticle.getLabels())).thenReturn(defaultArticle.getLabels());
 
 		Article article = articleService.save(defaultArticle);
 

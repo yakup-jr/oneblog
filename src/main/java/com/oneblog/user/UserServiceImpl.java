@@ -1,8 +1,12 @@
 package com.oneblog.user;
 
+import com.oneblog.article.ArticleNotFoundException;
 import com.oneblog.exceptions.ApiRequestException;
+import com.oneblog.user.role.RoleService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @Slf4j
@@ -10,15 +14,23 @@ public class UserServiceImpl implements UserService {
 
 	private final UserRepository userRepository;
 
-	public UserServiceImpl(UserRepository userRepository) {
+	private final RoleService roleService;
+
+	public UserServiceImpl(UserRepository userRepository, RoleService roleService) {
 		this.userRepository = userRepository;
+		this.roleService = roleService;
 	}
 
 	@Override
 	public User save(User user) {
-		if (userRepository.existsByEmailOrNickname(user.getEmail(), user.getNickname())) {
-			throw new ApiRequestException("User nickname and email must be unique");
+
+		if (userRepository.existsByNickname(user.getNickname())) {
+			throw new ApiRequestException("User nickname " + user.getNickname() + " already exists");
 		}
+		if (userRepository.existsByEmail(user.getEmail())) {
+			throw new ApiRequestException("User email " + user.getEmail() + " already exists");
+		}
+		user.setRoles(List.of(roleService.findByName("ROLE_USER")));
 
 		return userRepository.save(user);
 	}
@@ -31,7 +43,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public User findById(Long id) {
 		return userRepository.findById(id)
-		                     .orElseThrow(() -> new UserNotFoundException("User with id " + id + " not " + "found"));
+		                     .orElseThrow(() -> new UserNotFoundException("User with id " + id + " not found"));
 	}
 
 	@Override
@@ -47,9 +59,16 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public User deleteById(Long id) {
-		User user = findById(id);
+	public User findByArticleId(Long articleId) throws ArticleNotFoundException {
+		return userRepository.findUserByArticleId(articleId).orElseThrow(
+			() -> new ArticleNotFoundException("Article with id " + articleId + " not found"));
+	}
+
+	@Override
+	public void deleteById(Long id) {
+		if (!userRepository.existsById(id)) {
+			throw new UserNotFoundException("User with id " + id + " not found");
+		}
 		userRepository.deleteById(id);
-		return user;
 	}
 }

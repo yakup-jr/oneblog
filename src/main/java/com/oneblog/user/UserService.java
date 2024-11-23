@@ -1,5 +1,6 @@
 package com.oneblog.user;
 
+import com.oneblog.article.ArticleNotFoundException;
 import com.oneblog.exceptions.ApiRequestException;
 
 public interface UserService {
@@ -14,6 +15,8 @@ public interface UserService {
 
 	User findByEmail(String email) throws UserNotFoundException;
 
-	User deleteById(Long id) throws UserNotFoundException;
+	User findByArticleId(Long articleId) throws ArticleNotFoundException;
+
+	void deleteById(Long id) throws UserNotFoundException;
 
 }
