@@ -5,6 +5,10 @@ import com.oneblog.article.label.LabelService;
 import com.oneblog.exceptions.ApiRequestException;
 import com.oneblog.user.UserNotFoundException;
 import com.oneblog.user.UserService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -52,6 +56,20 @@ public class ArticleServiceImpl implements ArticleService {
 			throw new ArticleNotFoundException("Article with user id: " + userId + " not found");
 		}
 		return articles;
+	}
+
+	@Override
+	public Page<Article> findAll(Integer page, Integer size) throws ApiRequestException {
+		try {
+			Pageable pageRequest = PageRequest.of(page, size, Sort.by("createdAt").descending());
+			Page<Article> pageContent = articleRepository.findAll(pageRequest);
+			if (pageContent.isEmpty()) {
+				throw new ApiRequestException("Page " + page + " of size " + size + " doesn't exist");
+			}
+			return pageContent;
+		} catch (IllegalArgumentException e) {
+			throw new ApiRequestException(e.getMessage());
+		}
 	}
 
 	@Override

@@ -5,9 +5,12 @@ import com.oneblog.article.dto.ArticleDto;
 import com.oneblog.article.label.LabelNotFoundException;
 import com.oneblog.exceptions.ApiRequestException;
 import com.oneblog.user.UserNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,20 +18,26 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/article")
+@RequestMapping("/api/v1")
 public class ArticleController {
 
 	private final ArticleService articleService;
 	private final ArticleMapper articleMapper;
 	private final ArticleLink articleLink;
+	private final ArticleModelAssembler articleModelAssembler;
+	private final PagedResourcesAssembler<ArticleDto> pagedResourcesAssembler;
 
-	public ArticleController(ArticleService articleService, ArticleMapper articleMapper, ArticleLink articleLink) {
+	public ArticleController(
+		ArticleService articleService, ArticleMapper articleMapper, ArticleLink articleLink,
+		ArticleModelAssembler articleModelAssembler, PagedResourcesAssembler<ArticleDto> pagedResourcesAssembler) {
 		this.articleService = articleService;
 		this.articleMapper = articleMapper;
 		this.articleLink = articleLink;
+		this.articleModelAssembler = articleModelAssembler;
+		this.pagedResourcesAssembler = pagedResourcesAssembler;
 	}
 
-	@PostMapping("/")
+	@PostMapping("/article/")
 	public ResponseEntity<EntityModel<ArticleDto>> createArticle(@RequestBody ArticleCreateDto articleDto) {
 		try {
 			Article mappedArticle = articleMapper.map(articleDto);
@@ -41,7 +50,7 @@ public class ArticleController {
 		}
 	}
 
-	@GetMapping("/{articleId}")
+	@GetMapping("/article/{articleId}")
 	public ResponseEntity<EntityModel<ArticleDto>> findArticleByArticleId(@PathVariable Long articleId) {
 		try {
 			Article foundArticle = articleService.findByArticleId(articleId);
@@ -52,7 +61,19 @@ public class ArticleController {
 		}
 	}
 
-	@GetMapping("/user/{userId}")
+	@GetMapping("/articles")
+	public ResponseEntity<PagedModel<EntityModel<ArticleDto>>> findAllArticles(
+		@RequestParam Integer page, @RequestParam(required = false, defaultValue = "10") Integer size) {
+		try {
+			Page<ArticleDto> articlesPage = articleService.findAll(page, size).map(articleMapper::map);
+			return ResponseEntity.status(HttpStatus.OK)
+			                     .body(pagedResourcesAssembler.toModel(articlesPage, articleModelAssembler));
+		} catch (ApiRequestException e) {
+			throw new ApiRequestException(e.getMessage());
+		}
+	}
+
+	@GetMapping("/article/user/{userId}")
 	public ResponseEntity<CollectionModel<EntityModel<ArticleDto>>> findArticleByUserId(@PathVariable Long userId) {
 		try {
 			List<Article> foundArticles = articleService.findByUserId(userId);
@@ -68,7 +89,7 @@ public class ArticleController {
 		}
 	}
 
-	@DeleteMapping("/{articleId}")
+	@DeleteMapping("/article/{articleId}")
 	public ResponseEntity<Void> deleteArticle(@PathVariable Long articleId) {
 		try {
 			articleService.deleteByArticleId(articleId);

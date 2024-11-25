@@ -124,8 +124,7 @@ public class ArticleControllerTest {
 	@Test
 	void findArticleByArticleId_ReturnArticle() throws Exception {
 		mockMvc.perform(get("/api/v1/article/2").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-		       .andExpect(jsonPath("$.articleId", is(2)))
-		       .andExpect(jsonPath("$.preview.articlePreviewId", is(2)))
+		       .andExpect(jsonPath("$.articleId", is(2))).andExpect(jsonPath("$.preview.articlePreviewId", is(2)))
 		       .andExpect(jsonPath("$.preview.body", notNullValue())).andExpect(jsonPath("$.labels", hasSize(2)))
 		       .andExpect(jsonPath("$.labels[0].labelId", is(2))).andExpect(jsonPath("$.user.userId", is(2)))
 		       .andExpect(jsonPath("$._links.self.href", notNullValue()));
@@ -135,6 +134,33 @@ public class ArticleControllerTest {
 	void findArticleByArticleId_ThrowArticleNotFoundException() throws Exception {
 		mockMvc.perform(get("/api/v1/article/999").contentType(MediaType.APPLICATION_JSON))
 		       .andExpect(status().isNotFound());
+	}
+
+	@Test
+	void findAllArticles_ReturnArticles() throws Exception {
+		mockMvc.perform(get("/api/v1/articles?page=0&size=3").contentType(MediaType.APPLICATION_JSON))
+		       .andExpect(status().isOk()).andExpect(jsonPath("$._embedded.articles", hasSize(3)))
+		       .andExpect(jsonPath("$._embedded.articles[0].articleId", is(5)))
+		       .andExpect(jsonPath("$._embedded.articles[0].preview", notNullValue()))
+		       .andExpect(jsonPath("$._embedded.articles[0].user", notNullValue()));
+	}
+
+	@Test
+	void findAllArticles_ReturnBadRequest_PageNotExists() throws Exception {
+		mockMvc.perform(get("/api/v1/articles").contentType(MediaType.APPLICATION_JSON))
+		       .andExpect(status().isBadRequest());
+	}
+
+	@Test
+	void findAllArticles_ReturnBadRequest_PageLessZero() throws Exception {
+		mockMvc.perform(get("/api/v1/articles?page=-1").contentType(MediaType.APPLICATION_JSON))
+		       .andExpect(status().isBadRequest()).andExpect(jsonPath("$.message", containsStringIgnoringCase("page")));
+	}
+
+	@Test
+	void findAllArticles_ReturnBadRequest_PageMoreMax() throws Exception {
+		mockMvc.perform(get("/api/v1/articles?page=999&size=3").contentType(MediaType.APPLICATION_JSON))
+		       .andExpect(status().isBadRequest()).andExpect(jsonPath("$.message", containsStringIgnoringCase("page")));
 	}
 
 	@Test
