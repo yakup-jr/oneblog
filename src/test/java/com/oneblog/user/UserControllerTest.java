@@ -30,45 +30,98 @@ public class UserControllerTest {
 
 	@Test
 	void saveUser_ReturnUser() throws Exception {
-		mockMvc.perform(post("/api/v1/user/").contentType(MediaType.APPLICATION_JSON).content("""
-			                                                                                      {
-			                                                                                      	"name": "Alex",
-			                                                                                      	"nickname": "simple",
-			                                                                                      	"email": "simple@mail.com",
-			                                                                                      	"password": "strongPass"
-			                                                                                      }
-			                                                                                      """))
+		mockMvc.perform(post("/api/v1/user").contentType(MediaType.APPLICATION_JSON).content("""
+			                                                                                     {
+			                                                                                     	"name": "Alex",
+			                                                                                     	"nickname": "simple",
+			                                                                                     	"email": "simple@mail.com",
+			                                                                                     	"password": "strongPass"
+			                                                                                     }
+			                                                                                     """))
 		       .andExpect(status().isCreated()).andExpect(jsonPath("$.userId", notNullValue()))
 		       .andExpect(jsonPath("$.roles", hasSize(1))).andExpect(jsonPath("$.roles[0].name", is("ROLE_USER")))
 		       .andExpect(jsonPath("$._links.user.href", endsWith("user/6")));
 	}
 
 	@Test
+	void saveUser_ThrowMethodArgumentNotValidException() throws Exception {
+		mockMvc.perform(post("/api/v1/user").contentType(MediaType.APPLICATION_JSON).content("""
+			                                                                                     	{
+			                                                                                     		"name": "",
+			                                                                                     		"nickname": "",
+			                                                                                     		"email": "somemail",
+			                                                                                     		"password": "pass"
+			                                                                                     	}
+			                                                                                     """))
+		       .andExpect(status().isBadRequest())
+		       .andExpect(jsonPath("$.message", containsString("name: length must be between 2 and 60")))
+		       .andExpect(jsonPath("$.message", containsString("nickname: length must be between 2 and 60")))
+		       .andExpect(jsonPath("$.message", containsString("email: must be a well-formed email address")))
+		       .andExpect(jsonPath("$.message", containsString("password: length must be between 8 and 60")));
+	}
+
+	@Test
 	void saveUser_ThrowApiRequestException_NicknameIsNotUnique() throws Exception {
-		mockMvc.perform(post("/api/v1/user/").contentType(MediaType.APPLICATION_JSON).content("""
-			                                                                                      {
-			                                                                                      	"name": "Alex",
-			                                                                                      	"nickname": "hunter",
-			                                                                                      	"email": "alex@mail.com",
-			                                                                                      	"password": "strongPass"
-			                                                                                      }
-			                                                                                      """))
+		mockMvc.perform(post("/api/v1/user").contentType(MediaType.APPLICATION_JSON).content("""
+			                                                                                     {
+			                                                                                     	"name": "Alex",
+			                                                                                     	"nickname": "hunter",
+			                                                                                     	"email": "alex@mail.com",
+			                                                                                     	"password": "strongPass"
+			                                                                                     }
+			                                                                                     """))
 		       .andExpect(status().isBadRequest())
 		       .andExpect(jsonPath("$.message", is("User nickname hunter already exists")));
 	}
 
 	@Test
 	void saveUser_ThrowApiRequestException_EmailIsNotUnique() throws Exception {
-		mockMvc.perform(post("/api/v1/user/").contentType(MediaType.APPLICATION_JSON).content("""
-			                                                                                      	{
-			                                                                                      		"name": "Alex",
-			                                                                                      		"nickname": "simple",
-			                                                                                      		"email": "hunter@mail.com",
-			                                                                                      		"password": "strongPass"
-			                                                                                      	}
-			                                                                                      """))
+		mockMvc.perform(post("/api/v1/user").contentType(MediaType.APPLICATION_JSON).content("""
+			                                                                                     	{
+			                                                                                     		"name": "Alex",
+			                                                                                     		"nickname": "simple",
+			                                                                                     		"email": "hunter@mail.com",
+			                                                                                     		"password": "strongPass"
+			                                                                                     	}
+			                                                                                     """))
 		       .andExpect(status().isBadRequest())
 		       .andExpect(jsonPath("$.message", is("User email hunter@mail.com already exists")));
+	}
+
+	@Test
+	void findAllUsers_ReturnUsers() throws Exception {
+		mockMvc.perform(get("/api/v1/users?page=0&size=3").contentType(MediaType.APPLICATION_JSON))
+		       .andExpect(status().isOk()).andExpect(jsonPath("$._embedded.users", hasSize(3)))
+		       .andExpectAll(jsonPath("$._embedded.users[0].userId", is(1)),
+		                     jsonPath("$._embedded.users[0].name", is("James")),
+		                     jsonPath("$._embedded.users[0].nickname", is("hunter")),
+		                     jsonPath("$._embedded.users[0].email", is("hunter@mail.com")),
+		                     jsonPath("$._embedded.users[0].roles", hasSize(2)),
+		                     jsonPath("$._embedded.users[0].roles[0].name", is("ROLE_ADMIN")));
+	}
+
+	@Test
+	void findAllUsers_ReturnBadRequest_PageLessZero() throws Exception {
+		mockMvc.perform(get("/api/v1/users?page=-1&size=3").contentType(MediaType.APPLICATION_JSON))
+		       .andExpect(status().isBadRequest());
+	}
+
+	@Test
+	void findAllUsers_ReturnNotFound_PageMoreMax() throws Exception {
+		mockMvc.perform(get("/api/v1/users?page=999").contentType(MediaType.APPLICATION_JSON))
+		       .andExpect(status().isNotFound());
+	}
+
+	@Test
+	void findAllUsers_ReturnNotFound_SizeLessOne() throws Exception {
+		mockMvc.perform(get("/api/v1/users?page=0&size=-1").contentType(MediaType.APPLICATION_JSON))
+		       .andExpect(status().isBadRequest());
+	}
+
+	@Test
+	void findAllUsers_ReturnNotFound_SizeMoreMax() throws Exception {
+		mockMvc.perform(get("/api/v1/users?page=0&size=999").contentType(MediaType.APPLICATION_JSON))
+		       .andExpect(status().isBadRequest());
 	}
 
 	@Test

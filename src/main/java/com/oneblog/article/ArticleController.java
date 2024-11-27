@@ -2,9 +2,7 @@ package com.oneblog.article;
 
 import com.oneblog.article.dto.ArticleCreateDto;
 import com.oneblog.article.dto.ArticleDto;
-import com.oneblog.article.label.LabelNotFoundException;
 import com.oneblog.exceptions.ApiRequestException;
-import com.oneblog.user.UserNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.CollectionModel;
@@ -13,6 +11,7 @@ import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -38,20 +37,20 @@ public class ArticleController {
 	}
 
 	@PostMapping("/article/")
-	public ResponseEntity<EntityModel<ArticleDto>> createArticle(@RequestBody ArticleCreateDto articleDto) {
+	public ResponseEntity<EntityModel<ArticleDto>> createArticle(@RequestBody @Validated ArticleCreateDto articleDto) {
 		try {
 			Article mappedArticle = articleMapper.map(articleDto);
 			Article savedArticle = articleService.save(mappedArticle);
 			List<Link> links = List.of(articleLink.findArticleByArticleId(savedArticle.getArticleId()).withSelfRel());
 			return ResponseEntity.status(HttpStatus.CREATED)
 			                     .body(EntityModel.of(articleMapper.map(savedArticle), links));
-		} catch (ApiRequestException | LabelNotFoundException | UserNotFoundException e) {
+		} catch (ApiRequestException e) {
 			throw new ApiRequestException(e.getMessage());
 		}
 	}
 
 	@GetMapping("/article/{articleId}")
-	public ResponseEntity<EntityModel<ArticleDto>> findArticleByArticleId(@PathVariable Long articleId) {
+	public ResponseEntity<EntityModel<ArticleDto>> findArticleByArticleId(@PathVariable @Validated Long articleId) {
 		try {
 			Article foundArticle = articleService.findByArticleId(articleId);
 			List<Link> links = List.of(articleLink.findArticleByArticleId(articleId).withSelfRel());
@@ -74,7 +73,8 @@ public class ArticleController {
 	}
 
 	@GetMapping("/article/user/{userId}")
-	public ResponseEntity<CollectionModel<EntityModel<ArticleDto>>> findArticleByUserId(@PathVariable Long userId) {
+	public ResponseEntity<CollectionModel<EntityModel<ArticleDto>>> findArticleByUserId(
+		@PathVariable @Validated Long userId) {
 		try {
 			List<Article> foundArticles = articleService.findByUserId(userId);
 			List<Link> links = List.of(articleLink.findArticleByUserId(userId).withSelfRel());
@@ -90,7 +90,7 @@ public class ArticleController {
 	}
 
 	@DeleteMapping("/article/{articleId}")
-	public ResponseEntity<Void> deleteArticle(@PathVariable Long articleId) {
+	public ResponseEntity<Void> deleteArticle(@PathVariable @Validated Long articleId) {
 		try {
 			articleService.deleteByArticleId(articleId);
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

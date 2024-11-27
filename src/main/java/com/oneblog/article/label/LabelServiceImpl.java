@@ -1,6 +1,10 @@
 package com.oneblog.article.label;
 
 import com.oneblog.exceptions.ApiRequestException;
+import com.oneblog.exceptions.PageNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -31,18 +35,23 @@ public class LabelServiceImpl implements LabelService {
 	}
 
 	@Override
-	public List<Label> findAll() {
-		return labelRepository.findAll();
+	public Page<Label> findAll(Integer page, Integer size) throws PageNotFoundException {
+		Pageable pageRequest = PageRequest.of(page, size);
+		Page<Label> labelPage = labelRepository.findAll(pageRequest);
+		if (labelPage.isEmpty()) {
+			throw new PageNotFoundException("Page" + page + " with size " + size + " not found");
+		}
+		return labelPage;
 	}
 
 	@Override
-	public Label findById(Long labelId) {
+	public Label findById(Long labelId) throws LabelNotFoundException {
 		return labelRepository.findById(labelId)
 		                      .orElseThrow(() -> new LabelNotFoundException("Label with id " + labelId + " not found"));
 	}
 
 	@Override
-	public Label findByName(String name) {
+	public Label findByName(String name) throws LabelNotFoundException {
 		try {
 			return labelRepository.findByName(LabelName.valueOf(name)).orElseThrow(
 				() -> new LabelNotFoundException("Label with name " + name + " not found"));
@@ -53,7 +62,7 @@ public class LabelServiceImpl implements LabelService {
 	}
 
 	@Override
-	public List<Label> findLabels(List<Label> labels) {
+	public List<Label> findLabels(List<Label> labels) throws LabelNotFoundException {
 		List<Label> foundLabels = new ArrayList<>();
 		for (Label label : labels) {
 			foundLabels.add(findById(label.getLabelId()));
@@ -62,7 +71,7 @@ public class LabelServiceImpl implements LabelService {
 	}
 
 	@Override
-	public Label deleteById(Long labelId) {
+	public Label deleteById(Long labelId) throws LabelNotFoundException {
 		Optional<Label> deleteLabel = labelRepository.findById(labelId);
 		if (deleteLabel.isPresent()) {
 			labelRepository.deleteById(labelId);

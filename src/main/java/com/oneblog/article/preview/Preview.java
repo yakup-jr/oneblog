@@ -1,6 +1,5 @@
 package com.oneblog.article.preview;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.oneblog.article.Article;
 import jakarta.persistence.*;
 import lombok.*;
@@ -23,7 +22,6 @@ public class Preview {
 	@Column(name = "body")
 	private String body;
 
-	@JsonBackReference
 	@OneToOne(mappedBy = "preview")
 	private Article article;
 }

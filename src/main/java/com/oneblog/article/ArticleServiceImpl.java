@@ -29,15 +29,6 @@ public class ArticleServiceImpl implements ArticleService {
 
 	@Override
 	public Article save(Article article) throws ApiRequestException, UserNotFoundException, LabelNotFoundException {
-		if (article.getPreview() == null) {
-			throw new ApiRequestException("Preview could not be null");
-		}
-		if (article.getLabels() == null || article.getLabels().isEmpty()) {
-			throw new LabelNotFoundException("Label could not be empty");
-		}
-		if (article.getUser() == null || article.getUser().getUserId() == null) {
-			throw new UserNotFoundException("User could not be null");
-		}
 		article.setLabels(labelService.findLabels(article.getLabels()));
 		article.setUser(userService.findById(article.getUser().getUserId()));
 		return articleRepository.save(article);

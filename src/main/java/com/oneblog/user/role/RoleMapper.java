@@ -1,7 +1,5 @@
-package com.oneblog.article.label;
+package com.oneblog.user.role;
 
-import com.oneblog.article.label.dto.LabelCreateDto;
-import com.oneblog.article.label.dto.LabelDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.NullValuePropertyMappingStrategy;
@@ -9,10 +7,10 @@ import org.mapstruct.ReportingPolicy;
 
 @Mapper(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
 	componentModel = MappingConstants.ComponentModel.SPRING, unmappedTargetPolicy = ReportingPolicy.WARN)
-public abstract class LabelMapper {
+public abstract class RoleMapper {
 
-	public abstract Label map(LabelCreateDto dto);
+	public abstract Role map(RoleDto role);
 
-	public abstract LabelDto map(Label model);
+	public abstract RoleDto map(Role role);
 
 }

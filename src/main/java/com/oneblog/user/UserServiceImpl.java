@@ -2,8 +2,12 @@ package com.oneblog.user;
 
 import com.oneblog.article.ArticleNotFoundException;
 import com.oneblog.exceptions.ApiRequestException;
+import com.oneblog.exceptions.PageNotFoundException;
 import com.oneblog.user.role.RoleService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -38,6 +42,16 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public boolean existsById(Long userId) {
 		return userRepository.existsById(userId);
+	}
+
+	@Override
+	public Page<User> findAll(Integer page, Integer size) {
+		Pageable pageRequest = PageRequest.of(page, size);
+		Page<User> userPage = userRepository.findAll(pageRequest);
+		if (userPage.isEmpty()) {
+			throw new PageNotFoundException("Page " + page + " with size " + size + " not found");
+		}
+		return userPage;
 	}
 
 	@Override

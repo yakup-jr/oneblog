@@ -19,8 +19,12 @@ public class LabelLink {
 		return linkTo(methodOn(controllerClass).findLabelByLabelName(labelName));
 	}
 
+	public WebMvcLinkBuilder findAllLabels(Integer page, Integer size) {
+		return linkTo(methodOn(controllerClass).findAllLabels(page, size));
+	}
+
 	public WebMvcLinkBuilder findAllLabels() {
-		return linkTo(methodOn(controllerClass).findAllLabels());
+		return linkTo(methodOn(controllerClass).findAllLabels(0, 10));
 	}
 
 

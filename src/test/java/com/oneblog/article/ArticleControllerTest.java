@@ -58,6 +58,107 @@ public class ArticleControllerTest {
 	}
 
 	@Test
+	void createArticle_ThrowMethodArgumentNotValidException_TitleBlank() throws Exception {
+		mockMvc.perform(post("/api/v1/article/").contentType(MediaType.APPLICATION_JSON).content("""
+			                                                                                         	{
+			                                                                                         		"title": "",
+			                                                                                         		"body": "",
+			                                                                                         		"preview": {
+			                                                                                         		"body": "Something interesting preview"
+			                                                                                         		},
+			                                                                                         		"labels": [
+			                                                                                         		{
+			                                                                                         			"labelId": 1
+			                                                                                         		},
+			                                                                                         		{
+			                                                                                         			"labelId": 2
+			                                                                                         		}
+			                                                                                         		],
+			                                                                                         		"user": {
+			                                                                                         			"userId": 1
+			                                                                                         		}
+			                                                                                         	}
+			                                                                                         """))
+		       .andExpect(status().isBadRequest())
+		       .andExpect(jsonPath("$.message", containsString("title: length must be between 1 and 255")));
+	}
+
+	@Test
+	void createArticle_ThrowMethodArgumentNotValidException_PreviewBodyBlank() throws Exception {
+		mockMvc.perform(post("/api/v1/article/").contentType(MediaType.APPLICATION_JSON).content("""
+			                                                                                         	{
+			                                                                                         		"title": "the best president",
+			                                                                                         		"body": "more and more text...",
+			                                                                                         		"preview": {
+			                                                                                         			"body": ""
+			                                                                                                },
+			                                                                                                "labels": [
+			                                                                                                	{
+			                                                                                                		"labelId": 1
+			                                                                                                	},
+			                                                                                                	{
+			                                                                                                		"labelId": 2
+			                                                                                                	}
+			                                                                                                ],
+			                                                                                                "user": {
+			                                                                                                	"userId": 1
+			                                                                                                }
+			                                                                                         }
+			                                                                                         """))
+		       .andExpect(status().isBadRequest())
+		       .andExpect(jsonPath("$.message", containsString("preview.body: length must be between 10 and 1000")));
+	}
+
+	@Test
+	void createArticle_ThrowMethodArgumentNotValidException_LabelId() throws Exception {
+		mockMvc.perform(post("/api/v1/article/").contentType(MediaType.APPLICATION_JSON).content("""
+			                                                                                         	{
+			                                                                                          	"title": "the best president",
+			                                                                                          	"body": "more and more text...",
+			                                                                                          	"preview": {
+			                                                                                          		"body": "Something interesting preview"
+			                                                                                          	},
+			                                                                                          	"labels": [
+			                                                                                          		{
+			                                                                                          			"labelId": 0
+			                                                                                          		}
+			                                                                                          	],
+			                                                                                          	"user": {
+			                                                                                          		"userId": 1
+			                                                                                          	}
+			                                                                                         	}
+			                                                                                         """))
+		       .andExpect(status().isBadRequest()).andExpect(
+			       jsonPath("$.message", containsString("labels[0].labelId: must be greater than or equal to 1")));
+	}
+
+	@Test
+	void createArticle_ThrowMethodArgumentNotValidException_UserId() throws Exception {
+		mockMvc.perform(post("/api/v1/article/").contentType(MediaType.APPLICATION_JSON).content("""
+			                                                                                         	{
+			                                                                                         	"body": "more and more text...",
+			                                                                                         	"labels": [
+			                                                                                         		{
+			                                                                                         			"labelId": 1
+			                                                                                         		},
+			                                                                                         		{
+			                                                                                         			"labelId": 2
+			                                                                                         		}
+			                                                                                         	],
+			                                                                                         	"preview": {
+			                                                                                         		"body": "Something interesting preview"
+			                                                                                         	},
+			                                                                                         	"title": "the best president",
+			                                                                                         	"user": {
+			                                                                                         		"userId": 0
+			                                                                                         	}
+			                                                                                         	}
+			                                                                                         """))
+		       .andExpect(status().isBadRequest())
+		       .andExpect(jsonPath("$.message", containsString("user.userId: must be greater than or equal to 1")));
+	}
+
+	@Test
 	void createArticle_ThrowApiRequestException_articlePreview() throws Exception {
 		mockMvc.perform(post("/api/v1/article/").contentType(MediaType.APPLICATION_JSON).content("""
 			                                                                                          {

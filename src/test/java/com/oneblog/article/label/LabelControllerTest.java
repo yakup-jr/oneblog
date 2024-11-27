@@ -45,6 +45,27 @@ public class LabelControllerTest {
 	}
 
 	@Test
+	void saveLabel_ThrowMethodArgumentNotValidException_NameNull() throws Exception {
+		mockMvc.perform(post("/api/v1/articles/label").contentType(MediaType.APPLICATION_JSON).content("""
+			                                                                                               	{
+			                                                                                               		"name": null
+			                                                                                               	}
+			                                                                                               """))
+		       .andExpect(status().isBadRequest())
+		       .andExpect(jsonPath("$.message", containsString("name: must not be null")));
+	}
+
+	@Test
+	void saveLabel_ThrowMethodArgumentNotValidException_NameBlank() throws Exception {
+		mockMvc.perform(post("/api/v1/articles/label").contentType(MediaType.APPLICATION_JSON).content("""
+			                                                                                               	{
+			                                                                                               		"name": ""
+			                                                                                               	}
+			                                                                                               """))
+		       .andExpect(status().isBadRequest());
+	}
+
+	@Test
 	public void findByLabelId_ReturnLabel() throws Exception {
 		mockMvc.perform(get("/api/v1/articles/label/1").contentType(MediaType.APPLICATION_JSON))
 		       .andExpect(status().isOk()).andExpect(jsonPath("$.name", is(LabelName.Assembler.toString())))
@@ -74,9 +95,41 @@ public class LabelControllerTest {
 
 	@Test
 	public void findAll_ReturnsLabels() throws Exception {
+		mockMvc.perform(get("/api/v1/articles/labels?page=0&size=5").contentType(MediaType.APPLICATION_JSON))
+		       .andExpect(status().isOk()).andExpect(jsonPath("$._embedded.labels", hasSize(5)))
+		       .andExpect(jsonPath("$._embedded.labels[0].labelId", is(1)))
+		       .andExpect(jsonPath("$._embedded.labels[0].name", is("Assembler")))
+		       .andExpect(jsonPath("$._embedded.labels[0]._links.self.href", endsWith("/label/1")));
+	}
+
+	@Test
+	void findAll_ReturnBadRequest_PageNull() throws Exception {
 		mockMvc.perform(get("/api/v1/articles/labels").contentType(MediaType.APPLICATION_JSON))
-		       .andExpect(status().isOk()).andExpect(jsonPath("$._embedded.labelDtoList", hasSize(9)))
-		       .andExpect(jsonPath("$._links.self.href", containsString("api/v1/articles/labels")));
+		       .andExpect(status().isBadRequest());
+	}
+
+	@Test
+	void findAll_ReturnBadRequest_PageLessZero() throws Exception {
+		mockMvc.perform(get("/api/v1/articles/labels?page=-1").contentType(MediaType.APPLICATION_JSON))
+		       .andExpect(status().isBadRequest());
+	}
+
+	@Test
+	void findAll_ReturnBadRequest_PageMoreMax() throws Exception {
+		mockMvc.perform(get("/api/v1/articles/labels?page=999").contentType(MediaType.APPLICATION_JSON))
+		       .andExpect(status().isNotFound());
+	}
+
+	@Test
+	void findAll_ReturnBadRequest_SizeLessOne() throws Exception {
+		mockMvc.perform(get("/api/v1/articles/labels?size=0").contentType(MediaType.APPLICATION_JSON))
+		       .andExpect(status().isBadRequest());
+	}
+
+	@Test
+	void findAll_ReturnBadRequest_SizeMoreMax() throws Exception {
+		mockMvc.perform(get("/api/v1/articles/labels?size=999").contentType(MediaType.APPLICATION_JSON))
+		       .andExpect(status().isBadRequest());
 	}
 
 	@Test

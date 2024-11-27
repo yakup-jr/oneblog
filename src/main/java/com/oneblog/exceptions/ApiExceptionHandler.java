@@ -24,7 +24,8 @@ public class ApiExceptionHandler {
 	}
 
 	@ExceptionHandler(
-		value = {LabelNotFoundException.class, ArticleNotFoundException.class, UserNotFoundException.class})
+		value = {LabelNotFoundException.class, ArticleNotFoundException.class, UserNotFoundException.class,
+			PageNotFoundException.class})
 	public ResponseEntity<Object> handleNotFoundException() {
 		return ResponseEntity.notFound().build();
 	}
@@ -46,7 +47,9 @@ public class ApiExceptionHandler {
 
 		HttpStatus badRequest = HttpStatus.BAD_REQUEST;
 
-		ApiException apiException = ApiException.builder().message(e.getMessage()).httpStatus(badRequest).build();
+		ApiException apiException = ApiException.builder().message(e.getFieldErrors().stream().map(
+			                                                            validationError -> validationError.getField() + ": " + validationError.getDefaultMessage()).toList()
+		                                                            .toString()).httpStatus(badRequest).build();
 
 		return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(apiException);
 	}

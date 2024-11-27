@@ -1,14 +1,12 @@
 package com.oneblog.article;
 
-import com.oneblog.article.label.LabelNotFoundException;
 import com.oneblog.exceptions.ApiRequestException;
-import com.oneblog.user.UserNotFoundException;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
 
 public interface ArticleService {
-	Article save(Article article) throws ApiRequestException, LabelNotFoundException, UserNotFoundException;
+	Article save(Article article) throws ApiRequestException;
 
 	Article findByArticleId(Long id) throws ArticleNotFoundException;
 

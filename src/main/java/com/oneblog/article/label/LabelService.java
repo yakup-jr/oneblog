@@ -1,6 +1,8 @@
 package com.oneblog.article.label;
 
 import com.oneblog.exceptions.ApiRequestException;
+import com.oneblog.exceptions.PageNotFoundException;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -8,7 +10,7 @@ public interface LabelService {
 
 	Label save(Label label) throws ApiRequestException;
 
-	List<Label> findAll();
+	Page<Label> findAll(Integer page, Integer size) throws PageNotFoundException;
 
 	Label findById(Long labelId) throws LabelNotFoundException;
 
