@@ -1,0 +1,9 @@
+execution:
+  - concurrency: 25
+    ramp-up: 1m
+    hold-for: 1m
+    scenario: quick-test
+
+  scenarios:
+    quick-test:
+      requests: http://5.8.47.71:8080
