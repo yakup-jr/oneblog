@@ -12,9 +12,8 @@ spring:
       hibernate:
         format_sql: true
         show_sql: true
-
-
-
+jwt:
+  cookie-token-key: '{"kty":"oct","k":"956PBFst1FguLr5irJD-aQ"}'
 logging:
   level:
     org:
