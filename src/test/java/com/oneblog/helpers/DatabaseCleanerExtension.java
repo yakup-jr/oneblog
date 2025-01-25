@@ -1,4 +1,4 @@
-package com.oneblog;
+package com.oneblog.helpers;
 
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
