@@ -1,0 +1,76 @@
+databaseChangeLog:
+  - changeSet:
+      id: table-user-add-google_user_id
+      author: yakup_jr
+      changes:
+        - addColumn:
+            tableName: t_user
+            columns:
+              - column:
+                  name: google_user_id
+                  type: VARCHAR(64)
+                  autoIncrement: false
+                  constraints:
+                    nullable: true
+                    unique: true
+                    primaryKey: false
+  - changeSet:
+      id: table-user-password-may-be-nullable
+      author: yakup_jr
+      changes:
+        - dropNotNullConstraint:
+            tableName: t_user
+            columnName:
+              password
+  - changeSet:
+      id: create-table-token
+      author: yakup_jr
+      changes:
+        - createTable:
+            tableName: t_token
+            columns:
+              - column:
+                  name: token_id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    unique: true
+                    nullable: false
+                    primaryKeyName: pk_token
+              - column:
+                  name: access_token
+                  type: varchar(255)
+                  constraints:
+                    unique: true
+                    nullable: false
+                    primaryKey: false
+              - column:
+                  name: refresh_token
+                  type: varchar(255)
+                  constraints:
+                    unique: true
+                    nullable: false
+                    primaryKey: false
+              - column:
+                  name: logged_out
+                  type: boolean
+                  constraints:
+                    unique: false
+                    nullable: false
+                    primaryKey: false
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    foreignKeyName: fk_user_token
+                    references: t_user(user_id)
+                    deleteCascade: true
+  - changeSet:
+      id: table-user-name-may-be-nullable
+      author: yakup_jr
+      changes:
+        - dropNotNullConstraint:
+            tableName: t_user
+            columnName:
+              name

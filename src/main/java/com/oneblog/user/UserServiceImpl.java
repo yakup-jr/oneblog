@@ -4,16 +4,16 @@ import com.oneblog.article.ArticleNotFoundException;
 import com.oneblog.exceptions.ApiRequestException;
 import com.oneblog.exceptions.PageNotFoundException;
 import com.oneblog.user.role.RoleService;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-@Slf4j
 public class UserServiceImpl implements UserService {
 
 	private final UserRepository userRepository;
@@ -84,5 +84,23 @@ public class UserServiceImpl implements UserService {
 			throw new UserNotFoundException("User with id " + id + " not found");
 		}
 		userRepository.deleteById(id);
+	}
+
+	@Override
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		return userRepository.findByNickname(username).orElseThrow(() -> new UsernameNotFoundException("User with " +
+		                                                                                               "username" +
+		                                                                                               username +
+		                                                                                               " not found"));
+	}
+
+	@Override
+	public boolean existsByNickname(String nickname) {
+		return userRepository.existsByNickname(nickname);
+	}
+
+	@Override
+	public boolean existsByEmail(String email) {
+		return userRepository.existsByEmail(email);
 	}
 }

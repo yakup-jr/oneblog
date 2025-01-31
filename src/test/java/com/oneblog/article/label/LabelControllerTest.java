@@ -24,7 +24,7 @@ public class LabelControllerTest {
 	@Test
 	@WithMockAdmin
 	public void saveLabel_ReturnLabel() throws Exception {
-		mockMvc.perform(post("/api/v1/articles/label").with(csrf()).contentType(MediaType.APPLICATION_JSON)
+		mockMvc.perform(post("/api/v1/articles/label").contentType(MediaType.APPLICATION_JSON)
 		                                              .content("   {\n" + "       \"name\": \"Rust\"\n" + "   }\n"))
 		       .andExpect(status().isCreated()).andExpect(jsonPath("$.name", is(LabelName.Rust.toString())))
 		       .andExpect(jsonPath("$._links.label.href", containsString("api/v1/articles/label/1")));
@@ -33,7 +33,7 @@ public class LabelControllerTest {
 	@Test
 	@WithMockAdmin
 	public void saveLabel_ThrowException() throws Exception {
-		mockMvc.perform(post("/api/v1/articles/label").with(csrf()).contentType(MediaType.APPLICATION_JSON)
+		mockMvc.perform(post("/api/v1/articles/label").contentType(MediaType.APPLICATION_JSON)
 		                                              .content("   {\n" + "       \"name\": \"Python\"\n" + "   }\n"))
 		       .andExpect(status().isBadRequest()).andExpect(jsonPath("$.message", notNullValue()));
 	}
@@ -41,7 +41,7 @@ public class LabelControllerTest {
 	@Test
 	@WithMockAdmin
 	void saveLabel_ThrowMethodArgumentNotValidException_NameNull() throws Exception {
-		mockMvc.perform(post("/api/v1/articles/label").with(csrf()).contentType(MediaType.APPLICATION_JSON).content("""
+		mockMvc.perform(post("/api/v1/articles/label").contentType(MediaType.APPLICATION_JSON).content("""
 			                                                                                                            	{
 			                                                                                                            		"name": null
 			                                                                                                            	}
@@ -53,7 +53,7 @@ public class LabelControllerTest {
 	@Test
 	@WithMockAdmin
 	void saveLabel_ThrowMethodArgumentNotValidException_NameBlank() throws Exception {
-		mockMvc.perform(post("/api/v1/articles/label").with(csrf()).contentType(MediaType.APPLICATION_JSON).content("""
+		mockMvc.perform(post("/api/v1/articles/label").contentType(MediaType.APPLICATION_JSON).content("""
 			                                                                                                            	{
 			                                                                                                            		"name": ""
 			                                                                                                            	}
@@ -62,16 +62,8 @@ public class LabelControllerTest {
 	}
 
 	@Test
-	@WithMockAdmin
-	void saveLabel_ReturnForbidden_CsrfEmpty() throws Exception {
-		mockMvc.perform(post("/api/v1/articles/label").contentType(MediaType.APPLICATION_JSON)
-		                                              .content("   {\n" + "       \"name\": \"Rust\"\n" + "   }\n"))
-		       .andExpect(status().isForbidden());
-	}
-
-	@Test
 	void saveLabel_ReturnForbidden_NoPermission() throws Exception {
-		mockMvc.perform(post("/api/v1/articles/label").with(csrf()).contentType(MediaType.APPLICATION_JSON)
+		mockMvc.perform(post("/api/v1/articles/label").contentType(MediaType.APPLICATION_JSON)
 		                                              .content("   {\n" + "       \"name\": \"Rust\"\n" + "   }\n"))
 		       .andExpect(status().isForbidden());
 	}
@@ -146,7 +138,7 @@ public class LabelControllerTest {
 	@Test
 	@WithMockAdmin
 	void deleteById_ReturnLabel() throws Exception {
-		mockMvc.perform(delete("/api/v1/articles/label/5").with(csrf()).contentType(MediaType.APPLICATION_JSON))
+		mockMvc.perform(delete("/api/v1/articles/label/5").contentType(MediaType.APPLICATION_JSON))
 		       .andExpect(status().isOk()).andExpect(jsonPath("$.name", notNullValue()))
 		       .andExpect(jsonPath(("$._links.label.href"), containsString("api/v1/articles/label/5")));
 	}
@@ -154,20 +146,13 @@ public class LabelControllerTest {
 	@Test
 	@WithMockAdmin
 	void deleteById_ThrowException() throws Exception {
-		mockMvc.perform(delete("/api/v1/articles/label/999").with(csrf()).contentType(MediaType.APPLICATION_JSON))
+		mockMvc.perform(delete("/api/v1/articles/label/999").contentType(MediaType.APPLICATION_JSON))
 		       .andExpect(status().isNotFound());
 	}
 
 	@Test
-	@WithMockAdmin
-	void deleteById_ReturnForbidden_CsrfEmpty() throws Exception {
-		mockMvc.perform(delete("/api/v1/articles/label/5").contentType(MediaType.APPLICATION_JSON))
-		       .andExpect(status().isForbidden());
-	}
-
-	@Test
 	void deleteById_ReturnForbidden_NoPermission() throws Exception {
-		mockMvc.perform(delete("/api/v1/articles/label/5").with(csrf()).contentType(MediaType.APPLICATION_JSON))
+		mockMvc.perform(delete("/api/v1/articles/label/5").contentType(MediaType.APPLICATION_JSON))
 		       .andExpect(status().isForbidden());
 	}
 }

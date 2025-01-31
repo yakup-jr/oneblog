@@ -4,14 +4,15 @@ import com.oneblog.article.ArticleNotFoundException;
 import com.oneblog.exceptions.ApiRequestException;
 import com.oneblog.exceptions.PageNotFoundException;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
-public interface UserService {
+public interface UserService extends UserDetailsService {
 
 	User save(User user) throws ApiRequestException;
 
-	boolean existsById(Long userId);
-
 	Page<User> findAll(Integer page, Integer size) throws PageNotFoundException;
+
+	boolean existsById(Long userId);
 
 	User findById(Long id) throws UserNotFoundException;
 
@@ -20,6 +21,10 @@ public interface UserService {
 	User findByEmail(String email) throws UserNotFoundException;
 
 	User findByArticleId(Long articleId) throws ArticleNotFoundException;
+
+	boolean existsByNickname(String nickname);
+
+	boolean existsByEmail(String email);
 
 	void deleteById(Long id) throws UserNotFoundException;
 

@@ -12,8 +12,23 @@ spring:
       hibernate:
         format_sql: true
         show_sql: true
-jwt:
-  cookie-token-key: '{"kty":"oct","k":"956PBFst1FguLr5irJD-aQ"}'
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 66921987265-jjcf6teo4h8o2rc3v1sqgfp5va2phhfd.apps.googleusercontent.com
+            client-secret: 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
+            scope: openid,profile,email
+      resourceserver:
+        jwt:
+          issuer-uri: https://accounts.google.com
+security:
+  jwt:
+    secret_key: 4eeab38d706831be4b36612ead768ef8182d1dd6f0e14e5dc934652e297fb16a
+    access_token_expiration: 36000000
+    refresh_token_expiration: 252000000
+
 logging:
   level:
     org:
@@ -26,7 +41,3 @@ logging:
           core:
             JdbcTemplate: DEBUG
             StatementCreatorUtils: TRACE
-
-
-
-message-from-application-properties: Hello from application-dev.properties

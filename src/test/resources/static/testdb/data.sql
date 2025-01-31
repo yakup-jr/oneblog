@@ -20,7 +20,7 @@ values ('Kotlin');
 
 -- Users
 insert into t_user(nickname, name, email, password)
-values ('hunter', 'James', 'hunter@mail.com', 'strongPass1');
+values ('hunter', 'James', 'hunter@mail.com', '$2a$10$Ibeh7YM9hGmk3mrHLQyum.78WJeNKZ3Q1X6OPeKTWWHUfTaoo8osC');
 insert into t_user(nickname, name, email, password)
 values ('shadow', 'Emily', 'shadow@mail.com', 'strongPass2');
 insert into t_user(nickname, name, email, password)
