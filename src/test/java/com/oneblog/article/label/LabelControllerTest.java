@@ -9,7 +9,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.Matchers.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -42,10 +41,10 @@ public class LabelControllerTest {
 	@WithMockAdmin
 	void saveLabel_ThrowMethodArgumentNotValidException_NameNull() throws Exception {
 		mockMvc.perform(post("/api/v1/articles/label").contentType(MediaType.APPLICATION_JSON).content("""
-			                                                                                                            	{
-			                                                                                                            		"name": null
-			                                                                                                            	}
-			                                                                                                            """))
+			                                                                                               	{
+			                                                                                               		"name": null
+			                                                                                               	}
+			                                                                                               """))
 		       .andExpect(status().isBadRequest())
 		       .andExpect(jsonPath("$.message", containsString("name: must not be null")));
 	}
@@ -54,10 +53,10 @@ public class LabelControllerTest {
 	@WithMockAdmin
 	void saveLabel_ThrowMethodArgumentNotValidException_NameBlank() throws Exception {
 		mockMvc.perform(post("/api/v1/articles/label").contentType(MediaType.APPLICATION_JSON).content("""
-			                                                                                                            	{
-			                                                                                                            		"name": ""
-			                                                                                                            	}
-			                                                                                                            """))
+			                                                                                               	{
+			                                                                                               		"name": ""
+			                                                                                               	}
+			                                                                                               """))
 		       .andExpect(status().isBadRequest());
 	}
 

@@ -9,7 +9,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.Matchers.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -23,7 +22,7 @@ public class ArticleControllerTest {
 	@Test
 	@WithMockAdmin
 	void createArticle_ReturnArticle() throws Exception {
-		mockMvc.perform(post("/api/v1/article/").with(csrf()).contentType(MediaType.APPLICATION_JSON).content(
+		mockMvc.perform(post("/api/v1/article/").contentType(MediaType.APPLICATION_JSON).content(
 			       "		{\n" +
 			       "			\"title\": \"the best president\",\n" +
 			       "			\"body\": \"more and more text...\",\n" +
@@ -52,7 +51,7 @@ public class ArticleControllerTest {
 	@Test
 	@WithMockAdmin
 	void createArticle_ThrowMethodArgumentNotValidException_TitleBlank() throws Exception {
-		mockMvc.perform(post("/api/v1/article/").with(csrf()).contentType(MediaType.APPLICATION_JSON).content(
+		mockMvc.perform(post("/api/v1/article/").contentType(MediaType.APPLICATION_JSON).content(
 			       "	{\n" +
 			       "		\"title\": \"\",\n" +
 			       "		\"body\": \"\",\n" +
@@ -78,7 +77,7 @@ public class ArticleControllerTest {
 	@Test
 	@WithMockAdmin
 	void createArticle_ThrowMethodArgumentNotValidException_PreviewBodyBlank() throws Exception {
-		mockMvc.perform(post("/api/v1/article/").with(csrf()).contentType(MediaType.APPLICATION_JSON).content(
+		mockMvc.perform(post("/api/v1/article/").contentType(MediaType.APPLICATION_JSON).content(
 			       "	{\n" +
 			       "		\"title\": \"the best president\",\n" +
 			       "		\"body\": \"more and more text...\",\n" +
@@ -104,23 +103,23 @@ public class ArticleControllerTest {
 	@Test
 	@WithMockAdmin
 	void createArticle_ThrowMethodArgumentNotValidException_LabelId() throws Exception {
-		mockMvc.perform(post("/api/v1/article/").with(csrf()).contentType(MediaType.APPLICATION_JSON).content("""
-			                                                                                                      	{
-			                                                                                                       	"title": "the best president",
-			                                                                                                       	"body": "more and more text...",
-			                                                                                                       	"preview": {
-			                                                                                                       		"body": "Something interesting preview"
-			                                                                                                       	},
-			                                                                                                       	"labels": [
-			                                                                                                       		{
-			                                                                                                       			"labelId": 0
-			                                                                                                       		}
-			                                                                                                       	],
-			                                                                                                       	"user": {
-			                                                                                                       		"userId": 1
-			                                                                                                       	}
-			                                                                                                      	}
-			                                                                                                      """))
+		mockMvc.perform(post("/api/v1/article/").contentType(MediaType.APPLICATION_JSON).content("""
+			                                                                                         	{
+			                                                                                          	"title": "the best president",
+			                                                                                          	"body": "more and more text...",
+			                                                                                          	"preview": {
+			                                                                                          		"body": "Something interesting preview"
+			                                                                                          	},
+			                                                                                          	"labels": [
+			                                                                                          		{
+			                                                                                          			"labelId": 0
+			                                                                                          		}
+			                                                                                          	],
+			                                                                                          	"user": {
+			                                                                                          		"userId": 1
+			                                                                                          	}
+			                                                                                         	}
+			                                                                                         """))
 		       .andExpect(status().isBadRequest()).andExpect(
 			       jsonPath("$.message", containsString("labels[0].labelId: must be greater than or equal to 1")));
 	}
@@ -128,26 +127,26 @@ public class ArticleControllerTest {
 	@Test
 	@WithMockAdmin
 	void createArticle_ThrowMethodArgumentNotValidException_UserId() throws Exception {
-		mockMvc.perform(post("/api/v1/article/").with(csrf()).contentType(MediaType.APPLICATION_JSON).content("""
-			                                                                                                      	{
-			                                                                                                      	"body": "more and more text...",
-			                                                                                                      	"labels": [
-			                                                                                                      		{
-			                                                                                                      			"labelId": 1
-			                                                                                                      		},
-			                                                                                                      		{
-			                                                                                                      			"labelId": 2
-			                                                                                                      		}
-			                                                                                                      	],
-			                                                                                                      	"preview": {
-			                                                                                                      		"body": "Something interesting preview"
-			                                                                                                      	},
-			                                                                                                      	"title": "the best president",
-			                                                                                                      	"user": {
-			                                                                                                      		"userId": 0
-			                                                                                                      	}
-			                                                                                                      	}
-			                                                                                                      """))
+		mockMvc.perform(post("/api/v1/article/").contentType(MediaType.APPLICATION_JSON).content("""
+			                                                                                         	{
+			                                                                                         	"body": "more and more text...",
+			                                                                                         	"labels": [
+			                                                                                         		{
+			                                                                                         			"labelId": 1
+			                                                                                         		},
+			                                                                                         		{
+			                                                                                         			"labelId": 2
+			                                                                                         		}
+			                                                                                         	],
+			                                                                                         	"preview": {
+			                                                                                         		"body": "Something interesting preview"
+			                                                                                         	},
+			                                                                                         	"title": "the best president",
+			                                                                                         	"user": {
+			                                                                                         		"userId": 0
+			                                                                                         	}
+			                                                                                         	}
+			                                                                                         """))
 		       .andExpect(status().isBadRequest())
 		       .andExpect(jsonPath("$.message", containsString("user.userId: must be greater than or equal to 1")));
 	}
@@ -155,23 +154,23 @@ public class ArticleControllerTest {
 	@Test
 	@WithMockAdmin
 	void createArticle_ThrowApiRequestException_articlePreview() throws Exception {
-		mockMvc.perform(post("/api/v1/article/").with(csrf()).contentType(MediaType.APPLICATION_JSON).content("""
-			                                                                                                       {
-			                                                                                                       			"title": "the best president",
-			                                                                                                       			"body": "more and more text...",
-			                                                                                                       			"labels": [
-			                                                                                                       				{
-			                                                                                                       					"labelId": 1
-			                                                                                                       				},
-			                                                                                                       				{
-			                                                                                                       					"labelId": 2
-			                                                                                                       				}
-			                                                                                                       			],
-			                                                                                                       			"user": {
-			                                                                                                       				"userId": 1
-			                                                                                                       			}
-			                                                                                                         	 }
-			                                                                                                      """))
+		mockMvc.perform(post("/api/v1/article/").contentType(MediaType.APPLICATION_JSON).content("""
+			                                                                                          {
+			                                                                                          			"title": "the best president",
+			                                                                                          			"body": "more and more text...",
+			                                                                                          			"labels": [
+			                                                                                          				{
+			                                                                                          					"labelId": 1
+			                                                                                          				},
+			                                                                                          				{
+			                                                                                          					"labelId": 2
+			                                                                                          				}
+			                                                                                          			],
+			                                                                                          			"user": {
+			                                                                                          				"userId": 1
+			                                                                                          			}
+			                                                                                            	 }
+			                                                                                         """))
 		       .andExpect(status().isBadRequest())
 		       .andExpect(jsonPath("$.message", containsStringIgnoringCase("preview")));
 
@@ -180,18 +179,18 @@ public class ArticleControllerTest {
 	@Test
 	@WithMockAdmin
 	void createArticle_ThrowApiRequestException_labels() throws Exception {
-		mockMvc.perform(post("/api/v1/article/").with(csrf()).contentType(MediaType.APPLICATION_JSON).content("""
-			                                                                                                      	{
-			                                                                                                      			"title": "the best president",
-			                                                                                                      			"body": "more and more text...",
-			                                                                                                      			"preview": {
-			                                                                                                      				"body": "Something interesting preview"
-			                                                                                                      			},
-			                                                                                                      			"user": {
-			                                                                                                      				"userId": 1
-			                                                                                                      			}
-			                                                                                                      		}
-			                                                                                                      """))
+		mockMvc.perform(post("/api/v1/article/").contentType(MediaType.APPLICATION_JSON).content("""
+			                                                                                         	{
+			                                                                                         			"title": "the best president",
+			                                                                                         			"body": "more and more text...",
+			                                                                                         			"preview": {
+			                                                                                         				"body": "Something interesting preview"
+			                                                                                         			},
+			                                                                                         			"user": {
+			                                                                                         				"userId": 1
+			                                                                                         			}
+			                                                                                         		}
+			                                                                                         """))
 		       .andExpect(status().isBadRequest())
 		       .andExpect(jsonPath("$.message", containsStringIgnoringCase("label")));
 	}
@@ -199,54 +198,29 @@ public class ArticleControllerTest {
 	@Test
 	@WithMockAdmin
 	void createArticle_ThrowApiRequestException_user() throws Exception {
-		mockMvc.perform(post("/api/v1/article/").with(csrf()).contentType(MediaType.APPLICATION_JSON).content("""
-			                                                                                                      	{
-			                                                                                                      		"title": "the best president",
-			                                                                                                      		"body": "more and more text...",
-			                                                                                                      		"preview": {
-			                                                                                                      			"body": "Something interesting preview"
-			                                                                                                      		},
-			                                                                                                      		"labels": [
-			                                                                                                      			{
-			                                                                                                      				"labelId": "1"
-			                                                                                                      			}
-			                                                                                                      		],
-			                                                                                                      		"user": {
-			                                                                                                      			"userId": null
-			                                                                                                      		}
-			                                                                                                      	}
-			                                                                                                      """))
+		mockMvc.perform(post("/api/v1/article/").contentType(MediaType.APPLICATION_JSON).content("""
+			                                                                                         	{
+			                                                                                         		"title": "the best president",
+			                                                                                         		"body": "more and more text...",
+			                                                                                         		"preview": {
+			                                                                                         			"body": "Something interesting preview"
+			                                                                                         		},
+			                                                                                         		"labels": [
+			                                                                                         			{
+			                                                                                         				"labelId": "1"
+			                                                                                         			}
+			                                                                                         		],
+			                                                                                         		"user": {
+			                                                                                         			"userId": null
+			                                                                                         		}
+			                                                                                         	}
+			                                                                                         """))
 		       .andExpect(status().isBadRequest()).andExpect(jsonPath("$.message", containsStringIgnoringCase("user")));
 	}
 
 	@Test
-	@WithMockAdmin
-	void createArticle_ReturnForbidden_CsrfEmpty() throws Exception {
-		mockMvc.perform(post("/api/v1/article/").contentType(MediaType.APPLICATION_JSON).content(
-			       "		{\n" +
-			       "			\"title\": \"the best president\",\n" +
-			       "			\"body\": \"more and more text...\",\n" +
-			       "			\"preview\": {\n" +
-			       "				\"body\": \"Something interesting preview\"\n" +
-			       "			},\n" +
-			       "			\"labels\": [\n" +
-			       "				{\n" +
-			       "					\"labelId\": 1\n" +
-			       "				},\n" +
-			       "				{\n" +
-			       "					\"labelId\": 2\n" +
-			       "				}\n" +
-			       "			],\n" +
-			       "			\"user\": {\n" +
-			       "				\"userId\": 1\n" +
-			       "			}\n" +
-			       "		}\n"))
-		       .andExpect(status().isForbidden());
-	}
-
-	@Test
 	void createArticle_ReturnForbidden_NoPermission() throws Exception {
-		mockMvc.perform(post("/api/v1/article/").with(csrf()).contentType(MediaType.APPLICATION_JSON).content(
+		mockMvc.perform(post("/api/v1/article/").contentType(MediaType.APPLICATION_JSON).content(
 			       "		{\n" +
 			       "			\"title\": \"the best president\",\n" +
 			       "			\"body\": \"more and more text...\",\n" +
@@ -328,27 +302,20 @@ public class ArticleControllerTest {
 	@Test
 	@WithMockAdmin
 	void deleteArticleByArticleId_ReturnNoContent() throws Exception {
-		mockMvc.perform(delete("/api/v1/article/2").with(csrf()).contentType(MediaType.APPLICATION_JSON))
+		mockMvc.perform(delete("/api/v1/article/2").contentType(MediaType.APPLICATION_JSON))
 		       .andExpect(status().isNoContent());
 	}
 
 	@Test
 	@WithMockAdmin
 	void deleteArticleByArticleId_ThrowArticleNotFoundException() throws Exception {
-		mockMvc.perform(delete("/api/v1/article/999").with(csrf()).contentType(MediaType.APPLICATION_JSON))
+		mockMvc.perform(delete("/api/v1/article/999").contentType(MediaType.APPLICATION_JSON))
 		       .andExpect(status().isNotFound());
 	}
 
 	@Test
-	@WithMockAdmin
-	void deleteArticleByArticleId_ReturnForbidden_CsrfEmpty() throws Exception {
-		mockMvc.perform(delete("/api/v1/article/2").contentType(MediaType.APPLICATION_JSON))
-		       .andExpect(status().isForbidden());
-	}
-
-	@Test
 	void deleteArticleByArticleId_ReturnForbidden_NoPermission() throws Exception {
-		mockMvc.perform(delete("/api/v1/article/2").with(csrf()).contentType(MediaType.APPLICATION_JSON))
+		mockMvc.perform(delete("/api/v1/article/2").contentType(MediaType.APPLICATION_JSON))
 		       .andExpect(status().isForbidden());
 	}
 
