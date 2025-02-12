@@ -1,25 +1,48 @@
 version: "3.9"
 
 services:
-  oneblog:
-    container_name: "oneblog-backend"
-    build: ./
-    ports:
-      - "8080:8080"
-    environment:
-      POSTGRES_URL: jdbc:postgresql://oneblog
-      POSTGRES_DB: oneblog
-    restart: no
-    depends_on:
-      - db
   db:
-    image: "postgres:16.3-alpine"
-    container_name: "oneblog-db"
+    image: postgres:15
+    container_name: db
     environment:
       POSTGRES_DB: oneblog
-      POSTGRES_URL: jdbc:postgresql://oneblog
-      POSTGRES_PASSWORD: 123456
       POSTGRES_USER: yakup_jr
-    restart: always
+      POSTGRES_PASSWORD: root
     ports:
       - "5432:5432"
+    volumes:
+      - /var/lib/postgresql/data
+    networks:
+      - app-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U yakup_jr -d oneblog" ]
+      interval: 10s
+      retries: 5
+      start_period: 10s
+      timeout: 5s
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: spring_app
+    env_file:
+      - ".env"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/oneblog
+      SPRING_DATASOURCE_USERNAME: yakup_jr
+      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_PROFILES_ACTIVE: dev
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - app-network
+
+volumes:
+  db-data:
+
+networks:
+  app-network:

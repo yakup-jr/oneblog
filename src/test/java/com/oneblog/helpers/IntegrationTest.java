@@ -11,11 +11,13 @@ import org.springframework.test.context.jdbc.Sql;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+//todo: fix migration bug with populate db on profile "test"
+
 @Retention(RetentionPolicy.RUNTIME)
 @SpringBootTest(classes = {TestConfig.class})
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-@Sql(value = "/static/testdb/data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(value = "/testdb/data.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 @ExtendWith(DatabaseCleanerExtension.class)
 @WithMockUser
 public @interface IntegrationTest {}
