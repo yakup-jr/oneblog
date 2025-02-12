@@ -1,8 +1,0 @@
-message-from-application-properties: Hello from application-prod.properties
-
-spring:
-  datasource:
-    url: jdbc:postgresql://ep-mute-voice-a29cocai.eu-central-1.aws.neon.tech/oneblog
-    username: oneblog_owner
-    password: hBAgwKiMOu62
-    driver-class-name: org.postgresql.Driver

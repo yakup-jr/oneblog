@@ -1,1 +1,22 @@
-message-from-application-properties: Hello from application.properties
+spring:
+  sql:
+    init:
+      mode: always
+  datasource:
+    url: ${DATASOURCE_URL}
+    username: ${DATASOURCE_USERNAME}
+    password: ${DATASOURCE_PASSWORD}
+    driver-class-name: ${DATASOURCE_DRIVER_CLASS_NAME}
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${OAUTH_GOOGLE_CLIENT_ID}
+            client-secret: ${OAUTH_GOOGLE_CLIENT_SECRET}
+            scope: ${OAUTH_GOOGLE_SCOPE}
+security:
+  jwt:
+    secret_key: ${JWT_SECRET_KEY}
+    access_token_expiration: ${JWT_ACCESS_TOKEN_EXPIRATION}
+    refresh_token_expiration: ${JWT_REFRESH_TOKEN_EXPIRATION}

@@ -1,6 +1,5 @@
 package com.oneblog.auth;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.oneblog.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
