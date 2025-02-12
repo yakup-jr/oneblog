@@ -1,5 +1,7 @@
 package com.oneblog.auth;
 
+import com.oneblog.auth.dto.AuthenticationResponseDto;
+import com.oneblog.auth.dto.LoginRequestDto;
 import com.oneblog.config.TestConfig;
 import com.oneblog.helpers.DatabaseCleanerExtension;
 import org.junit.jupiter.api.Disabled;
@@ -22,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(classes = {TestConfig.class})
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-@Sql(value = "/static/testdb/data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(value = "/testdb/data.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 @ExtendWith(DatabaseCleanerExtension.class)
 public class AuthControllerTest {
 

@@ -1,4 +1,4 @@
-package com.oneblog.auth;
+package com.oneblog.auth.dto;
 
 import lombok.Data;
 

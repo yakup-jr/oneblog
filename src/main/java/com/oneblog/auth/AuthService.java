@@ -1,6 +1,9 @@
 package com.oneblog.auth;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.oneblog.auth.dto.AuthenticationResponseDto;
+import com.oneblog.auth.dto.LoginRequestDto;
+import com.oneblog.auth.dto.RegistrationRequestDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;

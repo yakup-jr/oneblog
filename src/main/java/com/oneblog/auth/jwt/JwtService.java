@@ -1,4 +1,4 @@
-package com.oneblog.auth;
+package com.oneblog.auth.jwt;
 
 import com.oneblog.user.User;
 import io.jsonwebtoken.Claims;

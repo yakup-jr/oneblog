@@ -1,5 +1,8 @@
 package com.oneblog.auth;
 
+import com.oneblog.auth.dto.AuthenticationResponseDto;
+import com.oneblog.auth.dto.LoginRequestDto;
+import com.oneblog.auth.dto.RegistrationRequestDto;
 import com.oneblog.exceptions.ApiRequestException;
 import com.oneblog.user.UserService;
 import io.jsonwebtoken.ExpiredJwtException;

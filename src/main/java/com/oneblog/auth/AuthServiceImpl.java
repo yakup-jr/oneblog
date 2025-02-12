@@ -4,6 +4,10 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
+import com.oneblog.auth.dto.AuthenticationResponseDto;
+import com.oneblog.auth.dto.LoginRequestDto;
+import com.oneblog.auth.dto.RegistrationRequestDto;
+import com.oneblog.auth.jwt.JwtService;
 import com.oneblog.user.User;
 import com.oneblog.user.UserNotFoundException;
 import com.oneblog.user.UserRepository;
@@ -12,6 +16,7 @@ import com.oneblog.user.role.RoleName;
 import com.oneblog.user.role.RoleRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +25,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -32,7 +36,8 @@ import java.util.Random;
 @Service
 public class AuthServiceImpl implements AuthService {
 
-	private final String clientId = "66921987265-jjcf6teo4h8o2rc3v1sqgfp5va2phhfd.apps.googleusercontent.com";
+	@Value("${OAUTH_GOOGLE_CLIENT_ID}")
+	private String clientId;
 
 	private final JwtService jwtService;
 
