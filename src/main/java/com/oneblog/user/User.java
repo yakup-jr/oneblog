@@ -48,6 +48,9 @@ public class User implements UserDetails {
 	@OneToMany(mappedBy = "user")
 	private List<Token> tokens;
 
+	@Column(name = "verificated")
+	private Boolean verificated;
+
 	@Column(name = "google_user_id", unique = true)
 	private String googleUserId;
 
@@ -109,6 +112,6 @@ public class User implements UserDetails {
 
 	@Override
 	public boolean isEnabled() {
-		return true;
+		return verificated;
 	}
 }

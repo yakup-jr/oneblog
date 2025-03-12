@@ -34,7 +34,7 @@ public class UserServiceTest {
 	private UserServiceImpl userService;
 
 	private static final User defaultUser = new User(1L, "Dima", "yakup_jr", "somemail@mail.com", "strongPass",
-	                                                 List.of(new Role(1L, RoleName.ROLE_USER, null)), null,
+	                                                 List.of(new Role(1L, RoleName.ROLE_USER, null)), null, true,
 	                                                 null, List.of(
 		new Article(1L, "The awesome title", "The awesome body", null, new Preview(1L, "preview body", null),
 		            List.of(new Label(1L, LabelName.Java, null)), null)));
@@ -42,11 +42,11 @@ public class UserServiceTest {
 	@Test
 	void save_ReturnUser() {
 		User requestUser = new User(null, defaultUser.getName(), defaultUser.getNickname(), defaultUser.getEmail(),
-		                            defaultUser.getPassword(), defaultUser.getRoles(), null, null, null);
+		                            defaultUser.getPassword(), defaultUser.getRoles(), null, true, null, null);
 
 		User responseUser =
 			new User(defaultUser.getUserId(), defaultUser.getName(), defaultUser.getNickname(), defaultUser.getEmail(),
-			         defaultUser.getPassword(), defaultUser.getRoles(), null, null, null);
+			         defaultUser.getPassword(), defaultUser.getRoles(), null, true, null, null);
 
 		when(userRepository.existsByNickname(requestUser.getNickname())).thenReturn(false);
 		when(userRepository.existsByEmail(requestUser.getEmail())).thenReturn(false);
@@ -64,7 +64,7 @@ public class UserServiceTest {
 	@Test
 	void save_ThrowApiRequestException_NicknameExists() {
 		User requestUser = new User(null, defaultUser.getName(), defaultUser.getNickname(), defaultUser.getEmail(),
-		                            defaultUser.getPassword(), defaultUser.getRoles(), null, null, null);
+		                            defaultUser.getPassword(), defaultUser.getRoles(), null, true, null, null);
 		when(userRepository.existsByNickname(requestUser.getNickname())).thenReturn(true);
 
 		assertThatThrownBy(() -> userService.save(requestUser)).isInstanceOf(ApiRequestException.class);
@@ -73,7 +73,7 @@ public class UserServiceTest {
 	@Test
 	void save_ThrowApiRequestException_EmailExists() {
 		User requestUser = new User(null, defaultUser.getName(), defaultUser.getNickname(), defaultUser.getEmail(),
-		                            defaultUser.getPassword(), defaultUser.getRoles(), null, null, null);
+		                            defaultUser.getPassword(), defaultUser.getRoles(), null, true, null, null);
 		when(userRepository.existsByNickname(requestUser.getNickname())).thenReturn(false);
 		when(userRepository.existsByEmail(requestUser.getEmail())).thenReturn(true);
 

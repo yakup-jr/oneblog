@@ -10,12 +10,15 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.utility.DockerImageName;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+
 
 @TestConfiguration
 @Import({OneblogConfig.class})
@@ -26,7 +29,22 @@ public class TestConfig {
 	@Primary
 	public PostgreSQLContainer<?> postgresContainer(DynamicPropertyRegistry dynamicPropertyRegistry) {
 		var container = new PostgreSQLContainer<>(DockerImageName.parse("postgres:16.3-alpine"));
+		container.withExposedPorts(5432);
 		dynamicPropertyRegistry.add("postgresql.driver", container::getDriverClassName);
+		return container;
+	}
+
+	@Bean
+	public GenericContainer greenMailContainer(DynamicPropertyRegistry dynamicPropertyRegistry) {
+		GenericContainer<?> container = new GenericContainer<>(DockerImageName.parse("greenmail/standalone:1.6.1"));
+		container.waitingFor(Wait.forLogMessage(".*Starting GreenMail standalone.*", 1))
+		         .withEnv("GREENMAIL_OPTS",
+		                  "-Dgreenmail.setup.test.smtp -Dgreenmail.hostname=0.0.0.0 -Dgreenmail" +
+		                  ".users=admin:root")
+		         .withExposedPorts(3025);
+		dynamicPropertyRegistry.add("spring.mail.host", container::getHost);
+		dynamicPropertyRegistry.add("spring.mail.port", container::getFirstMappedPort);
+
 		return container;
 	}
 

@@ -2,6 +2,7 @@ package com.oneblog.auth;
 
 import com.oneblog.auth.dto.AuthenticationResponseDto;
 import com.oneblog.auth.dto.LoginRequestDto;
+import com.oneblog.auth.dto.RegistrationEmailVerification;
 import com.oneblog.auth.dto.RegistrationRequestDto;
 import com.oneblog.exceptions.ApiRequestException;
 import com.oneblog.user.UserService;
@@ -11,6 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,9 +44,15 @@ public class AuthController {
 			throw new ApiRequestException("Email is already taken");
 		}
 
-		authService.register(registrationRequestDto);
+		String result = authService.register(registrationRequestDto);
 
-		return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
+		return ResponseEntity.status(HttpStatus.CREATED).body(result);
+	}
+
+	@PostMapping("/registration/email/verify")
+	public ResponseEntity<String> verifyEmail(@RequestBody RegistrationEmailVerification emailVerification) {
+		String result = authService.verifyEmail(emailVerification);
+		return ResponseEntity.status(HttpStatus.OK).body(result);
 	}
 
 	@PostMapping("/login")
@@ -56,8 +64,9 @@ public class AuthController {
 	public ResponseEntity<AuthenticationResponseDto> refreshToken(
 		HttpServletRequest request, HttpServletResponse response) {
 		try {
-			return authService.refreshToken(request, response);
-		} catch (SignatureException | ExpiredJwtException e) {
+			return ResponseEntity.status(HttpStatus.OK).body(authService.refreshToken(request, response));
+		} catch (SignatureException | ExpiredJwtException | GeneralSecurityException | MissingRequestHeaderException |
+		         NoSuchMethodException e) {
 			throw new SignatureException(e.getMessage());
 		}
 	}

@@ -54,37 +54,42 @@ public class SecurityConfig {
 	public SecurityFilterChain securityFilterChain(
 		HttpSecurity http) throws Exception {
 
-		http.csrf(AbstractHttpConfigurer::disable).headers(headers -> headers.contentSecurityPolicy(
-			                                                                     csp -> csp.policyDirectives("script-src 'self' https://accounts.google.com")).crossOriginOpenerPolicy(
-			                                                                     coop -> coop.policy(CrossOriginOpenerPolicyHeaderWriter.CrossOriginOpenerPolicy.SAME_ORIGIN))
-		                                                                     .crossOriginEmbedderPolicy(
-			                                                                     coep -> coep.policy(
-				                                                                     CrossOriginEmbedderPolicyHeaderWriter.CrossOriginEmbedderPolicy.REQUIRE_CORP))
-		                                                                     .frameOptions(
-			                                                                     HeadersConfigurer.FrameOptionsConfig::sameOrigin))
-		    .cors(configurer -> configurer.configurationSource(apiConfigurationSource()))
-		    .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-		    .userDetailsService(userService).exceptionHandling(e -> {
-			    e.accessDeniedHandler(accessDeniedHandler);
-			    e.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
-		    }).addFilterBefore(jwtFIlter, UsernamePasswordAuthenticationFilter.class).logout(log -> {
-			    log.logoutUrl("/logout");
-			    log.addLogoutHandler(customLogoutHandler);
-			    log.logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.getContext());
-		    }).authorizeHttpRequests(
-			    authorizeHttpRequests -> authorizeHttpRequests.requestMatchers(HttpMethod.POST, "/api/v1/user",
-			                                                                   "/api/v1/article/", "/api/v1/articles/label")
-			                                                  .hasRole("ADMIN")
-			                                                  .requestMatchers(HttpMethod.GET, "/api/v1/users")
-			                                                  .hasRole("ADMIN")
-			                                                  .requestMatchers(HttpMethod.DELETE, "/api/v1/user/{userId}",
-			                                                                   "/api/v1/article/{articleId}",
-			                                                                   "/api/v1/articles/label/{labelId}")
-			                                                  .hasRole("ADMIN")
-			                                                  .requestMatchers(HttpMethod.GET, "/api/v1/user/",
-			                                                                   "/api/v1/articles", "/api/v1/article/",
-			                                                                   "/api/v1/articles/labels").hasRole("USER")
-			                                                  .anyRequest().permitAll());
+		http
+			.csrf(AbstractHttpConfigurer::disable)
+			.headers(headers ->
+				         headers.contentSecurityPolicy(
+					                csp -> csp.policyDirectives("script-src 'self' https://accounts.google.com"))
+				                .crossOriginOpenerPolicy(
+					                coop -> coop.policy(
+						                CrossOriginOpenerPolicyHeaderWriter.CrossOriginOpenerPolicy.SAME_ORIGIN))
+				                .crossOriginEmbedderPolicy(
+					                coep -> coep.policy(
+						                CrossOriginEmbedderPolicyHeaderWriter.CrossOriginEmbedderPolicy.REQUIRE_CORP))
+				                .frameOptions(
+					                HeadersConfigurer.FrameOptionsConfig::sameOrigin))
+			.cors(configurer -> configurer.configurationSource(apiConfigurationSource()))
+			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+			.userDetailsService(userService).exceptionHandling(e -> {
+				e.accessDeniedHandler(accessDeniedHandler);
+				e.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
+			}).addFilterBefore(jwtFIlter, UsernamePasswordAuthenticationFilter.class).logout(log -> {
+				log.logoutUrl("/logout");
+				log.addLogoutHandler(customLogoutHandler);
+				log.logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.getContext());
+			}).authorizeHttpRequests(
+				authorizeHttpRequests -> authorizeHttpRequests.requestMatchers(HttpMethod.POST, "/api/v1/user",
+				                                                               "/api/v1/article/", "/api/v1/articles/label")
+				                                              .hasRole("ADMIN")
+				                                              .requestMatchers(HttpMethod.GET, "/api/v1/users")
+				                                              .hasRole("ADMIN")
+				                                              .requestMatchers(HttpMethod.DELETE, "/api/v1/user/{userId}",
+				                                                               "/api/v1/article/{articleId}",
+				                                                               "/api/v1/articles/label/{labelId}")
+				                                              .hasRole("ADMIN")
+				                                              .requestMatchers(HttpMethod.GET, "/api/v1/user/",
+				                                                               "/api/v1/articles", "/api/v1/article/",
+				                                                               "/api/v1/articles/labels").hasRole("USER")
+				                                              .anyRequest().permitAll());
 
 		return http.build();
 	}

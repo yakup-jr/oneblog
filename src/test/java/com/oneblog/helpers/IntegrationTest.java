@@ -19,5 +19,4 @@ import java.lang.annotation.RetentionPolicy;
 @ActiveProfiles("test")
 @Sql(value = "/testdb/data.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 @ExtendWith(DatabaseCleanerExtension.class)
-@WithMockUser
 public @interface IntegrationTest {}

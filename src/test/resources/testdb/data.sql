@@ -19,16 +19,17 @@ insert into t_label(name)
 values ('Kotlin');
 
 -- Users
-insert into t_user(nickname, name, email, password)
-values ('hunter', 'James', 'hunter@mail.com', '$2a$10$Ibeh7YM9hGmk3mrHLQyum.78WJeNKZ3Q1X6OPeKTWWHUfTaoo8osC');
-insert into t_user(nickname, name, email, password)
-values ('shadow', 'Emily', 'shadow@mail.com', 'strongPass2');
-insert into t_user(nickname, name, email, password)
-values ('falcon', 'John', 'falcon@mail.com', 'strongPass3');
-insert into t_user(nickname, name, email, password)
-values ('sparrow', 'Robert', 'sparrow@mail.com', 'strongPass4');
-insert into t_user(nickname, name, email, password)
-values ('finch', 'Sarah', 'finch@mail.com', 'strongPass5');
+insert into t_user(nickname, name, email, password, verificated)
+values ('hunter', 'James', 'hunter@mail.com',
+        '$2y$10$ZmUyu5qt8l9BZ7cewmm.M..9x7Kv55NzYvhWxNf6NnFzUKG0lf/1W', true);
+insert into t_user(nickname, name, email, password, verificated)
+values ('shadow', 'Emily', 'shadow@mail.com', 'strongPass2', true);
+insert into t_user(nickname, name, email, password, verificated)
+values ('falcon', 'John', 'falcon@mail.com', 'strongPass3', true);
+insert into t_user(nickname, name, email, password, verificated)
+values ('sparrow', 'Robert', 'sparrow@mail.com', 'strongPass4', true);
+insert into t_user(nickname, name, email, password, verificated)
+values ('finch', 'Sarah', 'finch@mail.com', 'strongPass5', true);
 
 -- Roles (unchanged)
 insert into t_role(name)

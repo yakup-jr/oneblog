@@ -1,13 +1,15 @@
 package com.oneblog.auth;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
-import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.gson.GsonFactory;
 import com.oneblog.auth.dto.AuthenticationResponseDto;
 import com.oneblog.auth.dto.LoginRequestDto;
+import com.oneblog.auth.dto.RegistrationEmailVerification;
 import com.oneblog.auth.dto.RegistrationRequestDto;
+import com.oneblog.auth.exception.InvalidVerificationCodeException;
 import com.oneblog.auth.jwt.JwtService;
+import com.oneblog.auth.repository.TokenRepository;
+import com.oneblog.auth.service.EmailVerificationService;
+import com.oneblog.auth.service.GoogleVerifier;
 import com.oneblog.user.User;
 import com.oneblog.user.UserNotFoundException;
 import com.oneblog.user.UserRepository;
@@ -16,7 +18,7 @@ import com.oneblog.user.role.RoleName;
 import com.oneblog.user.role.RoleRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,10 +27,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.MissingRequestHeaderException;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -36,33 +38,21 @@ import java.util.Random;
 @Service
 public class AuthServiceImpl implements AuthService {
 
-	@Value("${OAUTH_GOOGLE_CLIENT_ID}")
-	private String clientId;
-
 	private final JwtService jwtService;
-
 	private final PasswordEncoder passwordEncoder;
-
 	private final AuthenticationManager authenticationManager;
-
 	private final TokenRepository tokenRepository;
-
 	private final UserRepository userRepository;
-
 	private final UserService userService;
-
 	private final RoleRepository roleRepository;
-
-	private final GoogleIdTokenVerifier
-		verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new GsonFactory())
-			           .setAudience(Collections.singletonList(clientId))
-			           .build();
-
+	private final EmailVerificationService emailVerificationService;
+	private final GoogleVerifier googleVerifier;
 
 	public AuthServiceImpl(
 		JwtService jwtService, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager,
 		TokenRepository tokenRepository, UserRepository userRepository, UserService userService,
-		RoleRepository roleRepository) {
+		RoleRepository roleRepository, EmailVerificationService emailVerificationService,
+		GoogleVerifier googleVerifier) {
 		this.jwtService = jwtService;
 		this.passwordEncoder = passwordEncoder;
 		this.authenticationManager = authenticationManager;
@@ -70,20 +60,42 @@ public class AuthServiceImpl implements AuthService {
 		this.userRepository = userRepository;
 		this.userService = userService;
 		this.roleRepository = roleRepository;
+		this.emailVerificationService = emailVerificationService;
+		this.googleVerifier = googleVerifier;
 	}
 
 
 	@Override
-	public void register(RegistrationRequestDto request) {
-		User user = new User();
+	public String register(RegistrationRequestDto request) {
+		if (!userRepository.existsByEmail(request.getEmail())) {
+			User user = new User();
 
-		user.setNickname(request.getUsername());
-		user.setEmail(request.getEmail());
-		user.setPassword(passwordEncoder.encode(request.getPassword()));
-		user.setRoles(List.of(roleRepository.findByName(RoleName.ROLE_USER).get()));
+			user.setNickname(request.getUsername());
+			user.setEmail(request.getEmail());
+			user.setPassword(passwordEncoder.encode(request.getPassword()));
+			user.setRoles(List.of(roleRepository.findByName(RoleName.ROLE_USER).get()));
+			user.setVerificated(false);
 
-		userRepository.save(user);
+			userRepository.save(user);
+		}
+
+		emailVerificationService.sendVerificationCode(request.getEmail());
+
+		return "Success registration";
 	}
+
+	@Override
+	public String verifyEmail(RegistrationEmailVerification request) {
+		boolean verified = emailVerificationService.verifyCode(request);
+		if (!verified) {
+			throw new InvalidVerificationCodeException("Code is invalid");
+		}
+		User byEmail = userService.findByEmail(request.getEmail());
+		byEmail.setVerificated(true);
+		userService.save(byEmail);
+		return "Success";
+	}
+
 
 	@Override
 	public AuthenticationResponseDto authenticate(LoginRequestDto request) {
@@ -105,13 +117,20 @@ public class AuthServiceImpl implements AuthService {
 	}
 
 	@Override
-	public ResponseEntity<AuthenticationResponseDto> refreshToken(
-		HttpServletRequest request, HttpServletResponse response) {
+	public AuthenticationResponseDto refreshToken(
+		HttpServletRequest request, HttpServletResponse response)
+		throws NoSuchMethodException, MissingRequestHeaderException, GeneralSecurityException {
 
 		String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
 		if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+			throw new MissingRequestHeaderException(
+				"Authorization",
+				new MethodParameter(
+					this.getClass()
+					    .getDeclaredMethod("refreshToken", HttpServletRequest.class, HttpServletResponse.class), 0
+				)
+			);
 		}
 
 		String token = authorizationHeader.substring(7);
@@ -129,11 +148,9 @@ public class AuthServiceImpl implements AuthService {
 
 			saveUserToken(accessToken, refreshToken, user);
 
-			return ResponseEntity.status(HttpStatus.OK).body(new AuthenticationResponseDto(accessToken, refreshToken));
-
+			return new AuthenticationResponseDto(accessToken, refreshToken);
 		}
-
-		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+		throw new GeneralSecurityException("Invalid token");
 	}
 
 	@Override
@@ -158,11 +175,7 @@ public class AuthServiceImpl implements AuthService {
 
 	@Override
 	public AuthenticationResponseDto loginWithGoogle(String token) throws GeneralSecurityException, IOException {
-		GoogleIdToken.Payload payload = verifyGoogleToken(token);
-		boolean emailVerified = payload.getEmailVerified();
-		if (!emailVerified) {
-			throw new GeneralSecurityException("email verification failed");
-		}
+		GoogleIdToken.Payload payload = googleVerifier.verify(token);
 
 		String email = String.valueOf(payload.get("email"));
 		String googleUserId = String.valueOf(payload.getSubject());
@@ -217,14 +230,5 @@ public class AuthServiceImpl implements AuthService {
 		token.setLoggedOut(false);
 
 		tokenRepository.save(token);
-	}
-
-	private GoogleIdToken.Payload verifyGoogleToken(String token) throws GeneralSecurityException, IOException {
-		String tokenToVerify = token.split("\"")[3];
-		GoogleIdToken idToken = verifier.verify(tokenToVerify);
-		if (idToken != null) {
-			return idToken.getPayload();
-		}
-		throw new GeneralSecurityException("token verification failed");
 	}
 }

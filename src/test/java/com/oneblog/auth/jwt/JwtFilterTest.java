@@ -27,8 +27,6 @@ public class JwtFilterTest {
 
 	@InjectMocks
 	private JwtFilter jwtFilter;
-	@InjectMocks
-	private SecurityContextHolder securityContextHolder;
 
 	@Mock
 	private final MockHttpServletRequest request = new MockHttpServletRequest();
@@ -42,7 +40,8 @@ public class JwtFilterTest {
 	private UserService userService;
 
 	private final User user = new User(1L, "Dima", "test", "123", "123", List.of(new Role(1L, RoleName.ROLE_ADMIN,
-	                                                                                      null)), null, null, null);
+	                                                                                      null)), null, true, null,
+	                                   null);
 	private final String header = "Bearer test";
 	private final String token = "test";
 

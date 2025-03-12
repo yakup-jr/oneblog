@@ -2,6 +2,8 @@ package com.oneblog.exceptions;
 
 import com.oneblog.article.ArticleNotFoundException;
 import com.oneblog.article.label.LabelNotFoundException;
+import com.oneblog.auth.exception.EmailVerificationCodeNotFound;
+import com.oneblog.auth.exception.InvalidVerificationCodeException;
 import com.oneblog.user.UserNotFoundException;
 import io.jsonwebtoken.security.SignatureException;
 import org.springframework.http.HttpStatus;
@@ -57,12 +59,39 @@ public class ApiExceptionHandler {
 		return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(apiException);
 	}
 
-	@ExceptionHandler(value = {SignatureException.class, GeneralSecurityException.class})
+	@ExceptionHandler(value = {SignatureException.class})
 	public ResponseEntity<Object> handleSignatureException(SignatureException e) {
 		ApiException apiException =
 			ApiException.builder().message("Invalid token").httpStatus(HttpStatus.UNAUTHORIZED).build();
 
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).contentType(MediaType.APPLICATION_JSON)
+		                     .body(apiException);
+	}
+
+	@ExceptionHandler(value = {GeneralSecurityException.class})
+	public ResponseEntity<Object> handleGeneralSecurityException(GeneralSecurityException gse) {
+		ApiException apiException =
+			ApiException.builder().message("Invalid token").httpStatus(HttpStatus.UNAUTHORIZED).build();
+
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).contentType(MediaType.APPLICATION_JSON)
+		                     .body(apiException);
+	}
+
+	@ExceptionHandler(value = {EmailVerificationCodeNotFound.class})
+	public ResponseEntity<Object> handleEmailVerificationCodeNotFound(EmailVerificationCodeNotFound e) {
+		ApiException apiException =
+			ApiException.builder().message(e.getMessage()).httpStatus(HttpStatus.NOT_FOUND).build();
+
+		return ResponseEntity.status(apiException.getHttpStatus()).contentType(MediaType.APPLICATION_JSON)
+		                     .body(apiException);
+	}
+
+	@ExceptionHandler(value = {InvalidVerificationCodeException.class})
+	public ResponseEntity<Object> handleInvalidVerificationCodeException(InvalidVerificationCodeException e) {
+		ApiException apiException =
+			ApiException.builder().message(e.getMessage()).httpStatus(HttpStatus.UNAUTHORIZED).build();
+
+		return ResponseEntity.status(apiException.getHttpStatus()).contentType(MediaType.APPLICATION_JSON)
 		                     .body(apiException);
 	}
 }

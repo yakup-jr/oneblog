@@ -78,7 +78,10 @@ databaseChangeLog:
                   value: 'hunter@mail.com'
               - column:
                   name: password
-                  value: '$2a$10$Ibeh7YM9hGmk3mrHLQyum.78WJeNKZ3Q1X6OPeKTWWHUfTaoo8osC'
+                  value: '$2y$10$ZmUyu5qt8l9BZ7cewmm.M..9x7Kv55NzYvhWxNf6NnFzUKG0lf/1W'
+              - column:
+                  name: verificated
+                  value: 'true'
         - insert:
             tableName: t_user
             columns:
@@ -94,6 +97,9 @@ databaseChangeLog:
               - column:
                   name: password
                   value: 'strongPass2'
+              - column:
+                  name: verificated
+                  value: 'true'
         - insert:
             tableName: t_user
             columns:
@@ -109,6 +115,9 @@ databaseChangeLog:
               - column:
                   name: password
                   value: 'strongPass3'
+              - column:
+                  name: verificated
+                  value: 'true'
         - insert:
             tableName: t_user
             columns:
@@ -124,6 +133,9 @@ databaseChangeLog:
               - column:
                   name: password
                   value: 'strongPass4'
+              - column:
+                  name: verificated
+                  value: 'true'
         - insert:
             tableName: t_user
             columns:
@@ -139,6 +151,9 @@ databaseChangeLog:
               - column:
                   name: password
                   value: 'strongPass5'
+              - column:
+                  name: verificated
+                  value: 'true'
 
   - changeSet:
       id: 3

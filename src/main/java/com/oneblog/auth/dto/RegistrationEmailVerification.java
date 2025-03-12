@@ -1,16 +1,17 @@
 package com.oneblog.auth.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class RegistrationRequestDto {
+public class RegistrationEmailVerification {
 
-	private String username;
 	private String email;
-	private String password;
+	private String verificationCode;
 
 }

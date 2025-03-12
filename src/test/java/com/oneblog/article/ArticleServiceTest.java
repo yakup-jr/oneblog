@@ -44,7 +44,7 @@ public class ArticleServiceTest {
 		Article.builder().title("The new story").body("More and more...").articleId(1L).preview(new Preview())
 		       .labels(List.of(new Label(1L, LabelName.Assembler, null), new Label(2L, LabelName.Java, null))).user(
 			       new User(1L, "Dima", "yakup_jr", "somemail@mail.com", "strongpass",
-			                List.of(new Role(1L, RoleName.ROLE_ADMIN, null)), null, null, null)).build();
+			                List.of(new Role(1L, RoleName.ROLE_ADMIN, null)), null, true, null, null)).build();
 
 	@Test
 	public void save_ReturnArticle() {

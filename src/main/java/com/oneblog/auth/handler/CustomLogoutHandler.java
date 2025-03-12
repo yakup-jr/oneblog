@@ -1,7 +1,7 @@
 package com.oneblog.auth.handler;
 
 import com.oneblog.auth.Token;
-import com.oneblog.auth.TokenRepository;
+import com.oneblog.auth.repository.TokenRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;
