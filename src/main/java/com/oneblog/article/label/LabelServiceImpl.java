@@ -2,12 +2,14 @@ package com.oneblog.article.label;
 
 import com.oneblog.exceptions.ApiRequestException;
 import com.oneblog.exceptions.PageNotFoundException;
+import com.oneblog.exceptions.ServiceException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,14 +26,11 @@ public class LabelServiceImpl implements LabelService {
 	public Label save(Label label) throws ApiRequestException {
 		Optional<Label> existingLabel = labelRepository.findByName(label.getName());
 		if (existingLabel.isPresent()) {
-			throw new ApiRequestException("Label already exists");
+			throw new ServiceException("Label already exists");
 		}
-		for (LabelName labelName : LabelName.values()) {
-			if (labelName.equals(label.getName())) {
-				return labelRepository.save(label);
-			}
-		}
-		throw new ApiRequestException("Incorrect data");
+		LabelName newLabelName =
+			Arrays.stream(LabelName.values()).filter(labelName -> labelName.equals(label.getName())).findFirst().get();
+		return labelRepository.save(Label.builder().name(newLabelName).build());
 	}
 
 	@Override

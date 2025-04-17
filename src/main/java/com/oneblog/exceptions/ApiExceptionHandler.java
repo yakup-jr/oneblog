@@ -94,4 +94,13 @@ public class ApiExceptionHandler {
 		return ResponseEntity.status(apiException.getHttpStatus()).contentType(MediaType.APPLICATION_JSON)
 		                     .body(apiException);
 	}
+
+	@ExceptionHandler(value = {ServiceException.class})
+	public ResponseEntity<Object> handleServiceException(ServiceException e) {
+		ApiException apiException =
+			ApiException.builder().message(e.getMessage()).httpStatus(HttpStatus.BAD_REQUEST).build();
+
+		return ResponseEntity.status(apiException.getHttpStatus()).contentType(MediaType.APPLICATION_JSON)
+		                     .body(apiException);
+	}
 }

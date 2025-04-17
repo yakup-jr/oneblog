@@ -7,7 +7,6 @@ import com.oneblog.auth.dto.RegistrationEmailVerification;
 import com.oneblog.auth.dto.RegistrationRequestDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MissingRequestHeaderException;
 
 import java.io.IOException;

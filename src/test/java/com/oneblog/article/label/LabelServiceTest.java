@@ -1,6 +1,6 @@
 package com.oneblog.article.label;
 
-import com.oneblog.exceptions.ApiRequestException;
+import com.oneblog.exceptions.ServiceException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -11,6 +11,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -25,9 +26,9 @@ public class LabelServiceTest {
 	@Test
 	public void saveLabel_ReturnLabel() {
 		Label inputLabel = Label.builder().name(LabelName.Assembler).build();
-		Label outputLabel = Label.builder().name(inputLabel.getName()).labelId(0L).build();
+		Label outputLabel = Label.builder().name(inputLabel.getName()).labelId(1L).build();
 
-		when(labelRepository.save(inputLabel)).thenReturn(outputLabel);
+		when(labelRepository.save(any(Label.class))).thenReturn(outputLabel);
 
 		Label label = labelService.save(inputLabel);
 
@@ -37,13 +38,13 @@ public class LabelServiceTest {
 	}
 
 	@Test
-	public void saveLabel_ThrowApiRequestException() {
+	public void saveLabel_ThrowServiceException() {
 		Label inputLabel = Label.builder().name(LabelName.Assembler).build();
 		Label outputLabel = Label.builder().name(inputLabel.getName()).labelId(0L).build();
 
 		when(labelRepository.findByName(inputLabel.getName())).thenReturn(Optional.of(outputLabel));
 
-		assertThatExceptionOfType(ApiRequestException.class).isThrownBy(() -> labelService.save(inputLabel));
+		assertThatExceptionOfType(ServiceException.class).isThrownBy(() -> labelService.save(inputLabel));
 	}
 
 	@Test

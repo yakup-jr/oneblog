@@ -17,7 +17,7 @@ public class VerificationMailMessageTest {
 	private VerificationMailMessage verificationMailMessage;
 
 	@Mock
-	private JavaMailSender mailSender;
+	private static JavaMailSender mailSender;
 
 	@Mock
 	private CodeGenerator codeGenerator;

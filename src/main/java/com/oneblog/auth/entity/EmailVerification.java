@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-@Data
+@Setter
 @Builder
 public class EmailVerification {
 	@Id

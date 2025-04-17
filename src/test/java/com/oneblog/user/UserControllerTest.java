@@ -1,7 +1,9 @@
 package com.oneblog.user;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oneblog.helpers.IntegrationTest;
 import com.oneblog.helpers.WithMockAdmin;
+import com.oneblog.user.dto.UserCreateDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -21,69 +23,70 @@ public class UserControllerTest {
 	@Autowired
 	private MockMvc mockMvc;
 
+	private final ObjectMapper objectMapper = new ObjectMapper();
+
 	@Test
 	@WithMockAdmin
 	void saveUser_ReturnUser() throws Exception {
-		mockMvc.perform(post("/api/v1/user").contentType(MediaType.APPLICATION_JSON).content("{\n" +
-		                                                                                     "	\"name\": \"Alex\",\n" +
-		                                                                                     "	\"nickname\": \"simple\",\n" +
-		                                                                                     "	\"email\": \"simple@mail.com\",\n" +
-		                                                                                     "	\"password\": \"strongPass\"\n" +
-		                                                                                     "}\n"))
-		       .andExpect(status().isCreated()).andExpect(jsonPath("$.userId", notNullValue()))
-		       .andExpect(jsonPath("$.roles", hasSize(1))).andExpect(jsonPath("$.roles[0].name", is("ROLE_USER")))
-		       .andExpect(jsonPath("$._links.user.href", endsWith("user/6")));
+	    UserCreateDto userCreateDto = new UserCreateDto("Alex", "simple", "simple@mail.com", "strongPass");
+
+	    mockMvc.perform(post("/api/v1/user")
+	            .contentType(MediaType.APPLICATION_JSON)
+	            .content(objectMapper.writeValueAsString(userCreateDto)))
+	            .andExpect(status().isCreated())
+	            .andExpect(jsonPath("$.userId", notNullValue()))
+	            .andExpect(jsonPath("$.roles", hasSize(1)))
+	            .andExpect(jsonPath("$.roles[0].name", is("ROLE_USER")))
+	            .andExpect(jsonPath("$._links.user.href", endsWith("user/6")));
 	}
 
 	@Test
 	void saveUser_HaveNoPermission_Return403() throws Exception {
-		mockMvc.perform(post("/api/v1/user").contentType(MediaType.APPLICATION_JSON).content(
-			"{\"name\": \"Alex\",\n" +
-			"\"nickname\": \"simple\",\n" +
-			"\"email\": \"simple@mail.com\",\n" +
-			"\"password\": \"strongPass\"}\n")).andExpect(status().isForbidden());
+	    UserCreateDto userCreateDto = new UserCreateDto("Alex", "simple", "simple@mail.com", "strongPass");
+
+	    mockMvc.perform(post("/api/v1/user")
+	            .contentType(MediaType.APPLICATION_JSON)
+	            .content(objectMapper.writeValueAsString(userCreateDto)))
+	            .andExpect(status().isForbidden());
 	}
 
 	@Test
 	@WithMockAdmin
 	void saveUser_ThrowMethodArgumentNotValidException() throws Exception {
-		mockMvc.perform(post("/api/v1/user").contentType(MediaType.APPLICATION_JSON).content("	{\n" +
-		                                                                                     "		\"name\": \"\",\n" +
-		                                                                                     "		\"nickname\": \"\",\n" +
-		                                                                                     "		\"email\": \"somemail\",\n" +
-		                                                                                     "		\"password\": \"pass\"\n" +
-		                                                                                     "	}\n"))
-		       .andExpect(status().isBadRequest())
-		       .andExpect(jsonPath("$.message", containsString("name: length must be between 2 and 60")))
-		       .andExpect(jsonPath("$.message", containsString("nickname: length must be between 2 and 60")))
-		       .andExpect(jsonPath("$.message", containsString("email: must be a well-formed email address")))
-		       .andExpect(jsonPath("$.message", containsString("password: length must be between 8 and 60")));
+	    UserCreateDto userCreateDto = new UserCreateDto("", "", "somemail", "pass");
+
+	    mockMvc.perform(post("/api/v1/user")
+	            .contentType(MediaType.APPLICATION_JSON)
+	            .content(objectMapper.writeValueAsString(userCreateDto)))
+	            .andExpect(status().isBadRequest())
+	            .andExpect(jsonPath("$.message", containsString("name: length must be between 2 and 60")))
+	            .andExpect(jsonPath("$.message", containsString("nickname: length must be between 2 and 60")))
+	            .andExpect(jsonPath("$.message", containsString("email: must be a well-formed email address")))
+	            .andExpect(jsonPath("$.message", containsString("password: length must be between 8 and 60")));
 	}
 
 	@Test
 	@WithMockAdmin
 	void saveUser_ThrowApiRequestException_NicknameIsNotUnique() throws Exception {
-		mockMvc.perform(post("/api/v1/user").contentType(MediaType.APPLICATION_JSON).content("{\n" +
-		                                                                                     "	\"name\": \"Alex\",\n" +
-		                                                                                     "	\"nickname\": \"hunter\",\n" +
-		                                                                                     "	\"email\": \"alex@mail.com\",\n" +
-		                                                                                     "	\"password\": \"strongPass\"\n" +
-		                                                                                     "}\n"))
-		       .andExpect(status().isBadRequest())
-		       .andExpect(jsonPath("$.message", is("User nickname hunter already exists")));
+	    UserCreateDto userCreateDto = new UserCreateDto("Alex", "hunter", "alex@mail.com", "strongPass");
+
+	    mockMvc.perform(post("/api/v1/user")
+	            .contentType(MediaType.APPLICATION_JSON)
+	            .content(objectMapper.writeValueAsString(userCreateDto)))
+	            .andExpect(status().isBadRequest())
+	            .andExpect(jsonPath("$.message", is("User nickname hunter already exists")));
 	}
 
 	@Test
 	@WithMockAdmin
 	void saveUser_ThrowApiRequestException_EmailIsNotUnique() throws Exception {
-		mockMvc.perform(post("/api/v1/user").contentType(MediaType.APPLICATION_JSON).content("	{\n" +
-		                                                                                     "		\"name\": \"Alex\",\n" +
-		                                                                                     "		\"nickname\": \"simple\",\n" +
-		                                                                                     "		\"email\": \"hunter@mail.com\",\n" +
-		                                                                                     "		\"password\": \"strongPass\"\n" +
-		                                                                                     "	}\n"))
-		       .andExpect(status().isBadRequest())
-		       .andExpect(jsonPath("$.message", is("User email hunter@mail.com already exists")));
+	    UserCreateDto userCreateDto = new UserCreateDto("Alex", "simple", "hunter@mail.com", "strongPass");
+
+	    mockMvc.perform(post("/api/v1/user")
+	            .contentType(MediaType.APPLICATION_JSON)
+	            .content(objectMapper.writeValueAsString(userCreateDto)))
+	            .andExpect(status().isBadRequest())
+	            .andExpect(jsonPath("$.message", is("User email hunter@mail.com already exists")));
 	}
 
 	@Test
