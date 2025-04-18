@@ -1,0 +1,45 @@
+stages:
+  - build
+  - test
+  - deploy
+
+variables:
+  GRADLE_IMAGE: 'gradle:8.13.0-jdk21'
+  DOCKER_IMAGE: 'docker:stable'
+
+build:
+  stage: build
+  image: $GRADLE_IMAGE
+  script:
+    - gradle assemble
+  artifacts:
+    paths:
+      - build/libs/*.jar
+
+test:
+  stage: test
+  image: $GRADLE_IMAGE
+  needs:
+    - build
+  script:
+    - gradle check
+  artifacts:
+    when: always
+    reports:
+      junit: build/test-results/test/TEST-*.xml
+
+push to hub:
+  stage: deploy
+  image: $DOCKER_IMAGE
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+  needs:
+    - build
+    - test
+  services:
+    - docker:dind
+  script:
+    - docker build -t $IMAGE .
+    - echo "$DOCKER_HUB_PASSWORD" | docker login --username $DOCKER_HUB_LOGIN --password-stdin
+    - docker tag planner $DOCKER_HUB_USERNAME/$IMAGE:$CI_COMMIT_SHORT_SHA
+    - docker push $DOCKER_HUB_USERNAME/$IMAGE:$CI_COMMIT_SHORT_SHA
