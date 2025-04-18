@@ -27,8 +27,18 @@ spring:
           starttls:
             required: true
             enable: ${MAIL_SMTP_STARTTLS}
+  application:
+    name: oneblog
 security:
   jwt:
     secret_key: ${JWT_SECRET_KEY}
     access_token_expiration: ${JWT_ACCESS_TOKEN_EXPIRATION}
     refresh_token_expiration: ${JWT_REFRESH_TOKEN_EXPIRATION}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always

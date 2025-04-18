@@ -49,6 +49,8 @@ dependencies {
 	testImplementation("org.testcontainers:postgresql")
 	testImplementation("org.testcontainers:junit-jupiter")
 	testImplementation("com.icegreen:greenmail-junit5:2.1.3")
+	runtimeOnly("io.micrometer:micrometer-registry-prometheus")
+	testCompileOnly("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 }
 
 tasks.withType<Test> {
