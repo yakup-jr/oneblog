@@ -7,6 +7,7 @@ variables:
   GRADLE_IMAGE: 'gradle:8.13.0-jdk21'
   DOCKER_IMAGE: 'docker:stable'
 
+
 build:
   stage: build
   image: $GRADLE_IMAGE
@@ -19,6 +20,14 @@ build:
 test:
   stage: test
   image: $GRADLE_IMAGE
+  services:
+    - name: docker:dind
+      command: ["--tls=false"]
+  variables:
+    DOCKER_HOST: "tcp://docker:2375"
+    DOCKER_TLS_CERTDIR: ""
+    DOCKER_DRIVER: overlay2
+    TESTCONTAINERS_RYUK_DISABLED: "true"
   needs:
     - build
   script:
