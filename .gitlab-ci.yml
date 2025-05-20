@@ -6,6 +6,13 @@ stages:
 variables:
   GRADLE_IMAGE: 'gradle:8.13.0-jdk21'
   DOCKER_IMAGE: 'docker:stable'
+  DOCKER_REGISTRY: docker.io
+  DOCKER_IMAGE_BUILD: whtoy/oneblog
+  VERSTION: 1.0.${CI_PIPELINE_IID}
+
+
+.docker-login: &docker-login
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin $DOCKER_REGISTRY
 
 
 build:
@@ -37,18 +44,39 @@ test:
     reports:
       junit: build/test-results/test/TEST-*.xml
 
-push to hub:
+
+merge:on-dev:
   stage: deploy
   image: $DOCKER_IMAGE
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
+  services:
+    - docker:dind
   needs:
     - build
     - test
+  before_script:
+    *docker-login
+  rules:
+    - if: $CI_COMMIT_BRANCH == "dev" && $CI_PIPELINE_SOURCE == "push"
+      when: on_success
+  script:
+    - docker build -t $DOCKER_IMAGE_BUILD:dev-latest -t $DOCKER_IMAGE_BUILD:dev-$VERSION
+    - docker push $DOCKER_IMAGE_BUILD:dev-latest
+    - docker push $DOCKER_IMAGE_BUILD:dev-$VERSION
+
+merge:on-main:
+  stage: deploy
+  image: $DOCKER_IMAGE
   services:
     - docker:dind
+  needs:
+    - build
+    - test
+  before_script:
+    - *docker-login
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main" && $CI_PIPELINE_SOURCE == "push"
+      when: on_success
   script:
-    - docker build -t $IMAGE .
-    - echo "$DOCKER_HUB_PASSWORD" | docker login --username $DOCKER_HUB_LOGIN --password-stdin
-    - docker tag planner $DOCKER_HUB_USERNAME/$IMAGE:$CI_COMMIT_SHORT_SHA
-    - docker push $DOCKER_HUB_USERNAME/$IMAGE:$CI_COMMIT_SHORT_SHA
+    - docker build -t $DOCKER_IMAGE_BUILD:latest -t $DOCKER_IMAGE_BUILD:$VERSION
+    - docker push $DOCKER_IMAGE_BUILD:latest
+    - docker push $DOCKER_IMAGE_BUILD:$VERSION
