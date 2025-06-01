@@ -64,7 +64,8 @@ merge:on-dev:
     - if: $CI_COMMIT_BRANCH == "dev" && $CI_PIPELINE_SOURCE == "push"
       when: on_success
   script:
-    - docker build -t $DOCKER_IMAGE_BUILD:dev-latest -t $DOCKER_IMAGE_BUILD:dev-$VERSION
+    - docker build -t $DOCKER_IMAGE_BUILD:dev-latest .
+    - docker tag $DOCKER_IMAGE_BUILD:dev-latest $DOCKER_IMAGE_BUILD:dev-$VERSION
     - docker push $DOCKER_IMAGE_BUILD:dev-latest
     - docker push $DOCKER_IMAGE_BUILD:dev-$VERSION
 
