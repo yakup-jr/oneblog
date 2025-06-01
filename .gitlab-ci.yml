@@ -12,7 +12,7 @@ variables:
 
 
 .docker-login: &docker-login
-  - echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKER_HUB_LOGIN" --password-stdin $DOCKER_REGISTRY
+  - echo "$DOCKER_HUB_PAT" | docker login $DOCKER_REGISTRY -u "$DOCKER_HUB_LOGIN" --password-stdin
 
 
 build:
