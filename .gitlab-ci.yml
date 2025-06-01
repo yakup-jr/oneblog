@@ -35,6 +35,11 @@ test:
     DOCKER_TLS_CERTDIR: ""
     DOCKER_DRIVER: overlay2
     TESTCONTAINERS_RYUK_DISABLED: "true"
+    TC_REUSE_CONTAINER: "true"
+    TESTCONTAINERS_REUSE_ENABLE: "true"
+    DOCKER_API_VERSION: "1.41"
+    TESTCONTAINERS_CHECKS_DISABLE: "true"
+
   needs:
     - build
   script:
