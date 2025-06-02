@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 
 import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -93,16 +92,14 @@ public class UserControllerTest {
 	@Test
 	@WithMockAdmin
 	void findAllUsers_ReturnUsers() throws Exception {
-		MvcResult result =
-			mockMvc.perform(get("/api/v1/users?page=0&size=3").contentType(MediaType.APPLICATION_JSON))
-			       .andExpect(status().isOk()).andExpect(jsonPath("$._embedded.users", hasSize(3)))
-			       .andExpectAll(jsonPath("$._embedded.users[0].userId", is(1)),
-			                     jsonPath("$._embedded.users[0].name", is("James")),
-			                     jsonPath("$._embedded.users[0].nickname", is("hunter")),
-			                     jsonPath("$._embedded.users[0].email", is("hunter@mail.com")),
-			                     jsonPath("$._embedded.users[0].roles", hasSize(2)),
-			                     jsonPath("$._embedded.users[0].roles[0].name", is("ROLE_ADMIN"))).andReturn();
-		System.out.println("Response: " + result.getResponse().getContentAsString());
+		mockMvc.perform(get("/api/v1/users?page=0&size=3").contentType(MediaType.APPLICATION_JSON))
+		       .andExpect(status().isOk()).andExpect(jsonPath("$._embedded.users", hasSize(3)))
+		       .andExpectAll(jsonPath("$._embedded.users[0].userId", is(1)),
+		                     jsonPath("$._embedded.users[0].name", is("James")),
+		                     jsonPath("$._embedded.users[0].nickname", is("hunter")),
+		                     jsonPath("$._embedded.users[0].email", is("hunter@mail.com")),
+		                     jsonPath("$._embedded.users[0].roles", hasSize(2)),
+		                     jsonPath("$._embedded.users[0].roles[0].name", is("ROLE_ADMIN")));
 	}
 
 	@Test
