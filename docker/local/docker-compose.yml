@@ -4,10 +4,15 @@ services:
   db:
     image: postgres:15
     container_name: db
+    hostname: db
+    secrets:
+      - db_password
+    env_file:
+      - ".env"
     environment:
       POSTGRES_DB: oneblog
       POSTGRES_USER: yakup_jr
-      POSTGRES_PASSWORD_FILE: root
+      POSTGRES_PASSWORD: /run/secrets/db_password
     deploy:
       mode: replicated
       replicas: 1
@@ -19,7 +24,10 @@ services:
           cpus: "0.5"
           memory: 256M
     ports:
-      - "5432:5432"
+      - target: 5432
+        published: 5432
+        protocol: tcp
+        mode: host
     volumes:
       - /var/lib/postgresql/data
     networks:
@@ -35,13 +43,23 @@ services:
     image: whtoy/oneblog:dev-latest
     container_name: oneblog
     hostname: oneblog
+    secrets:
+      - db_password
+      - google_client_secret
+      - jwt_secret
+      - mail_username
+      - mail_password
     env_file:
       - ".env"
     environment:
       DATASOURCE_URL: jdbc:postgresql://db:5432/oneblog
       DATASOURCE_USERNAME: yakup_jr
-      DATASOURCE_PASSWORD: root
       DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+      DATASOURCE_PASSWORD: /run/secrets/db_password
+      OAUTH_GOOGLE_CLIENT_SECRET: /run/secrets/google_client_secret
+      MAIL_USERNAME: /run/secrets/mail_username
+      MAIL_PASSWORD: /run/secrets/mail_password
+      JWT_SECRET_KEY: /run/secrets/jwt_secret
       SPRING_PROFILES_ACTIVE: dev
     deploy:
       mode: replicated
@@ -184,16 +202,27 @@ services:
     depends_on:
       - prometheus
 
-
 configs:
   promtail-config:
-    external: true
+    file: ../../config/local/promtail.yml
   loki-config:
-    external: true
+    file: ../../config/local/loki.yml
   prometheus-config:
-    external: true
+    file: ../../config/local/prometheus.yml
   grafana-datasources:
-    external: true
+    file: ../../config/local/datasources.yml
+
+secrets:
+  db_password:
+    file: ${DATASOURCE_PASSWORD_PATH}
+  google_client_secret:
+    file: ${OAUTH_GOOGLE_CLIENT_SECRET}
+  jwt_secret:
+    file: ${JWT_SECRET_KEY_PATH}
+  mail_username:
+    file: ${MAIL_USERNAME_PATH}
+  mail_password:
+    file: ${MAIL_PASSWORD_PATH}
 
 volumes:
   db-data:

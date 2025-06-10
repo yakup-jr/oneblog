@@ -1,0 +1,225 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:15
+    container_name: db
+    environment:
+      POSTGRES_DB: oneblog
+      POSTGRES_USER: yakup_jr
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+    deploy:
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: "1"
+          memory: 512M
+        reservations:
+          cpus: "0.5"
+          memory: 256M
+    ports:
+      - "5432:5432"
+    secrets:
+      - db_password
+    volumes:
+      - /var/lib/postgresql/data
+    networks:
+      - app-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U yakup_jr -d oneblog" ]
+      interval: 10s
+      retries: 5
+      start_period: 10s
+      timeout: 5s
+
+  app:
+    image: whtoy/oneblog:dev-latest
+    container_name: oneblog
+    hostname: oneblog
+    env_file:
+      - ".env"
+    environment:
+      DATASOURCE_URL: jdbc:postgresql://db:5432/oneblog
+      DATASOURCE_USERNAME: yakup_jr
+      DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+      SPRING_PROFILES_ACTIVE: dev
+      DATASOURCE_PASSWORD_FILE: /run/secrets/db_password
+      OAUTH_GOOGLE_CLIENT_SECRET_FILE: /run/secrets/google_client_secret
+      MAIL_PASSWORD_FILE: /run/secrets/mail_password
+      JWT_SECRET_KEY_FILE: /run/secrets/jwt_secret
+    deploy:
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: "1"
+          memory: 512M
+        reservations:
+          cpus: "0.5"
+          memory: 256M
+    secrets:
+      - db_password
+      - google_client_secret
+      - mail_password
+      - jwt_secret
+    depends_on:
+      - db
+    ports:
+      - target: 8080
+        published: 8080
+        protocol: tcp
+        mode: host
+    networks:
+      app-network:
+        aliases:
+          - oneblog
+
+  promtail:
+    image: grafana/promtail:latest
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 128M
+        reservations:
+          cpus: "0.2"
+          memory: 64M
+    configs:
+      - source: promtail-config
+        target: /etc/promtail/config.yml
+    container_name: promtail
+    ports:
+      - target: 9090
+        published: 9090
+        protocol: tcp
+        mode: host
+    volumes:
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: -config.file=/etc/promtail/config.yml
+    networks:
+      - app-network
+    privileged: true
+    depends_on:
+      - db
+      - app
+
+  loki:
+    image: grafana/loki:latest
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+        reservations:
+          cpus: "0.2"
+          memory: 128M
+    container_name: loki
+    hostname: loki
+    configs:
+      - source: loki-config
+        target: /etc/loki/loki-config.yaml
+    volumes:
+      - loki-data:/loki
+    command: -config.file=/etc/loki/loki-config.yaml
+    ports:
+      - target: 3100
+        published: 3100
+        protocol: tcp
+        mode: host
+    networks:
+      app-network:
+        aliases:
+          - loki
+
+  prometheus:
+    image: prom/prometheus:latest
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+        reservations:
+          cpus: "0.2"
+          memory: 128M
+    configs:
+      - source: prometheus-config
+        target: /etc/prometheus/prometheus.yml
+    container_name: prometheus
+    hostname: prometheus
+    ports:
+      - target: 9090
+        published: 9090
+        protocol: tcp
+        mode: host
+    volumes:
+      - prometheusdata:/prometheus
+    networks:
+      app-network:
+        aliases:
+          - prometheus
+    depends_on:
+      - app
+
+  grafana:
+    image: grafana/grafana:latest
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 128M
+        reservations:
+          cpus: "0.2"
+          memory: 64M
+    configs:
+      - source: grafana-datasources
+        target: /etc/grafana/provisioning/datasources/datasources.yaml
+    container_name: grafana
+    hostname: grafana
+    ports:
+      - target: 3000
+        published: 3000
+        protocol: tcp
+        mode: host
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    volumes:
+      - grafanadata:/var/lib/grafana
+    networks:
+      app-network:
+        aliases:
+          - grafana
+    depends_on:
+      - prometheus
+
+
+configs:
+  promtail-config:
+    external: true
+  loki-config:
+    external: true
+  prometheus-config:
+    external: true
+  grafana-datasources:
+    external: true
+
+secrets:
+  db_password:
+    external: true
+  google_client_secret:
+    external: true
+  mail_password:
+    external: true
+  jwt_secret:
+    external: true
+
+volumes:
+  db-data:
+  grafanadata:
+  prometheusdata:
+  loki-data:
+
+networks:
+  app-network:

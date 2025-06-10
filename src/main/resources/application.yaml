@@ -5,7 +5,7 @@ spring:
   datasource:
     url: ${DATASOURCE_URL}
     username: ${DATASOURCE_USERNAME}
-    password: ${DATASOURCE_PASSWORD}
+    password: ${DATASOURCE_PASSWORD_FILE:${DATASOURCE_PASSWORD}}
     driver-class-name: ${DATASOURCE_DRIVER_CLASS_NAME}
   security:
     oauth2:
@@ -13,13 +13,13 @@ spring:
         registration:
           google:
             client-id: 66921987265-jjcf6teo4h8o2rc3v1sqgfp5va2phhfd.apps.googleusercontent.com
-            client-secret: ${OAUTH_GOOGLE_CLIENT_SECRET}
+            client-secret: ${OAUTH_GOOGLE_CLIENT_SECRET_FILE:${OAUTH_GOOGLE_CLIENT_SECRET}}
             scope: ${OAUTH_GOOGLE_SCOPE}
   mail:
     host: ${MAIL_HOST}
     port: ${MAIL_PORT}
     username: ${MAIL_USERNAME}
-    password: ${MAIL_PASSWORD}
+    password: ${MAIL_PASSWORD_FILE:${MAIL_PASSWORD}}
     properties:
       mail:
         smtp:
@@ -31,7 +31,7 @@ spring:
     name: oneblog
 security:
   jwt:
-    secret_key: ${JWT_SECRET_KEY}
+    secret_key: ${JWT_SECRET_KEY_FILE:${JWT_SECRET_KEY}}
     access_token_expiration: ${JWT_ACCESS_TOKEN_EXPIRATION}
     refresh_token_expiration: ${JWT_REFRESH_TOKEN_EXPIRATION}
 management:
