@@ -7,7 +7,6 @@ services:
     environment:
       POSTGRES_DB: oneblog
       POSTGRES_USER: yakup_jr
-      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
     deploy:
       mode: replicated
       replicas: 1
@@ -37,17 +36,9 @@ services:
     image: whtoy/oneblog:dev-latest
     container_name: oneblog
     hostname: oneblog
-    env_file:
-      - ".env"
-    environment:
-      DATASOURCE_URL: jdbc:postgresql://db:5432/oneblog
-      DATASOURCE_USERNAME: yakup_jr
-      DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
-      SPRING_PROFILES_ACTIVE: dev
-      DATASOURCE_PASSWORD_FILE: /run/secrets/db_password
-      OAUTH_GOOGLE_CLIENT_SECRET_FILE: /run/secrets/google_client_secret
-      MAIL_PASSWORD_FILE: /run/secrets/mail_password
-      JWT_SECRET_KEY_FILE: /run/secrets/jwt_secret
+    configs:
+      - target: app-config
+        source: /etc/app/app.yml
     deploy:
       mode: replicated
       replicas: 1
@@ -196,6 +187,8 @@ services:
 
 
 configs:
+  app-config:
+    external: true
   promtail-config:
     external: true
   loki-config:

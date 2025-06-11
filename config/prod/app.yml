@@ -1,0 +1,20 @@
+application:
+  name: oneblog
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    smtp:
+      auth: true
+      starttls: true
+  oauth:
+    google:
+      scope: email,profile
+  monitoring:
+    enabled: true
+  datasource:
+    url: jdbc:postgresql://db:5432/oneblog
+    user: yakup_jr
+    driver-class-name: org.postgresql.Driver
+  spring:
+    profiles:
+      active: dev
