@@ -36,9 +36,6 @@ services:
     image: whtoy/oneblog:dev-latest
     container_name: oneblog
     hostname: oneblog
-    configs:
-      - target: app-config
-        source: /etc/app/app.yml
     deploy:
       mode: replicated
       replicas: 1
@@ -50,10 +47,15 @@ services:
           cpus: "0.5"
           memory: 256M
     secrets:
+      - db_username
       - db_password
-      - google_client_secret
+      - oauth_google_client_id
+      - oauth_google_client_secret
+      - mail_username
       - mail_password
       - jwt_secret
+      - jwt_access_token_expiration
+      - jwt_refresh_token_expiration
     depends_on:
       - db
     ports:
@@ -187,8 +189,6 @@ services:
 
 
 configs:
-  app-config:
-    external: true
   promtail-config:
     external: true
   loki-config:
@@ -199,14 +199,25 @@ configs:
     external: true
 
 secrets:
+  db_username:
+    external: true
   db_password:
     external: true
-  google_client_secret:
+  oauth_google_client_id:
+    external: true
+  oauth_google_client_secret:
+    external: true
+  mail_username:
     external: true
   mail_password:
     external: true
   jwt_secret:
     external: true
+  jwt_access_token_expiration:
+    external: true
+  jwt_refresh_token_expiration:
+    external: true
+
 
 volumes:
   db-data:
