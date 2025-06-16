@@ -4,9 +4,6 @@ services:
   db:
     image: postgres:15
     container_name: db
-    environment:
-      POSTGRES_DB: oneblog
-      POSTGRES_USER: yakup_jr
     deploy:
       mode: replicated
       replicas: 1
@@ -20,6 +17,7 @@ services:
     ports:
       - "5432:5432"
     secrets:
+      - db_username
       - db_password
     volumes:
       - /var/lib/postgresql/data

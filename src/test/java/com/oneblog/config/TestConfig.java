@@ -2,6 +2,7 @@ package com.oneblog.config;
 
 import com.zaxxer.hikari.HikariDataSource;
 import liquibase.integration.spring.SpringLiquibase;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
@@ -25,6 +26,11 @@ import java.sql.SQLException;
 @Profile("test")
 public class TestConfig {
 
+	@Value("${spring.mail.username}")
+	private String mailUsername;
+	@Value("${spring.mail.password}")
+	private String mailPassword;
+
 	@Bean
 	@Primary
 	public PostgreSQLContainer<?> postgresContainer(DynamicPropertyRegistry dynamicPropertyRegistry) {
@@ -40,7 +46,7 @@ public class TestConfig {
 		container.waitingFor(Wait.forLogMessage(".*Starting GreenMail standalone.*", 1))
 		         .withEnv("GREENMAIL_OPTS",
 		                  "-Dgreenmail.setup.test.smtp -Dgreenmail.hostname=0.0.0.0 -Dgreenmail" +
-		                  ".users=admin:root")
+		                  ".users=" + mailUsername + ":" + mailPassword)
 		         .withExposedPorts(3025);
 		dynamicPropertyRegistry.add("spring.mail.host", container::getHost);
 		dynamicPropertyRegistry.add("spring.mail.port", container::getFirstMappedPort);

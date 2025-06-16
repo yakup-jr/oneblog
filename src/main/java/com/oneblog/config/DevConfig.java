@@ -9,7 +9,7 @@ import org.springframework.context.annotation.PropertySource;
 @Configuration
 @Profile("dev")
 @Import({OneblogConfig.class})
-@PropertySource("classpath:/application-dev.yaml")
+@PropertySource("classpath:/application-dev.yml")
 @Slf4j
 public class DevConfig {
 

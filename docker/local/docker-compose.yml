@@ -6,13 +6,8 @@ services:
     container_name: db
     hostname: db
     secrets:
+      - db_username
       - db_password
-    env_file:
-      - ".env"
-    environment:
-      POSTGRES_DB: oneblog
-      POSTGRES_USER: yakup_jr
-      POSTGRES_PASSWORD: /run/secrets/db_password
     deploy:
       mode: replicated
       replicas: 1
@@ -44,23 +39,15 @@ services:
     container_name: oneblog
     hostname: oneblog
     secrets:
+      - db_username
       - db_password
-      - google_client_secret
-      - jwt_secret
+      - oauth_google_client_id
+      - oauth_google_client_secret
+      - jwt_secret_key
       - mail_username
       - mail_password
-    env_file:
-      - ".env"
     environment:
       DATASOURCE_URL: jdbc:postgresql://db:5432/oneblog
-      DATASOURCE_USERNAME: yakup_jr
-      DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
-      DATASOURCE_PASSWORD: /run/secrets/db_password
-      OAUTH_GOOGLE_CLIENT_SECRET: /run/secrets/google_client_secret
-      MAIL_USERNAME: /run/secrets/mail_username
-      MAIL_PASSWORD: /run/secrets/mail_password
-      JWT_SECRET_KEY: /run/secrets/jwt_secret
-      SPRING_PROFILES_ACTIVE: dev
     deploy:
       mode: replicated
       replicas: 1
@@ -213,16 +200,21 @@ configs:
     file: ../../config/local/datasources.yml
 
 secrets:
+  db_username:
+    file: ../../secrets/local/db_username.txt
   db_password:
-    file: ${DATASOURCE_PASSWORD_PATH}
-  google_client_secret:
-    file: ${OAUTH_GOOGLE_CLIENT_SECRET}
-  jwt_secret:
-    file: ${JWT_SECRET_KEY_PATH}
+    file: ../../secrets/local/db_password.txt
+  oauth_google_client_id:
+    file: ../../secrets/local/oauth_google_client_id.txt
+  oauth_google_client_secret:
+    file: ../../secrets/local/oauth_google_client_secret.txt
+  jwt_secret_key:
+    file: ../../secrets/local/jwt_secret_key.txt
   mail_username:
-    file: ${MAIL_USERNAME_PATH}
+    file: ../../secrets/local/mail_username.txt
   mail_password:
-    file: ${MAIL_PASSWORD_PATH}
+    file: ../../secrets/local/mail_password.txt
+
 
 volumes:
   db-data:
