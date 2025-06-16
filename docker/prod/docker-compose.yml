@@ -4,6 +4,10 @@ services:
   db:
     image: postgres:15
     container_name: db
+    environment:
+      POSTGRES_USER_FILE: /run/secrets/db_username
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+      POSTGRES_DB: oneblog
     deploy:
       mode: replicated
       replicas: 1
@@ -34,6 +38,10 @@ services:
     image: whtoy/oneblog:dev-latest
     container_name: oneblog
     hostname: oneblog
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      DB_USERNAME_FILE: /run/secrets/db_username
+      DB_PASSWORD_FILE: /run/secrets/db_password
     deploy:
       mode: replicated
       replicas: 1
