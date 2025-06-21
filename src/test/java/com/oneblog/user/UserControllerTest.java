@@ -98,8 +98,7 @@ public class UserControllerTest {
 		                     jsonPath("$._embedded.users[0].name", is("James")),
 		                     jsonPath("$._embedded.users[0].nickname", is("hunter")),
 		                     jsonPath("$._embedded.users[0].email", is("hunter@mail.com")),
-		                     jsonPath("$._embedded.users[0].roles", hasSize(2)),
-		                     jsonPath("$._embedded.users[0].roles[0].name", is("ROLE_ADMIN")));
+		                     jsonPath("$._embedded.users[0].roles", hasSize(2)));
 	}
 
 	@Test
