@@ -3,9 +3,9 @@ spring:
     init:
       mode: always
   datasource:
-    url: jdbc:postgresql://db:5432/oneblog
-    username: ${DB_USERNAME_FILE:${DB_USERNAME}}
-    password: ${DB_PASSWORD_FILE:${DB_PASSWORD}}
+    url: ${DATASOURCE_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
   security:
     oauth2:

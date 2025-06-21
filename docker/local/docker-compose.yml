@@ -1,10 +1,12 @@
-version: "3.9"
-
 services:
   db:
     image: postgres:15
     container_name: db
     hostname: db
+    environment:
+      POSTGRES_USER_FILE: /run/secrets/db_username
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+      POSTGRES_DB: oneblog
     secrets:
       - db_username
       - db_password
@@ -28,14 +30,16 @@ services:
     networks:
       - app-network
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U yakup_jr -d oneblog" ]
+      test: [ "CMD-SHELL", "pg_isready -U $$(cat /run/secrets/db_username) -d oneblog" ]
       interval: 10s
       retries: 5
       start_period: 10s
       timeout: 5s
 
   app:
-    image: whtoy/oneblog:dev-latest
+    build:
+      context: ../../
+      dockerfile: ./Dockerfile
     container_name: oneblog
     hostname: oneblog
     secrets:
@@ -47,7 +51,10 @@ services:
       - mail_username
       - mail_password
     environment:
+      SPRING_PROFILES_ACTIVE: dev
       DATASOURCE_URL: jdbc:postgresql://db:5432/oneblog
+      JWT_ACCESS_TOKEN_EXPIRATION: 3600
+      JWT_REFRESH_TOKEN_EXPIRATION: 604800
     deploy:
       mode: replicated
       replicas: 1
@@ -85,8 +92,8 @@ services:
         target: /etc/promtail/config.yml
     container_name: promtail
     ports:
-      - target: 9090
-        published: 9090
+      - target: 9080
+        published: 9080
         protocol: tcp
         mode: host
     volumes:

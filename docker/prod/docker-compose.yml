@@ -40,8 +40,9 @@ services:
     hostname: oneblog
     environment:
       SPRING_PROFILES_ACTIVE: prod
-      DB_USERNAME_FILE: /run/secrets/db_username
-      DB_PASSWORD_FILE: /run/secrets/db_password
+      DATASOURCE_URL: jdbc:postgresql://db:5432/oneblog
+      JWT_ACCESS_TOKEN_EXPIRATION: 3600
+      JWT_REFRESH_TOKEN_EXPIRATION: 604800
     deploy:
       mode: replicated
       replicas: 1
@@ -60,8 +61,6 @@ services:
       - mail_username
       - mail_password
       - jwt_secret
-      - jwt_access_token_expiration
-      - jwt_refresh_token_expiration
     depends_on:
       - db
     ports:
