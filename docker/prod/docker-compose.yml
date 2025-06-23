@@ -5,6 +5,19 @@ services:
     image: haproxy:lts
     container_name: proxy
     hostname: proxy
+    depends_on:
+      - app
+    ports:
+      - target: 80
+        published: 80
+        protocol: tcp
+        mode: host
+      - target: 443
+        published: 443
+        protocol: tcp
+        mode: host
+    networks:
+      - app-network
     configs:
       - source: haproxy-config
         target: /usr/local/etc/haproxy/haproxy.cfg
@@ -24,19 +37,6 @@ services:
         reservations:
           cpus: "0.2"
           memory: 64M
-    ports:
-      - target: 80
-        published: 80
-        protocol: tcp
-        mode: host
-      - target: 443
-        published: 443
-        protocol: tcp
-        mode: host
-    networks:
-      - app-network
-    depends_on:
-      - app
 
   db:
     image: postgres:15
@@ -45,41 +45,20 @@ services:
       POSTGRES_USER_FILE: /run/secrets/db_username
       POSTGRES_PASSWORD_FILE: /run/secrets/db_password
       POSTGRES_DB: oneblog
-    deploy:
-      update_config:
-        order: start-first
-      mode: replicated
-      replicas: 1
-      resources:
-        limits:
-          cpus: "1"
-          memory: 512M
-        reservations:
-          cpus: "0.5"
-          memory: 256M
-    secrets:
-      - db_username
-      - db_password
-    volumes:
-      - /var/lib/postgresql/data
+    ports: []
     networks:
       - app-network
+    volumes:
+      - /var/lib/postgresql/data
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U yakup_jr -d oneblog" ]
       interval: 10s
       retries: 5
       start_period: 10s
       timeout: 5s
-
-  app:
-    image: whtoy/oneblog:dev-latest
-    container_name: oneblog
-    hostname: oneblog
-    environment:
-      SPRING_PROFILES_ACTIVE: prod
-      DATASOURCE_URL: jdbc:postgresql://db:5432/oneblog
-      JWT_ACCESS_TOKEN_EXPIRATION: 3600
-      JWT_REFRESH_TOKEN_EXPIRATION: 604800
+    secrets:
+      - db_username
+      - db_password
     deploy:
       update_config:
         order: start-first
@@ -92,6 +71,22 @@ services:
         reservations:
           cpus: "0.5"
           memory: 256M
+
+  app:
+    image: whtoy/oneblog:dev-latest
+    container_name: oneblog
+    hostname: oneblog
+    depends_on:
+      - db
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      DATASOURCE_URL: jdbc:postgresql://db:5432/oneblog
+      JWT_ACCESS_TOKEN_EXPIRATION: 3600
+      JWT_REFRESH_TOKEN_EXPIRATION: 604800
+    networks:
+      app-network:
+        aliases:
+          - oneblog
     secrets:
       - db_username
       - db_password
@@ -100,93 +95,35 @@ services:
       - mail_username
       - mail_password
       - jwt_secret_key
-    depends_on:
-      - db
-    networks:
-      app-network:
-        aliases:
-          - oneblog
-
-  promtail:
-    image: grafana/promtail:latest
     deploy:
       update_config:
         order: start-first
+      mode: replicated
+      replicas: 1
       resources:
         limits:
-          cpus: "0.5"
-          memory: 128M
+          cpus: "1"
+          memory: 512M
         reservations:
-          cpus: "0.2"
-          memory: 64M
-    configs:
-      - source: promtail-config
-        target: /etc/promtail/config.yml
+          cpus: "0.5"
+          memory: 256M
+
+  promtail:
+    image: grafana/promtail:latest
     container_name: promtail
+    depends_on:
+      - db
+      - app
+    privileged: true
+    networks:
+      - app-network
     volumes:
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
       - /var/run/docker.sock:/var/run/docker.sock
     command: -config.file=/etc/promtail/config.yml
-    networks:
-      - app-network
-    privileged: true
-    depends_on:
-      - db
-      - app
-
-  loki:
-    image: grafana/loki:latest
-    deploy:
-      update_config:
-        order: start-first
-      resources:
-        limits:
-          cpus: "0.5"
-          memory: 256M
-        reservations:
-          cpus: "0.2"
-          memory: 128M
-    container_name: loki
-    hostname: loki
     configs:
-      - source: loki-config
-        target: /etc/loki/loki-config.yaml
-    volumes:
-      - loki-data:/loki
-    command: -config.file=/etc/loki/loki-config.yaml
-    networks:
-      app-network:
-        aliases:
-          - loki
-
-  prometheus:
-    image: prom/prometheus:latest
-    deploy:
-      update_config:
-        order: start-first
-      resources:
-        limits:
-          cpus: "0.5"
-          memory: 256M
-        reservations:
-          cpus: "0.2"
-          memory: 128M
-    configs:
-      - source: prometheus-config
-        target: /etc/prometheus/prometheus.yml
-    container_name: prometheus
-    hostname: prometheus
-    volumes:
-      - prometheusdata:/prometheus
-    networks:
-      app-network:
-        aliases:
-          - prometheus
-    depends_on:
-      - app
-
-  grafana:
-    image: grafana/grafana:latest
+      - source: promtail-config
+        target: /etc/promtail/config.yml
     deploy:
       update_config:
         order: start-first
@@ -197,24 +134,87 @@ services:
         reservations:
           cpus: "0.2"
           memory: 64M
+
+  loki:
+    image: grafana/loki:latest
+    container_name: loki
+    hostname: loki
+    networks:
+      app-network:
+        aliases:
+          - loki
+    volumes:
+      - loki-data:/loki
+    command: -config.file=/etc/loki/loki-config.yaml
     configs:
-      - source: grafana-datasources
-        target: /etc/grafana/provisioning/datasources/datasources.yaml
+      - source: loki-config
+        target: /etc/loki/loki-config.yaml
+    deploy:
+      update_config:
+        order: start-first
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+        reservations:
+          cpus: "0.2"
+          memory: 128M
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    hostname: prometheus
+    depends_on:
+      - app
+    networks:
+      app-network:
+        aliases:
+          - prometheus
+    volumes:
+      - prometheusdata:/prometheus
+    configs:
+      - source: prometheus-config
+        target: /etc/prometheus/prometheus.yml
+    deploy:
+      update_config:
+        order: start-first
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+        reservations:
+          cpus: "0.2"
+          memory: 128M
+
+  grafana:
+    image: grafana/grafana:latest
     container_name: grafana
     hostname: grafana
+    depends_on:
+      - prometheus
     environment:
       GF_SECURITY_ADMIN_USER: admin
       GF_SECURITY_ADMIN_PASSWORD: admin
       GF_SERVER_ROOT_URL: https://grafana.oneblog.space
       GF_SERVER_DOMAIN: grafana.oneblog.space
-    volumes:
-      - grafanadata:/var/lib/grafana
     networks:
       app-network:
         aliases:
           - grafana
-    depends_on:
-      - prometheus
+    volumes:
+      - grafanadata:/var/lib/grafana
+    configs:
+      - source: grafana-datasources
+        target: /etc/grafana/provisioning/datasources/datasources.yaml
+    deploy:
+      update_config:
+        order: start-first
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 128M
+        reservations:
+          cpus: "0.2"
 
 
 configs:
