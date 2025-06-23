@@ -1,6 +1,43 @@
 version: "3.9"
 
 services:
+  haproxy:
+    image: haproxy:lts
+    container_name: proxy
+    hostname: proxy
+    configs:
+      - source: haproxy-config
+        target: /usr/local/etc/haproxy/haproxy.cfg
+    secrets:
+      - source: ssl_cert
+        target: /run/secrets/ssl_cert.pem
+        mode: 0444
+    deploy:
+      update_config:
+        order: start-first
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 128M
+        reservations:
+          cpus: "0.2"
+          memory: 64M
+    ports:
+      - target: 80
+        published: 80
+        protocol: tcp
+        mode: host
+      - target: 443
+        published: 443
+        protocol: tcp
+        mode: host
+    networks:
+      - app-network
+    depends_on:
+      - app
+
   db:
     image: postgres:15
     container_name: db
@@ -20,8 +57,6 @@ services:
         reservations:
           cpus: "0.5"
           memory: 256M
-    ports:
-      - "5432:5432"
     secrets:
       - db_username
       - db_password
@@ -67,11 +102,6 @@ services:
       - jwt_secret_key
     depends_on:
       - db
-    ports:
-      - target: 8080
-        published: 8080
-        protocol: tcp
-        mode: host
     networks:
       app-network:
         aliases:
@@ -93,11 +123,6 @@ services:
       - source: promtail-config
         target: /etc/promtail/config.yml
     container_name: promtail
-    ports:
-      - target: 9080
-        published: 9080
-        protocol: tcp
-        mode: host
     volumes:
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
       - /var/run/docker.sock:/var/run/docker.sock
@@ -129,11 +154,6 @@ services:
     volumes:
       - loki-data:/loki
     command: -config.file=/etc/loki/loki-config.yaml
-    ports:
-      - target: 3100
-        published: 3100
-        protocol: tcp
-        mode: host
     networks:
       app-network:
         aliases:
@@ -156,11 +176,6 @@ services:
         target: /etc/prometheus/prometheus.yml
     container_name: prometheus
     hostname: prometheus
-    ports:
-      - target: 9090
-        published: 9090
-        protocol: tcp
-        mode: host
     volumes:
       - prometheusdata:/prometheus
     networks:
@@ -187,14 +202,11 @@ services:
         target: /etc/grafana/provisioning/datasources/datasources.yaml
     container_name: grafana
     hostname: grafana
-    ports:
-      - target: 3000
-        published: 3000
-        protocol: tcp
-        mode: host
     environment:
       GF_SECURITY_ADMIN_USER: admin
       GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_SERVER_ROOT_URL: https://grafana.oneblog.space
+      GF_SERVER_DOMAIN: grafana.oneblog.space
     volumes:
       - grafanadata:/var/lib/grafana
     networks:
@@ -206,6 +218,8 @@ services:
 
 
 configs:
+  haproxy-config:
+    external: true
   promtail-config:
     external: true
   loki-config:
@@ -216,6 +230,8 @@ configs:
     external: true
 
 secrets:
+  ssl_cert:
+    external: true
   db_username:
     external: true
   db_password:
