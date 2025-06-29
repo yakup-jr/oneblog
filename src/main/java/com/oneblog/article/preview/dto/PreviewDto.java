@@ -10,6 +10,9 @@ import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.hateoas.server.core.Relation;
 
+/**
+ * The type Preview dto.
+ */
 @Setter
 @Getter
 @AllArgsConstructor

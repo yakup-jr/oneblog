@@ -16,6 +16,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * The type Label controller.
+ */
 @RestController
 @RequestMapping("/api/v1/articles")
 public class LabelController {
@@ -30,6 +33,15 @@ public class LabelController {
 
 	private final PagedResourcesAssembler<LabelDto> pagedResourcesAssembler;
 
+	/**
+	 * Instantiates a new Label controller.
+	 *
+	 * @param labelMapper             the label mapper
+	 * @param labelService            the label service
+	 * @param labelLink               the label link
+	 * @param labelModelAssembler     the label model assembler
+	 * @param pagedResourcesAssembler the paged resources assembler
+	 */
 	public LabelController(
 		LabelMapper labelMapper, LabelService labelService, LabelLink labelLink,
 		LabelModelAssembler labelModelAssembler, PagedResourcesAssembler<LabelDto> pagedResourcesAssembler) {
@@ -40,6 +52,12 @@ public class LabelController {
 		this.pagedResourcesAssembler = pagedResourcesAssembler;
 	}
 
+	/**
+	 * Save label response entity.
+	 *
+	 * @param labelDto the label dto
+	 * @return the response entity
+	 */
 	@PostMapping("/label")
 	public ResponseEntity<EntityModel<LabelDto>> saveLabel(@RequestBody @Validated LabelCreateDto labelDto) {
 		try {
@@ -54,6 +72,12 @@ public class LabelController {
 		}
 	}
 
+	/**
+	 * Find label by label id response entity.
+	 *
+	 * @param labelId the label id
+	 * @return the response entity
+	 */
 	@GetMapping("label/{labelId}")
 	public ResponseEntity<EntityModel<LabelDto>> findLabelByLabelId(@PathVariable @Validated Long labelId) {
 		try {
@@ -67,6 +91,12 @@ public class LabelController {
 		}
 	}
 
+	/**
+	 * Find label by label name response entity.
+	 *
+	 * @param name the name
+	 * @return the response entity
+	 */
 	@GetMapping("label/name/{name}")
 	public ResponseEntity<EntityModel<LabelDto>> findLabelByLabelName(@PathVariable @Validated String name) {
 		try {
@@ -80,6 +110,13 @@ public class LabelController {
 		}
 	}
 
+	/**
+	 * Find all labels response entity.
+	 *
+	 * @param page the page
+	 * @param size the size
+	 * @return the response entity
+	 */
 	@GetMapping("/labels")
 	public ResponseEntity<PagedModel<EntityModel<LabelDto>>> findAllLabels(
 		@RequestParam @Validated @Min(0L) Integer page,
@@ -93,6 +130,12 @@ public class LabelController {
 		}
 	}
 
+	/**
+	 * Delete label response entity.
+	 *
+	 * @param labelId the label id
+	 * @return the response entity
+	 */
 	@DeleteMapping("/label/{labelId}")
 	public ResponseEntity<EntityModel<LabelDto>> deleteLabel(@PathVariable @Validated Long labelId) {
 		try {

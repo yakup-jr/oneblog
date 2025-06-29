@@ -5,6 +5,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * The type Registration email verification.
+ */
 @Getter
 @Setter
 @AllArgsConstructor

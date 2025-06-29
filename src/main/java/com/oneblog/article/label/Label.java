@@ -6,6 +6,9 @@ import lombok.*;
 
 import java.util.List;
 
+/**
+ * The type Label.
+ */
 @Builder
 @Setter
 @Getter

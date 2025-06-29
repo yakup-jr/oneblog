@@ -35,6 +35,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
+/**
+ * The type Auth service.
+ */
 @Service
 public class AuthServiceImpl implements AuthService {
 
@@ -48,6 +51,19 @@ public class AuthServiceImpl implements AuthService {
 	private final EmailVerificationService emailVerificationService;
 	private final GoogleVerifier googleVerifier;
 
+	/**
+	 * Instantiates a new Auth service.
+	 *
+	 * @param jwtService               the jwt service
+	 * @param passwordEncoder          the password encoder
+	 * @param authenticationManager    the authentication manager
+	 * @param tokenRepository          the token repository
+	 * @param userRepository           the user repository
+	 * @param userService              the user service
+	 * @param roleRepository           the role repository
+	 * @param emailVerificationService the email verification service
+	 * @param googleVerifier           the google verifier
+	 */
 	public AuthServiceImpl(
 		JwtService jwtService, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager,
 		TokenRepository tokenRepository, UserRepository userRepository, UserService userService,

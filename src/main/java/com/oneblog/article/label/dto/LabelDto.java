@@ -8,6 +8,9 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.springframework.hateoas.server.core.Relation;
 
+/**
+ * The type Label dto.
+ */
 @Setter
 @Getter
 @Builder

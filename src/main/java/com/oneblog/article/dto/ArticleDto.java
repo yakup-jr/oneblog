@@ -14,6 +14,9 @@ import org.springframework.hateoas.server.core.Relation;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * The type Article dto.
+ */
 @Setter
 @Getter
 @Relation(collectionRelation = "articles")

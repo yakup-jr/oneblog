@@ -11,6 +11,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
+/**
+ * The type Email verification service.
+ */
 @Service
 public class EmailVerificationServiceImpl implements EmailVerificationService {
 
@@ -22,6 +25,13 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
 
 	private final UserService userService;
 
+	/**
+	 * Instantiates a new Email verification service.
+	 *
+	 * @param emailVerificationRepository the email verification repository
+	 * @param mailMessage                 the mail message
+	 * @param userService                 the user service
+	 */
 	public EmailVerificationServiceImpl(
 		EmailVerificationRepository emailVerificationRepository, VerificationMailMessage mailMessage,
 		UserService userService) {

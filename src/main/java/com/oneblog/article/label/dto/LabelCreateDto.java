@@ -8,6 +8,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.hateoas.server.core.Relation;
 
+/**
+ * The type Label create dto.
+ */
 @Setter
 @Getter
 @AllArgsConstructor

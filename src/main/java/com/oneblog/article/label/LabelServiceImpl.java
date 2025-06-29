@@ -13,11 +13,19 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * The type Label service.
+ */
 @Service
 public class LabelServiceImpl implements LabelService {
 
 	private final LabelRepository labelRepository;
 
+	/**
+	 * Instantiates a new Label service.
+	 *
+	 * @param labelRepository the label repository
+	 */
 	public LabelServiceImpl(LabelRepository labelRepository) {
 		this.labelRepository = labelRepository;
 	}

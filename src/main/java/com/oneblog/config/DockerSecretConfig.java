@@ -14,6 +14,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+/**
+ * The type Docker secret config.
+ */
 @Configuration
 @Profile({"dev", "prod"})
 public class DockerSecretConfig {
@@ -23,6 +26,12 @@ public class DockerSecretConfig {
 	@Value("${DATASOURCE_URL}")
 	private String datasourceUrl;
 
+	/**
+	 * Data source data source.
+	 *
+	 * @return the data source
+	 * @throws IOException the io exception
+	 */
 	@Bean
 	public DataSource dataSource() throws IOException {
 		String username = Files.readString(Path.of("/run/secrets/db_username")).trim();
@@ -39,6 +48,11 @@ public class DockerSecretConfig {
 		                        .build();
 	}
 
+	/**
+	 * Load secrets.
+	 *
+	 * @throws IOException the io exception
+	 */
 	@PostConstruct
 	public void loadSecrets() throws IOException {
 		String googleClientId = Files.readString(Path.of("/run/secrets/oauth_google_client_id")).trim();

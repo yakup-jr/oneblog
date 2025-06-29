@@ -12,6 +12,9 @@ import org.springframework.hateoas.server.core.Relation;
 
 import java.util.List;
 
+/**
+ * The type User dto.
+ */
 @Setter
 @Getter
 @Builder

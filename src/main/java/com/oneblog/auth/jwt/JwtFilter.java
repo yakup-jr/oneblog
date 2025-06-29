@@ -17,6 +17,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+/**
+ * The type Jwt filter.
+ */
 @Component
 public class JwtFilter extends OncePerRequestFilter {
 
@@ -24,6 +27,12 @@ public class JwtFilter extends OncePerRequestFilter {
 
 	private final UserService userService;
 
+	/**
+	 * Instantiates a new Jwt filter.
+	 *
+	 * @param jwtService  the jwt service
+	 * @param userService the user service
+	 */
 	public JwtFilter(JwtService jwtService, UserService userService) {
 		this.jwtService = jwtService;
 		this.userService = userService;

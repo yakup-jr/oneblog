@@ -4,6 +4,9 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 
+/**
+ * The type Verification mail message.
+ */
 @Component
 public class VerificationMailMessage {
 
@@ -11,11 +14,23 @@ public class VerificationMailMessage {
 
 	private final JavaMailSender mailSender;
 
+	/**
+	 * Instantiates a new Verification mail message.
+	 *
+	 * @param codeGenerator the code generator
+	 * @param mailSender    the mail sender
+	 */
 	public VerificationMailMessage(CodeGenerator codeGenerator, JavaMailSender mailSender) {
 		this.codeGenerator = codeGenerator;
 		this.mailSender = mailSender;
 	}
 
+	/**
+	 * Send verification code string.
+	 *
+	 * @param email the email
+	 * @return the string
+	 */
 	public String sendVerificationCode(String email) {
 		String code = codeGenerator.generateSixDigits();
 

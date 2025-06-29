@@ -29,6 +29,9 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * The type Security config.
+ */
 @EnableWebSecurity
 @Configuration
 public class SecurityConfig {
@@ -41,6 +44,14 @@ public class SecurityConfig {
 
 	private final CustomLogoutHandler customLogoutHandler;
 
+	/**
+	 * Instantiates a new Security config.
+	 *
+	 * @param jwtFIlter           the jwt f ilter
+	 * @param userService         the user service
+	 * @param accessDeniedHandler the access denied handler
+	 * @param customLogoutHandler the custom logout handler
+	 */
 	public SecurityConfig(
 		JwtFilter jwtFIlter, UserService userService, CustomAccessDeniedHandler accessDeniedHandler,
 		CustomLogoutHandler customLogoutHandler) {
@@ -50,6 +61,13 @@ public class SecurityConfig {
 		this.customLogoutHandler = customLogoutHandler;
 	}
 
+	/**
+	 * Security filter chain security filter chain.
+	 *
+	 * @param http the http
+	 * @return the security filter chain
+	 * @throws Exception the exception
+	 */
 	@Bean
 	public SecurityFilterChain securityFilterChain(
 		HttpSecurity http) throws Exception {
@@ -94,16 +112,33 @@ public class SecurityConfig {
 		return http.build();
 	}
 
+	/**
+	 * Password encoder password encoder.
+	 *
+	 * @return the password encoder
+	 */
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
 
+	/**
+	 * Authentication manager bean authentication manager.
+	 *
+	 * @param config the config
+	 * @return the authentication manager
+	 * @throws Exception the exception
+	 */
 	@Bean
 	public AuthenticationManager authenticationManagerBean(AuthenticationConfiguration config) throws Exception {
 		return config.getAuthenticationManager();
 	}
 
+	/**
+	 * Api configuration source url based cors configuration source.
+	 *
+	 * @return the url based cors configuration source
+	 */
 	UrlBasedCorsConfigurationSource apiConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
 		configuration.setAllowCredentials(true);

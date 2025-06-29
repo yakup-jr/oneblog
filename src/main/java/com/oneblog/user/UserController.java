@@ -20,6 +20,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * The type User controller.
+ */
 @RestController
 @RequestMapping("/api/v1")
 public class UserController {
@@ -31,6 +34,16 @@ public class UserController {
 	private final UserModelAssembler userModelAssembler;
 	private final PagedResourcesAssembler<UserDto> pagedResourcesAssembler;
 
+	/**
+	 * Instantiates a new User controller.
+	 *
+	 * @param userMapper              the user mapper
+	 * @param userService             the user service
+	 * @param userLink                the user link
+	 * @param articleLink             the article link
+	 * @param userModelAssembler      the user model assembler
+	 * @param pagedResourcesAssembler the paged resources assembler
+	 */
 	public UserController(
 		UserMapper userMapper, UserService userService, UserLink userLink, ArticleLink articleLink,
 		UserModelAssembler userModelAssembler, PagedResourcesAssembler<UserDto> pagedResourcesAssembler) {
@@ -42,6 +55,12 @@ public class UserController {
 		this.pagedResourcesAssembler = pagedResourcesAssembler;
 	}
 
+	/**
+	 * Save user response entity.
+	 *
+	 * @param userCreateDto the user create dto
+	 * @return the response entity
+	 */
 	@PostMapping("/user")
 	public ResponseEntity<EntityModel<UserDto>> saveUser(@RequestBody @Validated UserCreateDto userCreateDto) {
 		try {
@@ -54,6 +73,13 @@ public class UserController {
 		}
 	}
 
+	/**
+	 * Find all users response entity.
+	 *
+	 * @param page the page
+	 * @param size the size
+	 * @return the response entity
+	 */
 	@GetMapping("/users")
 	public ResponseEntity<PagedModel<EntityModel<UserDto>>> findAllUsers(
 		@RequestParam @Validated @Min(0) Integer page,
@@ -67,6 +93,12 @@ public class UserController {
 		}
 	}
 
+	/**
+	 * Find user by user id response entity.
+	 *
+	 * @param userId the user id
+	 * @return the response entity
+	 */
 	@GetMapping("/user/{userId}")
 	public ResponseEntity<EntityModel<UserDto>> findUserByUserId(@PathVariable Long userId) {
 		try {
@@ -80,6 +112,12 @@ public class UserController {
 		}
 	}
 
+	/**
+	 * Find user by nickname response entity.
+	 *
+	 * @param nickname the nickname
+	 * @return the response entity
+	 */
 	@GetMapping("/user/nickname/{nickname}")
 	public ResponseEntity<EntityModel<UserDto>> findUserByNickname(@PathVariable String nickname) {
 		try {
@@ -93,6 +131,12 @@ public class UserController {
 		}
 	}
 
+	/**
+	 * Find user by article id response entity.
+	 *
+	 * @param articleId the article id
+	 * @return the response entity
+	 */
 	@GetMapping("/user/article/{articleId}")
 	public ResponseEntity<EntityModel<UserDto>> findUserByArticleId(@PathVariable Long articleId) {
 		try {
@@ -106,6 +150,12 @@ public class UserController {
 		}
 	}
 
+	/**
+	 * Delete user response entity.
+	 *
+	 * @param userId the user id
+	 * @return the response entity
+	 */
 	@DeleteMapping("/user/{userId}")
 	public ResponseEntity<EntityModel<UserDto>> deleteUser(@PathVariable Long userId) {
 		try {

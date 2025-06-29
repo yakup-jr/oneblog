@@ -8,11 +8,19 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.stereotype.Component;
 
+/**
+ * The type Custom logout handler.
+ */
 @Component
 public class CustomLogoutHandler implements LogoutHandler {
 	
 	private final TokenRepository tokenRepository;
 
+	/**
+	 * Instantiates a new Custom logout handler.
+	 *
+	 * @param tokenRepository the token repository
+	 */
 	public CustomLogoutHandler(TokenRepository tokenRepository) {
 		this.tokenRepository = tokenRepository;
 	}

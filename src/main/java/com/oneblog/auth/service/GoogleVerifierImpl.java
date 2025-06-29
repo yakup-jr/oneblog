@@ -7,11 +7,19 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 
+/**
+ * The type Google verifier.
+ */
 @Component
 public class GoogleVerifierImpl implements GoogleVerifier {
 
 	private final GoogleIdTokenVerifier verifier;
 
+	/**
+	 * Instantiates a new Google verifier.
+	 *
+	 * @param verifier the verifier
+	 */
 	public GoogleVerifierImpl(GoogleIdTokenVerifier verifier) {this.verifier = verifier;}
 
 	@Override

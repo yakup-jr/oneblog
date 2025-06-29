@@ -6,6 +6,9 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.stereotype.Component;
 
+/**
+ * The type Article model assembler.
+ */
 @Component
 public class ArticleModelAssembler implements RepresentationModelAssembler<ArticleDto, EntityModel<ArticleDto>> {
 
@@ -13,6 +16,12 @@ public class ArticleModelAssembler implements RepresentationModelAssembler<Artic
 
 	private final UserLink userLink;
 
+	/**
+	 * Instantiates a new Article model assembler.
+	 *
+	 * @param articleLink the article link
+	 * @param userLink    the user link
+	 */
 	public ArticleModelAssembler(ArticleLink articleLink, UserLink userLink) {
 		this.articleLink = articleLink;
 		this.userLink = userLink;
