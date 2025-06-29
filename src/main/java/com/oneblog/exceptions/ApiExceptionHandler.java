@@ -92,7 +92,7 @@ public class ApiExceptionHandler {
 	 * @return the response entity
 	 */
 	@ExceptionHandler(value = {SignatureException.class})
-	public ResponseEntity<Object> handleSignatureException(SignatureException e) {
+	public ResponseEntity<Object> handleSignatureException() {
 		ApiException apiException =
 			ApiException.builder().message("Invalid token").httpStatus(HttpStatus.UNAUTHORIZED).build();
 
@@ -107,7 +107,7 @@ public class ApiExceptionHandler {
 	 * @return the response entity
 	 */
 	@ExceptionHandler(value = {GeneralSecurityException.class})
-	public ResponseEntity<Object> handleGeneralSecurityException(GeneralSecurityException gse) {
+	public ResponseEntity<Object> handleGeneralSecurityException() {
 		ApiException apiException =
 			ApiException.builder().message("Invalid token").httpStatus(HttpStatus.UNAUTHORIZED).build();
 

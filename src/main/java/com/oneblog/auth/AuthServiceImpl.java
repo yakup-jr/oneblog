@@ -20,8 +20,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -170,8 +168,7 @@ public class AuthServiceImpl implements AuthService {
 	}
 
 	@Override
-	public AuthenticationResponseDto signUpWithGoogle(GoogleIdToken.Payload payload)
-		throws GeneralSecurityException, IOException {
+	public AuthenticationResponseDto signUpWithGoogle(GoogleIdToken.Payload payload) {
 		String nickname = String.valueOf(payload.get("given_name"));
 		if (userRepository.findByNickname(String.valueOf(payload.get("given_name"))).isPresent()) {
 			nickname = nickname.concat(String.valueOf(new Random().nextInt(10000)));

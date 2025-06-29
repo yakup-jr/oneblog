@@ -4,6 +4,7 @@ import com.oneblog.article.ArticleLink;
 import com.oneblog.user.dto.UserDto;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 /**
@@ -28,7 +29,8 @@ public class UserModelAssembler implements RepresentationModelAssembler<UserDto,
 	}
 
 	@Override
-	public EntityModel<UserDto> toModel(UserDto userDto) {
+	@NonNull
+	public EntityModel<UserDto> toModel(@NonNull UserDto userDto) {
 		return EntityModel.of(userDto, userLink.findUserByUserId(userDto.getUserId()).withSelfRel(),
 		                      articleLink.findArticleByUserId(userDto.getUserId()).withRel("articles"));
 	}
