@@ -393,7 +393,6 @@ components:
       properties:
         name:
           type: "string"
-          nullable: true
           enum:
             - "Programming_languages"
             - "Java"
@@ -418,10 +417,8 @@ components:
         labelId:
           type: "integer"
           format: "int64"
-          nullable: true
         name:
           type: "string"
-          nullable: true
           enum:
             - "Programming_languages"
             - "Java"
@@ -445,13 +442,11 @@ components:
       properties:
         body:
           type: "string"
-          nullable: true
     RoleDto:
       type: "object"
       properties:
         name:
           type: "string"
-          nullable: true
           enum:
             - "ROLE_USER"
             - "ROLE_ADMIN"
@@ -461,19 +456,14 @@ components:
         userId:
           type: "integer"
           format: "int64"
-          nullable: true
         name:
           type: "string"
-          nullable: true
         nickname:
           type: "string"
-          nullable: true
         email:
           type: "string"
-          nullable: true
         roles:
           type: "array"
-          nullable: true
           items:
             $ref: "#/components/schemas/RoleDto"
     ArticleCreateDto:
@@ -481,24 +471,18 @@ components:
       properties:
         title:
           type: "string"
-          nullable: true
         body:
           type: "string"
-          nullable: true
         createTime:
           type: "string"
           format: "date-time"
-          nullable: true
         preview:
-          nullable: true
           $ref: "#/components/schemas/PreviewCreateDto"
         labels:
           type: "array"
-          nullable: true
           items:
             $ref: "#/components/schemas/LabelDto"
         user:
-          nullable: true
           $ref: "#/components/schemas/UserDto"
     PreviewDto:
       type: "object"
@@ -506,37 +490,28 @@ components:
         articlePreviewId:
           type: "integer"
           format: "int64"
-          nullable: true
         body:
           type: "string"
-          nullable: true
     ArticleDto:
       type: "object"
       properties:
         articleId:
           type: "integer"
           format: "int64"
-          nullable: true
         title:
           type: "string"
-          nullable: true
         body:
           type: "string"
-          nullable: true
         createdAt:
           type: "string"
           format: "date-time"
-          nullable: true
         preview:
-          nullable: true
           $ref: "#/components/schemas/PreviewDto"
         labels:
           type: "array"
-          nullable: true
           items:
             $ref: "#/components/schemas/LabelDto"
         user:
-          nullable: true
           $ref: "#/components/schemas/UserDto"
     Void:
       type: "object"
@@ -546,52 +521,39 @@ components:
       properties:
         username:
           type: "string"
-          nullable: true
         password:
           type: "string"
-          nullable: true
     AuthenticationResponseDto:
       type: "object"
       properties:
         accessToken:
           type: "string"
-          nullable: true
         refreshToken:
           type: "string"
-          nullable: true
     RegistrationRequestDto:
       type: "object"
       properties:
         username:
           type: "string"
-          nullable: true
         email:
           type: "string"
-          nullable: true
         password:
           type: "string"
-          nullable: true
     RegistrationEmailVerification:
       type: "object"
       properties:
         email:
           type: "string"
-          nullable: true
         verificationCode:
           type: "string"
-          nullable: true
     UserCreateDto:
       type: "object"
       properties:
         name:
           type: "string"
-          nullable: true
         nickname:
           type: "string"
-          nullable: true
         email:
           type: "string"
-          nullable: true
         password:
           type: "string"
-          nullable: true

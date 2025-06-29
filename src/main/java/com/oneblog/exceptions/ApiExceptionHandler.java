@@ -88,7 +88,6 @@ public class ApiExceptionHandler {
 	/**
 	 * Handle signature exception response entity.
 	 *
-	 * @param e the e
 	 * @return the response entity
 	 */
 	@ExceptionHandler(value = {SignatureException.class})
@@ -103,7 +102,6 @@ public class ApiExceptionHandler {
 	/**
 	 * Handle general security exception response entity.
 	 *
-	 * @param gse the gse
 	 * @return the response entity
 	 */
 	@ExceptionHandler(value = {GeneralSecurityException.class})
