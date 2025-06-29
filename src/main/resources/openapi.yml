@@ -1,0 +1,597 @@
+openapi: "3.1.0"
+info:
+  title: "oneblog API"
+  description: "oneblog API"
+  version: "1.0.0"
+servers:
+  - url: "https://oneblog.space"
+paths:
+  /api/v1/articles/label:
+    post:
+      summary: "POST api/v1/articles/label"
+      operationId: "saveLabel"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LabelCreateDto"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/LabelDto"
+  /api/v1/articles/label/name/{name}:
+    get:
+      summary: "GET api/v1/articles/label/name/{name}"
+      operationId: "findLabelByLabelName"
+      parameters:
+        - name: "name"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/LabelDto"
+  /api/v1/articles/label/{labelId}:
+    get:
+      summary: "GET api/v1/articles/label/{labelId}"
+      operationId: "findLabelByLabelId"
+      parameters:
+        - name: "labelId"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int64"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/LabelDto"
+    delete:
+      summary: "DELETE api/v1/articles/label/{labelId}"
+      operationId: "deleteLabel"
+      parameters:
+        - name: "labelId"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int64"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/LabelDto"
+  /api/v1/articles/labels:
+    get:
+      summary: "GET api/v1/articles/labels"
+      operationId: "findAllLabels"
+      parameters:
+        - name: "page"
+          in: "query"
+          required: true
+          schema:
+            type: "integer"
+            format: "int32"
+        - name: "size"
+          in: "query"
+          required: false
+          schema:
+            type: "integer"
+            format: "int32"
+            default: "10"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/LabelDto"
+  /api/v1/article/:
+    post:
+      summary: "POST api/v1/article/"
+      operationId: "createArticle"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ArticleCreateDto"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ArticleDto"
+  /api/v1/article/user/{userId}:
+    get:
+      summary: "GET api/v1/article/user/{userId}"
+      operationId: "findArticleByUserId"
+      parameters:
+        - name: "userId"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int64"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ArticleDto"
+  /api/v1/article/{articleId}:
+    get:
+      summary: "GET api/v1/article/{articleId}"
+      operationId: "findArticleByArticleId"
+      parameters:
+        - name: "articleId"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int64"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ArticleDto"
+    delete:
+      summary: "DELETE api/v1/article/{articleId}"
+      operationId: "deleteArticle"
+      parameters:
+        - name: "articleId"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int64"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Void"
+  /api/v1/articles:
+    get:
+      summary: "GET api/v1/articles"
+      operationId: "findAllArticles"
+      parameters:
+        - name: "page"
+          in: "query"
+          required: true
+          schema:
+            type: "integer"
+            format: "int32"
+        - name: "size"
+          in: "query"
+          required: false
+          schema:
+            type: "integer"
+            format: "int32"
+            default: "10"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ArticleDto"
+  /login:
+    post:
+      summary: "POST login"
+      operationId: "login"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequestDto"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/AuthenticationResponseDto"
+  /login/oauth2/code/google:
+    post:
+      summary: "POST login/oauth2/code/google"
+      operationId: "authenticationOauth"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "string"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/AuthenticationResponseDto"
+  /refresh-token:
+    post:
+      summary: "POST refresh-token"
+      operationId: "refreshToken"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/AuthenticationResponseDto"
+  /registration:
+    post:
+      summary: "POST registration"
+      operationId: "register"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegistrationRequestDto"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+  /registration/email/verify:
+    post:
+      summary: "POST registration/email/verify"
+      operationId: "verifyEmail"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegistrationEmailVerification"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+  /api/v1/user:
+    post:
+      summary: "POST api/v1/user"
+      operationId: "saveUser"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserCreateDto"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/UserDto"
+  /api/v1/user/article/{articleId}:
+    get:
+      summary: "GET api/v1/user/article/{articleId}"
+      operationId: "findUserByArticleId"
+      parameters:
+        - name: "articleId"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int64"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/UserDto"
+  /api/v1/user/nickname/{nickname}:
+    get:
+      summary: "GET api/v1/user/nickname/{nickname}"
+      operationId: "findUserByNickname"
+      parameters:
+        - name: "nickname"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/UserDto"
+  /api/v1/user/{userId}:
+    get:
+      summary: "GET api/v1/user/{userId}"
+      operationId: "findUserByUserId"
+      parameters:
+        - name: "userId"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int64"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/UserDto"
+    delete:
+      summary: "DELETE api/v1/user/{userId}"
+      operationId: "deleteUser"
+      parameters:
+        - name: "userId"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int64"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/UserDto"
+  /api/v1/users:
+    get:
+      summary: "GET api/v1/users"
+      operationId: "findAllUsers"
+      parameters:
+        - name: "page"
+          in: "query"
+          required: true
+          schema:
+            type: "integer"
+            format: "int32"
+        - name: "size"
+          in: "query"
+          required: false
+          schema:
+            type: "integer"
+            format: "int32"
+            default: "10"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/UserDto"
+components:
+  schemas:
+    LabelCreateDto:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+          nullable: true
+          enum:
+            - "Programming_languages"
+            - "Java"
+            - "CHash"
+            - "C"
+            - "CPlusPlus"
+            - "Python"
+            - "JavaScript"
+            - "TypeScript"
+            - "Sql"
+            - "Go"
+            - "Kotlin"
+            - "Rust"
+            - "Php"
+            - "Pascal"
+            - "Ruby"
+            - "Basic"
+            - "Assembler"
+    LabelDto:
+      type: "object"
+      properties:
+        labelId:
+          type: "integer"
+          format: "int64"
+          nullable: true
+        name:
+          type: "string"
+          nullable: true
+          enum:
+            - "Programming_languages"
+            - "Java"
+            - "CHash"
+            - "C"
+            - "CPlusPlus"
+            - "Python"
+            - "JavaScript"
+            - "TypeScript"
+            - "Sql"
+            - "Go"
+            - "Kotlin"
+            - "Rust"
+            - "Php"
+            - "Pascal"
+            - "Ruby"
+            - "Basic"
+            - "Assembler"
+    PreviewCreateDto:
+      type: "object"
+      properties:
+        body:
+          type: "string"
+          nullable: true
+    RoleDto:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+          nullable: true
+          enum:
+            - "ROLE_USER"
+            - "ROLE_ADMIN"
+    UserDto:
+      type: "object"
+      properties:
+        userId:
+          type: "integer"
+          format: "int64"
+          nullable: true
+        name:
+          type: "string"
+          nullable: true
+        nickname:
+          type: "string"
+          nullable: true
+        email:
+          type: "string"
+          nullable: true
+        roles:
+          type: "array"
+          nullable: true
+          items:
+            $ref: "#/components/schemas/RoleDto"
+    ArticleCreateDto:
+      type: "object"
+      properties:
+        title:
+          type: "string"
+          nullable: true
+        body:
+          type: "string"
+          nullable: true
+        createTime:
+          type: "string"
+          format: "date-time"
+          nullable: true
+        preview:
+          nullable: true
+          $ref: "#/components/schemas/PreviewCreateDto"
+        labels:
+          type: "array"
+          nullable: true
+          items:
+            $ref: "#/components/schemas/LabelDto"
+        user:
+          nullable: true
+          $ref: "#/components/schemas/UserDto"
+    PreviewDto:
+      type: "object"
+      properties:
+        articlePreviewId:
+          type: "integer"
+          format: "int64"
+          nullable: true
+        body:
+          type: "string"
+          nullable: true
+    ArticleDto:
+      type: "object"
+      properties:
+        articleId:
+          type: "integer"
+          format: "int64"
+          nullable: true
+        title:
+          type: "string"
+          nullable: true
+        body:
+          type: "string"
+          nullable: true
+        createdAt:
+          type: "string"
+          format: "date-time"
+          nullable: true
+        preview:
+          nullable: true
+          $ref: "#/components/schemas/PreviewDto"
+        labels:
+          type: "array"
+          nullable: true
+          items:
+            $ref: "#/components/schemas/LabelDto"
+        user:
+          nullable: true
+          $ref: "#/components/schemas/UserDto"
+    Void:
+      type: "object"
+      properties: { }
+    LoginRequestDto:
+      type: "object"
+      properties:
+        username:
+          type: "string"
+          nullable: true
+        password:
+          type: "string"
+          nullable: true
+    AuthenticationResponseDto:
+      type: "object"
+      properties:
+        accessToken:
+          type: "string"
+          nullable: true
+        refreshToken:
+          type: "string"
+          nullable: true
+    RegistrationRequestDto:
+      type: "object"
+      properties:
+        username:
+          type: "string"
+          nullable: true
+        email:
+          type: "string"
+          nullable: true
+        password:
+          type: "string"
+          nullable: true
+    RegistrationEmailVerification:
+      type: "object"
+      properties:
+        email:
+          type: "string"
+          nullable: true
+        verificationCode:
+          type: "string"
+          nullable: true
+    UserCreateDto:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+          nullable: true
+        nickname:
+          type: "string"
+          nullable: true
+        email:
+          type: "string"
+          nullable: true
+        password:
+          type: "string"
+          nullable: true

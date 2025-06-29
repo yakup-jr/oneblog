@@ -68,3 +68,6 @@ logging:
             JdbcTemplate: DEBUG
             StatementCreatorUtils: TRACE
 
+springdoc:
+  api-docs:
+    path: /api-docs
