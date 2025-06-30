@@ -3,7 +3,6 @@ version: "3.9"
 services:
   haproxy:
     image: haproxy:lts
-    container_name: proxy
     hostname: proxy
     depends_on:
       - app
@@ -19,7 +18,7 @@ services:
     networks:
       - app-network
     configs:
-      - source: haproxy-config
+      - source: haproxy
         target: /usr/local/etc/haproxy/haproxy.cfg
     secrets:
       - source: ssl_cert
@@ -40,12 +39,11 @@ services:
 
   db:
     image: postgres:15
-    container_name: db
     environment:
       POSTGRES_USER_FILE: /run/secrets/db_username
       POSTGRES_PASSWORD_FILE: /run/secrets/db_password
       POSTGRES_DB: oneblog
-    ports: []
+    ports: [ ]
     networks:
       - app-network
     volumes:
@@ -74,7 +72,6 @@ services:
 
   app:
     image: whtoy/oneblog:dev-latest
-    container_name: oneblog
     hostname: oneblog
     depends_on:
       - db
@@ -110,7 +107,6 @@ services:
 
   promtail:
     image: grafana/promtail:latest
-    container_name: promtail
     depends_on:
       - db
       - app
@@ -120,10 +116,10 @@ services:
     volumes:
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
       - /var/run/docker.sock:/var/run/docker.sock
-    command: -config.file=/etc/promtail/config.yml
+    command: -config.file=/etc/promtail/promtail.yml
     configs:
-      - source: promtail-config
-        target: /etc/promtail/config.yml
+      - source: promtail
+        target: /etc/promtail/promtail.yml
     deploy:
       update_config:
         order: start-first
@@ -137,7 +133,6 @@ services:
 
   loki:
     image: grafana/loki:latest
-    container_name: loki
     hostname: loki
     networks:
       app-network:
@@ -147,7 +142,7 @@ services:
       - loki-data:/loki
     command: -config.file=/etc/loki/loki-config.yaml
     configs:
-      - source: loki-config
+      - source: loki
         target: /etc/loki/loki-config.yaml
     deploy:
       update_config:
@@ -162,7 +157,6 @@ services:
 
   prometheus:
     image: prom/prometheus:latest
-    container_name: prometheus
     hostname: prometheus
     depends_on:
       - app
@@ -173,7 +167,7 @@ services:
     volumes:
       - prometheusdata:/prometheus
     configs:
-      - source: prometheus-config
+      - source: prometheus
         target: /etc/prometheus/prometheus.yml
     deploy:
       update_config:
@@ -188,7 +182,6 @@ services:
 
   grafana:
     image: grafana/grafana:latest
-    container_name: grafana
     hostname: grafana
     depends_on:
       - prometheus
@@ -204,8 +197,8 @@ services:
     volumes:
       - grafanadata:/var/lib/grafana
     configs:
-      - source: grafana-datasources
-        target: /etc/grafana/provisioning/datasources/datasources.yaml
+      - source: grafana
+        target: /etc/grafana/grafana.yml
     deploy:
       update_config:
         order: start-first
@@ -218,15 +211,15 @@ services:
 
 
 configs:
-  haproxy-config:
+  haproxy:
     external: true
-  promtail-config:
+  promtail:
     external: true
-  loki-config:
+  loki:
     external: true
-  prometheus-config:
+  prometheus:
     external: true
-  grafana-datasources:
+  grafana:
     external: true
 
 secrets:
