@@ -35,3 +35,9 @@ out/
 
 ### VS Code ###
 .vscode/
+
+**/.env
+secret/local/*
+secret/prod/*
+
+!secret/*/README.md

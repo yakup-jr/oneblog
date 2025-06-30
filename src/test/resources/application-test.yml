@@ -1,0 +1,68 @@
+spring:
+  sql:
+    init:
+      mode: always
+  datasource:
+    url: jdbc:postgresql://db:5432/oneblog
+    username: admin
+    password: root
+    driver-class-name: org.postgresql.Driver
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: test_user
+            client-secret: test_secret
+            scope: email,profile
+  mail:
+    host: localhost
+    port: 3025
+    username: admin
+    password: root
+    properties:
+      mail:
+        smtp:
+          auth: false
+          starttls: false
+  devtools:
+    livereload:
+      enabled: true
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+  liquibase:
+    contexts: dev
+  application:
+    name: oneblog
+
+security:
+  jwt:
+    secret_key: secretfusyadiofuayioufqywuftwiufytsudftauftweui6tfuwfuwryuwtuioqjwdfwhqfoidhhasfoqdf
+    access_token_expiration: 36000
+    refresh_token_expiration: 108000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    org:
+      hibernate:
+        type: trace
+      springframework:
+        web:
+          DEBUG
+        jdbc:
+          core:
+            JdbcTemplate: DEBUG
+            StatementCreatorUtils: TRACE
+

@@ -1,8 +1,44 @@
-message-from-application-properties: Hello from application-prod.properties
-
 spring:
+  sql:
+    init:
+      mode: always
   datasource:
-    url: jdbc:postgresql://oneblog-devdb-10741.7tc.aws-eu-central-1.cockroachlabs.cloud:26257/devdb
-    username: yakup_jr
-    password: OKGNBiaaX4pHc9qtA0GYqg
-    driver-class-name: org.hsqldb.jdbc.JDBCDriver
+    url: ${DATASOURCE_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${OAUTH_GOOGLE_CLIENT_ID}
+            client-secret: ${OAUTH_GOOGLE_CLIENT_SECRET}
+            scope: email,profile
+  mail:
+    host: smtp.resend.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            required: true
+            enable: true
+  application:
+    name: oneblog
+security:
+  jwt:
+    secret_key: ${JWT_SECRET_KEY}
+    access_token_expiration: ${JWT_ACCESS_TOKEN_EXPIRATION}
+    refresh_token_expiration: ${JWT_REFRESH_TOKEN_EXPIRATION}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always

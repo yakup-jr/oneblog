@@ -1,0 +1,164 @@
+services:
+  proxy:
+    image: haproxy:lts
+    build:
+      context: ./
+    container_name: proxy
+    hostname: proxy
+    depends_on:
+      - app
+      - db
+    ports:
+      - target: 80
+        published: 80
+        protocol: tcp
+        mode: host
+    networks:
+      app-network:
+    volumes:
+      - ../../config/local/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+
+  db:
+    image: postgres:15
+    container_name: db
+    hostname: db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: oneblog
+    ports:
+      - target: 5432
+        published: 5432
+        protocol: tcp
+        mode: host
+    networks:
+      - app-network
+    volumes:
+      - ../../secrets/local/db_username.txt:/run/secrets/db_username:ro
+      - ../../secrets/local/db_password.txt:/run/secrets/db_password:ro
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $$(cat /run/secrets/db_username) -d oneblog" ]
+      interval: 10s
+      retries: 5
+      start_period: 10s
+      timeout: 5s
+
+  app:
+    build:
+      context: ../../
+      dockerfile: ./Dockerfile
+    container_name: oneblog
+    hostname: oneblog
+    depends_on:
+      - db
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      DATASOURCE_URL: jdbc:postgresql://db:5432/oneblog
+      JWT_ACCESS_TOKEN_EXPIRATION: 3600
+      JWT_REFRESH_TOKEN_EXPIRATION: 604800
+    ports:
+      - target: 8080
+        published: 8080
+        protocol: tcp
+        mode: host
+    networks:
+      app-network:
+        aliases:
+          - oneblog
+    volumes:
+      - ../../secrets/local/db_username.txt:/run/secrets/db_username:ro
+      - ../../secrets/local/db_password.txt:/run/secrets/db_password:ro
+      - ../../secrets/local/oauth_google_client_id.txt:/run/secrets/oauth_google_client_id:ro
+      - ../../secrets/local/oauth_google_client_secret.txt:/run/secrets/oauth_google_client_secret:ro
+      - ../../secrets/local/jwt_secret_key.txt:/run/secrets/jwt_secret_key:ro
+      - ../../secrets/local/mail_username.txt:/run/secrets/mail_username:ro
+      - ../../secrets/local/mail_password.txt:/run/secrets/mail_password:ro
+
+  promtail:
+    image: grafana/promtail:latest
+    container_name: promtail
+    depends_on:
+      - db
+      - app
+    ports:
+      - target: 9080
+        published: 9080
+        protocol: tcp
+        mode: host
+    privileged: true
+    networks:
+      - app-network
+    volumes:
+      - ../../config/local/promtail.yml:/etc/promtail/config.yml
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: -config.file=/etc/promtail/config.yml
+
+  loki:
+    image: grafana/loki:latest
+    container_name: loki
+    hostname: loki
+    ports:
+      - target: 3100
+        published: 3100
+        protocol: tcp
+        mode: host
+    networks:
+      app-network:
+        aliases:
+          - loki
+    volumes:
+      - ../../config/local/loki.yml:/etc/loki/loki.yml
+      - loki-data:/loki
+    command: -config.file=/etc/loki/loki.yml
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    hostname: prometheus
+    depends_on:
+      - app
+    ports:
+      - target: 9090
+        published: 9090
+        protocol: tcp
+        mode: host
+    networks:
+      app-network:
+        aliases:
+          - prometheus
+    volumes:
+      - ../../config/local/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheusdata:/prometheus
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    hostname: grafana
+    depends_on:
+      - prometheus
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    ports:
+      - target: 3000
+        published: 3000
+        protocol: tcp
+        mode: host
+    networks:
+      app-network:
+        aliases:
+          - grafana
+    volumes:
+      - ../../secrets/local/jwt_secret_key.txt:/run/secrets/jwt_secret_key:ro
+      - grafanadata:/var/lib/grafana
+
+volumes:
+  db-data:
+  grafanadata:
+  prometheusdata:
+  loki-data:
+
+networks:
+  app-network:

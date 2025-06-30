@@ -1,0 +1,255 @@
+version: "3.9"
+
+services:
+  haproxy:
+    image: haproxy:lts
+    hostname: proxy
+    depends_on:
+      - app
+    ports:
+      - target: 80
+        published: 80
+        protocol: tcp
+        mode: host
+      - target: 443
+        published: 443
+        protocol: tcp
+        mode: host
+    networks:
+      - app-network
+    configs:
+      - source: haproxy
+        target: /usr/local/etc/haproxy/haproxy.cfg
+    secrets:
+      - source: ssl_cert
+        target: /run/secrets/ssl_cert.pem
+        mode: 0444
+    deploy:
+      update_config:
+        order: start-first
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 128M
+        reservations:
+          cpus: "0.2"
+          memory: 64M
+
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER_FILE: /run/secrets/db_username
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+      POSTGRES_DB: oneblog
+    ports: [ ]
+    networks:
+      - app-network
+    volumes:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U yakup_jr -d oneblog" ]
+      interval: 10s
+      retries: 5
+      start_period: 10s
+      timeout: 5s
+    secrets:
+      - db_username
+      - db_password
+    deploy:
+      update_config:
+        order: start-first
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: "1"
+          memory: 512M
+        reservations:
+          cpus: "0.5"
+          memory: 256M
+
+  app:
+    image: whtoy/oneblog:dev-latest
+    hostname: oneblog
+    depends_on:
+      - db
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      DATASOURCE_URL: jdbc:postgresql://db:5432/oneblog
+      JWT_ACCESS_TOKEN_EXPIRATION: 3600
+      JWT_REFRESH_TOKEN_EXPIRATION: 604800
+    networks:
+      app-network:
+        aliases:
+          - oneblog
+    secrets:
+      - db_username
+      - db_password
+      - oauth_google_client_id
+      - oauth_google_client_secret
+      - mail_username
+      - mail_password
+      - jwt_secret_key
+    deploy:
+      update_config:
+        order: start-first
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: "1"
+          memory: 512M
+        reservations:
+          cpus: "0.5"
+          memory: 256M
+
+  promtail:
+    image: grafana/promtail:latest
+    depends_on:
+      - db
+      - app
+    privileged: true
+    networks:
+      - app-network
+    volumes:
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: -config.file=/etc/promtail/promtail.yml
+    configs:
+      - source: promtail
+        target: /etc/promtail/promtail.yml
+    deploy:
+      update_config:
+        order: start-first
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 128M
+        reservations:
+          cpus: "0.2"
+          memory: 64M
+
+  loki:
+    image: grafana/loki:latest
+    hostname: loki
+    networks:
+      app-network:
+        aliases:
+          - loki
+    volumes:
+      - loki-data:/loki
+    command: -config.file=/etc/loki/loki-config.yaml
+    configs:
+      - source: loki
+        target: /etc/loki/loki-config.yaml
+    deploy:
+      update_config:
+        order: start-first
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+        reservations:
+          cpus: "0.2"
+          memory: 128M
+
+  prometheus:
+    image: prom/prometheus:latest
+    hostname: prometheus
+    depends_on:
+      - app
+    networks:
+      app-network:
+        aliases:
+          - prometheus
+    volumes:
+      - prometheusdata:/prometheus
+    configs:
+      - source: prometheus
+        target: /etc/prometheus/prometheus.yml
+    deploy:
+      update_config:
+        order: start-first
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+        reservations:
+          cpus: "0.2"
+          memory: 128M
+
+  grafana:
+    image: grafana/grafana:latest
+    hostname: grafana
+    depends_on:
+      - prometheus
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_SERVER_ROOT_URL: https://grafana.oneblog.space
+      GF_SERVER_DOMAIN: grafana.oneblog.space
+    networks:
+      app-network:
+        aliases:
+          - grafana
+    volumes:
+      - grafanadata:/var/lib/grafana
+    configs:
+      - source: grafana
+        target: /etc/grafana/grafana.yml
+    deploy:
+      update_config:
+        order: start-first
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 128M
+        reservations:
+          cpus: "0.2"
+
+
+configs:
+  haproxy:
+    external: true
+  promtail:
+    external: true
+  loki:
+    external: true
+  prometheus:
+    external: true
+  grafana:
+    external: true
+
+secrets:
+  ssl_cert:
+    external: true
+  db_username:
+    external: true
+  db_password:
+    external: true
+  oauth_google_client_id:
+    external: true
+  oauth_google_client_secret:
+    external: true
+  mail_username:
+    external: true
+  mail_password:
+    external: true
+  jwt_secret_key:
+    external: true
+  jwt_access_token_expiration:
+    external: true
+  jwt_refresh_token_expiration:
+    external: true
+
+
+volumes:
+  db-data:
+  grafanadata:
+  prometheusdata:
+  loki-data:
+
+networks:
+  app-network:
