@@ -35,9 +35,9 @@ public class VerificationMailMessage {
 		String code = codeGenerator.generateSixDigits();
 
 		SimpleMailMessage message = new SimpleMailMessage();
-		message.setFrom("oneblog");
+		message.setFrom("oneblog.space@resend.dev");
 		message.setSubject("Verification Code");
-		message.setText("Verification code: " + code);
+		message.setText("Verification code for registration on oneblog.space: " + code);
 		message.setTo(email);
 		mailSender.send(message);
 
