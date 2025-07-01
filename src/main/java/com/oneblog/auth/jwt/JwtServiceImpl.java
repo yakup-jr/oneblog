@@ -16,6 +16,9 @@ import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.function.Function;
 
+/**
+ * The type Jwt service.
+ */
 @Service
 public class JwtServiceImpl implements JwtService {
 
@@ -30,6 +33,11 @@ public class JwtServiceImpl implements JwtService {
 
 	private final TokenRepository tokenRepository;
 
+	/**
+	 * Instantiates a new Jwt service.
+	 *
+	 * @param tokenRepository the token repository
+	 */
 	public JwtServiceImpl(TokenRepository tokenRepository) {
 		this.tokenRepository = tokenRepository;
 	}

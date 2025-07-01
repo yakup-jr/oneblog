@@ -31,7 +31,7 @@ class GoogleVerifierTest {
 	private GoogleIdToken.Payload payload;
 
 	@Test
-	void verify_TokenInvalid_ThrowGeneralSecurityException() throws GeneralSecurityException, IOException {
+	void verify_TokenInvalid_ThrowGeneralSecurityException() {
 		String token = "invalidToken";
 
 		assertThatThrownBy(() -> verifierImpl.verify(token)).withFailMessage("token not valid")

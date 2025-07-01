@@ -20,8 +20,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -35,6 +33,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
+/**
+ * The type Auth service.
+ */
 @Service
 public class AuthServiceImpl implements AuthService {
 
@@ -48,6 +49,19 @@ public class AuthServiceImpl implements AuthService {
 	private final EmailVerificationService emailVerificationService;
 	private final GoogleVerifier googleVerifier;
 
+	/**
+	 * Instantiates a new Auth service.
+	 *
+	 * @param jwtService               the jwt service
+	 * @param passwordEncoder          the password encoder
+	 * @param authenticationManager    the authentication manager
+	 * @param tokenRepository          the token repository
+	 * @param userRepository           the user repository
+	 * @param userService              the user service
+	 * @param roleRepository           the role repository
+	 * @param emailVerificationService the email verification service
+	 * @param googleVerifier           the google verifier
+	 */
 	public AuthServiceImpl(
 		JwtService jwtService, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager,
 		TokenRepository tokenRepository, UserRepository userRepository, UserService userService,
@@ -154,8 +168,7 @@ public class AuthServiceImpl implements AuthService {
 	}
 
 	@Override
-	public AuthenticationResponseDto signUpWithGoogle(GoogleIdToken.Payload payload)
-		throws GeneralSecurityException, IOException {
+	public AuthenticationResponseDto signUpWithGoogle(GoogleIdToken.Payload payload) {
 		String nickname = String.valueOf(payload.get("given_name"));
 		if (userRepository.findByNickname(String.valueOf(payload.get("given_name"))).isPresent()) {
 			nickname = nickname.concat(String.valueOf(new Random().nextInt(10000)));

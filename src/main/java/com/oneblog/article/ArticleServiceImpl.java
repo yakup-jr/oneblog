@@ -13,6 +13,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * The type Article service.
+ */
 @Service
 public class ArticleServiceImpl implements ArticleService {
 
@@ -20,6 +23,13 @@ public class ArticleServiceImpl implements ArticleService {
 	private final UserService userService;
 	private final LabelService labelService;
 
+	/**
+	 * Instantiates a new Article service.
+	 *
+	 * @param articleRepository the article repository
+	 * @param userService       the user service
+	 * @param labelService      the label service
+	 */
 	public ArticleServiceImpl(
 		ArticleRepository articleRepository, UserService userService, LabelService labelService) {
 		this.articleRepository = articleRepository;

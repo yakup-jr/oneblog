@@ -1,13 +1,24 @@
 package com.oneblog.article;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.oneblog.article.dto.ArticleCreateDto;
+import com.oneblog.article.label.LabelName;
+import com.oneblog.article.label.dto.LabelDto;
+import com.oneblog.article.preview.dto.PreviewCreateDto;
 import com.oneblog.helpers.IntegrationTest;
 import com.oneblog.helpers.WithMockAdmin;
+import com.oneblog.user.dto.UserDto;
+import com.oneblog.user.role.RoleDto;
+import com.oneblog.user.role.RoleName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -21,57 +32,51 @@ public class ArticleControllerTest {
 	@Autowired
 	private MockMvc mockMvc;
 
-	@Test
-	@WithMockAdmin
-	void createArticle_ReturnArticle() throws Exception {
-		mockMvc.perform(post("/api/v1/article/").contentType(MediaType.APPLICATION_JSON).content(
-			       "		{\n" +
-			       "			\"title\": \"the best president\",\n" +
-			       "			\"body\": \"more and more text...\",\n" +
-			       "			\"preview\": {\n" +
-			       "				\"body\": \"Something interesting preview\"\n" +
-			       "			},\n" +
-			       "			\"labels\": [\n" +
-			       "				{\n" +
-			       "					\"labelId\": 1\n" +
-			       "				},\n" +
-			       "				{\n" +
-			       "					\"labelId\": 2\n" +
-			       "				}\n" +
-			       "			],\n" +
-			       "			\"user\": {\n" +
-			       "				\"userId\": 1\n" +
-			       "			}\n" +
-			       "		}\n"))
-		       .andExpect(status().isCreated()).andExpect(jsonPath("$.articleId", notNullValue()))
-		       .andExpect(jsonPath("$.preview.articlePreviewId", notNullValue()))
-		       .andExpect(jsonPath("$.preview.body", notNullValue())).andExpect(jsonPath("$.labels", hasSize(2)))
-		       .andExpect(jsonPath("$.labels[0].labelId", is(1)))
-		       .andExpect(jsonPath("$._links.self.href", notNullValue()));
+	private static final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
+
+	private ArticleCreateDto createValidArticleCreateDto() {
+		return ArticleCreateDto.builder()
+		                       .title("the best president")
+		                       .body("more and more text...")
+		                       .createTime(LocalDateTime.now())
+		                       .preview(new PreviewCreateDto("Something interesting preview"))
+		                       .labels(List.of(LabelDto.builder().labelId(1L).name(LabelName.Assembler).build(),
+		                                       LabelDto.builder().labelId(2L).name(LabelName.C).build()))
+		                       .user(UserDto.builder().userId(1L).name("James").nickname("hunter")
+		                                    .email("hunter@mail.com")
+		                                    .roles(List.of(RoleDto.builder().name(RoleName.ROLE_USER).build(),
+		                                                   RoleDto.builder().name(RoleName.ROLE_ADMIN).build()))
+		                                    .build())
+		                       .build();
 	}
 
 	@Test
 	@WithMockAdmin
+	void createArticle_ReturnArticle() throws Exception {
+		ArticleCreateDto articleCreateDto = createValidArticleCreateDto();
+
+		mockMvc.perform(post("/api/v1/article/")
+			                .contentType(MediaType.APPLICATION_JSON)
+			                .content(objectMapper.writeValueAsString(articleCreateDto)))
+		       .andExpect(status().isCreated())
+		       .andExpect(jsonPath("$.articleId", notNullValue()))
+		       .andExpect(jsonPath("$.preview.articlePreviewId", notNullValue()))
+		       .andExpect(jsonPath("$.preview.body", notNullValue()))
+		       .andExpect(jsonPath("$.labels", hasSize(2)))
+		       .andExpect(jsonPath("$.labels[0].labelId", is(1)))
+		       .andExpect(jsonPath("$._links.self.href", notNullValue()));
+	}
+
+
+	@Test
+	@WithMockAdmin
 	void createArticle_ThrowMethodArgumentNotValidException_TitleBlank() throws Exception {
-		mockMvc.perform(post("/api/v1/article/").contentType(MediaType.APPLICATION_JSON).content(
-			       "	{\n" +
-			       "		\"title\": \"\",\n" +
-			       "		\"body\": \"\",\n" +
-			       "		\"preview\": {\n" +
-			       "		\"body\": \"Something interesting preview\"\n" +
-			       "		},\n" +
-			       "		\"labels\": [\n" +
-			       "		{\n" +
-			       "			\"labelId\": 1\n" +
-			       "		},\n" +
-			       "		{\n" +
-			       "			\"labelId\": 2\n" +
-			       "		}\n" +
-			       "		],\n" +
-			       "		\"user\": {\n" +
-			       "			\"userId\": 1\n" +
-			       "		}\n" +
-			       "	}\n"))
+		ArticleCreateDto articleCreateDto = createValidArticleCreateDto();
+		articleCreateDto.setTitle("");
+
+		mockMvc.perform(post("/api/v1/article/")
+			                .contentType(MediaType.APPLICATION_JSON)
+			                .content(objectMapper.writeValueAsString(articleCreateDto)))
 		       .andExpect(status().isBadRequest())
 		       .andExpect(jsonPath("$.message", containsString("title: length must be between 1 and 255")));
 	}
@@ -79,76 +84,66 @@ public class ArticleControllerTest {
 	@Test
 	@WithMockAdmin
 	void createArticle_ThrowMethodArgumentNotValidException_PreviewBodyBlank() throws Exception {
-		mockMvc.perform(post("/api/v1/article/").contentType(MediaType.APPLICATION_JSON).content(
-			       "	{\n" +
-			       "		\"title\": \"the best president\",\n" +
-			       "		\"body\": \"more and more text...\",\n" +
-			       "		\"preview\": {\n" +
-			       "			\"body\": \"\"\n" +
-			       "       },\n" +
-			       "       \"labels\": [\n" +
-			       "       	{\n" +
-			       "       		\"labelId\": 1\n" +
-			       "       	},\n" +
-			       "       	{\n" +
-			       "       		\"labelId\": 2\n" +
-			       "       	}\n" +
-			       "       ],\n" +
-			       "       \"user\": {\n" +
-			       "       	\"userId\": 1\n" +
-			       "       }\n" +
-			       "}\n"))
+		ArticleCreateDto articleCreateDto = createValidArticleCreateDto();
+		articleCreateDto.getPreview().setBody("");
+
+		mockMvc.perform(post("/api/v1/article/")
+			                .contentType(MediaType.APPLICATION_JSON)
+			                .content(objectMapper.writeValueAsString(articleCreateDto)))
 		       .andExpect(status().isBadRequest())
 		       .andExpect(jsonPath("$.message", containsString("preview.body: length must be between 10 and 1000")));
 	}
 
 	@Test
 	@WithMockAdmin
-	void createArticle_ThrowMethodArgumentNotValidException_LabelId() throws Exception {
-		mockMvc.perform(post("/api/v1/article/").contentType(MediaType.APPLICATION_JSON).content("""
-			                                                                                         	{
-			                                                                                          	"title": "the best president",
-			                                                                                          	"body": "more and more text...",
-			                                                                                          	"preview": {
-			                                                                                          		"body": "Something interesting preview"
-			                                                                                          	},
-			                                                                                          	"labels": [
-			                                                                                          		{
-			                                                                                          			"labelId": 0
-			                                                                                          		}
-			                                                                                          	],
-			                                                                                          	"user": {
-			                                                                                          		"userId": 1
-			                                                                                          	}
-			                                                                                         	}
-			                                                                                         """))
-		       .andExpect(status().isBadRequest()).andExpect(
-			       jsonPath("$.message", containsString("labels[0].labelId: must be greater than or equal to 1")));
+	void createArticle_ThrowMethodArgumentNotValidException_LabelIdNull() throws Exception {
+		ArticleCreateDto articleCreateDto = createValidArticleCreateDto();
+		articleCreateDto.setLabels(null);
+
+		mockMvc.perform(post("/api/v1/article/")
+			                .contentType(MediaType.APPLICATION_JSON)
+			                .content(objectMapper.writeValueAsString(articleCreateDto)))
+		       .andExpect(status().isBadRequest())
+		       .andExpect(
+			       jsonPath("$.message", containsString("labels: must not be null")));
 	}
 
 	@Test
 	@WithMockAdmin
-	void createArticle_ThrowMethodArgumentNotValidException_UserId() throws Exception {
-		mockMvc.perform(post("/api/v1/article/").contentType(MediaType.APPLICATION_JSON).content("""
-			                                                                                         	{
-			                                                                                         	"body": "more and more text...",
-			                                                                                         	"labels": [
-			                                                                                         		{
-			                                                                                         			"labelId": 1
-			                                                                                         		},
-			                                                                                         		{
-			                                                                                         			"labelId": 2
-			                                                                                         		}
-			                                                                                         	],
-			                                                                                         	"preview": {
-			                                                                                         		"body": "Something interesting preview"
-			                                                                                         	},
-			                                                                                         	"title": "the best president",
-			                                                                                         	"user": {
-			                                                                                         		"userId": 0
-			                                                                                         	}
-			                                                                                         	}
-			                                                                                         """))
+	void createArticle_ThrowMethodArgumentNotValidException_LabelIdZero() throws Exception {
+		ArticleCreateDto articleCreateDto = createValidArticleCreateDto();
+		articleCreateDto.setLabels(List.of(LabelDto.builder().labelId(0L).build()));
+
+		mockMvc.perform(post("/api/v1/article/")
+			                .contentType(MediaType.APPLICATION_JSON)
+			                .content(objectMapper.writeValueAsString(articleCreateDto)))
+		       .andExpect(status().isBadRequest())
+		       .andExpect(jsonPath("$.message", containsString("labels[0].labelId: must be greater than or equal to " +
+		                                                       "1")));
+	}
+
+	@Test
+	@WithMockAdmin
+	void createArticle_ThrowMethodArgumentNotValidException_UserIdNull() throws Exception {
+		ArticleCreateDto articleCreateDto = createValidArticleCreateDto();
+		articleCreateDto.setUser(null);
+
+		mockMvc.perform(post("/api/v1/article/")
+			                .contentType(MediaType.APPLICATION_JSON)
+			                .content(objectMapper.writeValueAsString(articleCreateDto)))
+		       .andExpect(status().isBadRequest())
+		       .andExpect(jsonPath("$.message", containsString("user: must not be null")));
+	}
+
+	@Test
+	@WithMockAdmin
+	void createArticle_ThrowMethodArgumentNotValidException_UserIdZero() throws Exception {
+		ArticleCreateDto articleCreateDto = createValidArticleCreateDto();
+		articleCreateDto.setUser(UserDto.builder().userId(0L).build());
+
+		mockMvc.perform(post("/api/v1/article/")
+			                .contentType(MediaType.APPLICATION_JSON)
+			                .content(objectMapper.writeValueAsString(articleCreateDto)))
 		       .andExpect(status().isBadRequest())
 		       .andExpect(jsonPath("$.message", containsString("user.userId: must be greater than or equal to 1")));
 	}
@@ -156,43 +151,25 @@ public class ArticleControllerTest {
 	@Test
 	@WithMockAdmin
 	void createArticle_ThrowApiRequestException_articlePreview() throws Exception {
-		mockMvc.perform(post("/api/v1/article/").contentType(MediaType.APPLICATION_JSON).content("""
-			                                                                                          {
-			                                                                                          			"title": "the best president",
-			                                                                                          			"body": "more and more text...",
-			                                                                                          			"labels": [
-			                                                                                          				{
-			                                                                                          					"labelId": 1
-			                                                                                          				},
-			                                                                                          				{
-			                                                                                          					"labelId": 2
-			                                                                                          				}
-			                                                                                          			],
-			                                                                                          			"user": {
-			                                                                                          				"userId": 1
-			                                                                                          			}
-			                                                                                            	 }
-			                                                                                         """))
+		ArticleCreateDto articleCreateDto = createValidArticleCreateDto();
+		articleCreateDto.setPreview(null);
+
+		mockMvc.perform(post("/api/v1/article/")
+			                .contentType(MediaType.APPLICATION_JSON)
+			                .content(objectMapper.writeValueAsString(articleCreateDto)))
 		       .andExpect(status().isBadRequest())
 		       .andExpect(jsonPath("$.message", containsStringIgnoringCase("preview")));
-
 	}
 
 	@Test
 	@WithMockAdmin
 	void createArticle_ThrowApiRequestException_labels() throws Exception {
-		mockMvc.perform(post("/api/v1/article/").contentType(MediaType.APPLICATION_JSON).content("""
-			                                                                                         	{
-			                                                                                         			"title": "the best president",
-			                                                                                         			"body": "more and more text...",
-			                                                                                         			"preview": {
-			                                                                                         				"body": "Something interesting preview"
-			                                                                                         			},
-			                                                                                         			"user": {
-			                                                                                         				"userId": 1
-			                                                                                         			}
-			                                                                                         		}
-			                                                                                         """))
+		ArticleCreateDto articleCreateDto = createValidArticleCreateDto();
+		articleCreateDto.setLabels(null);
+
+		mockMvc.perform(post("/api/v1/article/")
+			                .contentType(MediaType.APPLICATION_JSON)
+			                .content(objectMapper.writeValueAsString(articleCreateDto)))
 		       .andExpect(status().isBadRequest())
 		       .andExpect(jsonPath("$.message", containsStringIgnoringCase("label")));
 	}
@@ -200,47 +177,23 @@ public class ArticleControllerTest {
 	@Test
 	@WithMockAdmin
 	void createArticle_ThrowApiRequestException_user() throws Exception {
-		mockMvc.perform(post("/api/v1/article/").contentType(MediaType.APPLICATION_JSON).content("""
-			                                                                                         	{
-			                                                                                         		"title": "the best president",
-			                                                                                         		"body": "more and more text...",
-			                                                                                         		"preview": {
-			                                                                                         			"body": "Something interesting preview"
-			                                                                                         		},
-			                                                                                         		"labels": [
-			                                                                                         			{
-			                                                                                         				"labelId": "1"
-			                                                                                         			}
-			                                                                                         		],
-			                                                                                         		"user": {
-			                                                                                         			"userId": null
-			                                                                                         		}
-			                                                                                         	}
-			                                                                                         """))
-		       .andExpect(status().isBadRequest()).andExpect(jsonPath("$.message", containsStringIgnoringCase("user")));
+		ArticleCreateDto articleCreateDto = createValidArticleCreateDto();
+		articleCreateDto.setUser(null);
+
+		mockMvc.perform(post("/api/v1/article/")
+			                .contentType(MediaType.APPLICATION_JSON)
+			                .content(objectMapper.writeValueAsString(articleCreateDto)))
+		       .andExpect(status().isBadRequest())
+		       .andExpect(jsonPath("$.message", containsStringIgnoringCase("user")));
 	}
 
 	@Test
 	void createArticle_ReturnForbidden_NoPermission() throws Exception {
-		mockMvc.perform(post("/api/v1/article/").contentType(MediaType.APPLICATION_JSON).content(
-			       "		{\n" +
-			       "			\"title\": \"the best president\",\n" +
-			       "			\"body\": \"more and more text...\",\n" +
-			       "			\"preview\": {\n" +
-			       "				\"body\": \"Something interesting preview\"\n" +
-			       "			},\n" +
-			       "			\"labels\": [\n" +
-			       "				{\n" +
-			       "					\"labelId\": 1\n" +
-			       "				},\n" +
-			       "				{\n" +
-			       "					\"labelId\": 2\n" +
-			       "				}\n" +
-			       "			],\n" +
-			       "			\"user\": {\n" +
-			       "				\"userId\": 1\n" +
-			       "			}\n" +
-			       "		}\n"))
+		ArticleCreateDto articleCreateDto = createValidArticleCreateDto();
+
+		mockMvc.perform(post("/api/v1/article/")
+			                .contentType(MediaType.APPLICATION_JSON)
+			                .content(objectMapper.writeValueAsString(articleCreateDto)))
 		       .andExpect(status().isForbidden());
 	}
 

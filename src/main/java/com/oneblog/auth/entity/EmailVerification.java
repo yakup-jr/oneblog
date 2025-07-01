@@ -6,12 +6,15 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
+/**
+ * The type Email verification.
+ */
 @Entity
 @Table(name = "t_email_verification")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-@Data
+@Setter
 @Builder
 public class EmailVerification {
 	@Id

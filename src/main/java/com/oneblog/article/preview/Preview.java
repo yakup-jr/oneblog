@@ -4,6 +4,9 @@ import com.oneblog.article.Article;
 import jakarta.persistence.*;
 import lombok.*;
 
+/**
+ * The type Preview.
+ */
 @Builder
 @Setter
 @Getter

@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * The type Article controller.
+ */
 @RestController
 @RequestMapping("/api/v1")
 public class ArticleController {
@@ -26,6 +29,15 @@ public class ArticleController {
 	private final ArticleModelAssembler articleModelAssembler;
 	private final PagedResourcesAssembler<ArticleDto> pagedResourcesAssembler;
 
+	/**
+	 * Instantiates a new Article controller.
+	 *
+	 * @param articleService          the article service
+	 * @param articleMapper           the article mapper
+	 * @param articleLink             the article link
+	 * @param articleModelAssembler   the article model assembler
+	 * @param pagedResourcesAssembler the paged resources assembler
+	 */
 	public ArticleController(
 		ArticleService articleService, ArticleMapper articleMapper, ArticleLink articleLink,
 		ArticleModelAssembler articleModelAssembler, PagedResourcesAssembler<ArticleDto> pagedResourcesAssembler) {
@@ -36,6 +48,12 @@ public class ArticleController {
 		this.pagedResourcesAssembler = pagedResourcesAssembler;
 	}
 
+	/**
+	 * Create article response entity.
+	 *
+	 * @param articleDto the article dto
+	 * @return the response entity
+	 */
 	@PostMapping("/article/")
 	public ResponseEntity<EntityModel<ArticleDto>> createArticle(@RequestBody @Validated ArticleCreateDto articleDto) {
 		try {
@@ -49,6 +67,12 @@ public class ArticleController {
 		}
 	}
 
+	/**
+	 * Find article by article id response entity.
+	 *
+	 * @param articleId the article id
+	 * @return the response entity
+	 */
 	@GetMapping("/article/{articleId}")
 	public ResponseEntity<EntityModel<ArticleDto>> findArticleByArticleId(@PathVariable @Validated Long articleId) {
 		try {
@@ -60,6 +84,13 @@ public class ArticleController {
 		}
 	}
 
+	/**
+	 * Find all articles response entity.
+	 *
+	 * @param page the page
+	 * @param size the size
+	 * @return the response entity
+	 */
 	@GetMapping("/articles")
 	public ResponseEntity<PagedModel<EntityModel<ArticleDto>>> findAllArticles(
 		@RequestParam Integer page, @RequestParam(required = false, defaultValue = "10") Integer size) {
@@ -72,6 +103,12 @@ public class ArticleController {
 		}
 	}
 
+	/**
+	 * Find article by user id response entity.
+	 *
+	 * @param userId the user id
+	 * @return the response entity
+	 */
 	@GetMapping("/article/user/{userId}")
 	public ResponseEntity<CollectionModel<EntityModel<ArticleDto>>> findArticleByUserId(
 		@PathVariable @Validated Long userId) {
@@ -89,6 +126,12 @@ public class ArticleController {
 		}
 	}
 
+	/**
+	 * Delete article response entity.
+	 *
+	 * @param articleId the article id
+	 * @return the response entity
+	 */
 	@DeleteMapping("/article/{articleId}")
 	public ResponseEntity<Void> deleteArticle(@PathVariable @Validated Long articleId) {
 		try {

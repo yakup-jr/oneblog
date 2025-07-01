@@ -13,6 +13,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * The type User service.
+ */
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -20,6 +23,12 @@ public class UserServiceImpl implements UserService {
 
 	private final RoleService roleService;
 
+	/**
+	 * Instantiates a new User service.
+	 *
+	 * @param userRepository the user repository
+	 * @param roleService    the role service
+	 */
 	public UserServiceImpl(UserRepository userRepository, RoleService roleService) {
 		this.userRepository = userRepository;
 		this.roleService = roleService;

@@ -15,9 +15,18 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.security.GeneralSecurityException;
 
+/**
+ * The type Api exception handler.
+ */
 @ControllerAdvice
 public class ApiExceptionHandler {
 
+	/**
+	 * Handle api request exception response entity.
+	 *
+	 * @param e the e
+	 * @return the response entity
+	 */
 	@ExceptionHandler(value = {ApiRequestException.class})
 	public ResponseEntity<Object> handleApiRequestException(
 		ApiRequestException e) {
@@ -28,6 +37,11 @@ public class ApiExceptionHandler {
 		return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(apiException);
 	}
 
+	/**
+	 * Handle not found exception response entity.
+	 *
+	 * @return the response entity
+	 */
 	@ExceptionHandler(
 		value = {LabelNotFoundException.class, ArticleNotFoundException.class, UserNotFoundException.class,
 			PageNotFoundException.class})
@@ -35,6 +49,12 @@ public class ApiExceptionHandler {
 		return ResponseEntity.notFound().build();
 	}
 
+	/**
+	 * Handle conflict exception response entity.
+	 *
+	 * @param e the e
+	 * @return the response entity
+	 */
 	@ExceptionHandler(value = {ConflictException.class})
 	public ResponseEntity<Object> handleConflictException(ConflictException e) {
 		HttpStatus conflict = HttpStatus.CONFLICT;
@@ -46,6 +66,12 @@ public class ApiExceptionHandler {
 	}
 
 
+	/**
+	 * Handle argument not valid exception response entity.
+	 *
+	 * @param e the e
+	 * @return the response entity
+	 */
 	@ExceptionHandler(value = {MethodArgumentNotValidException.class})
 	public ResponseEntity<Object> handleArgumentNotValidException(
 		MethodArgumentNotValidException e) {
@@ -59,8 +85,13 @@ public class ApiExceptionHandler {
 		return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(apiException);
 	}
 
+	/**
+	 * Handle signature exception response entity.
+	 *
+	 * @return the response entity
+	 */
 	@ExceptionHandler(value = {SignatureException.class})
-	public ResponseEntity<Object> handleSignatureException(SignatureException e) {
+	public ResponseEntity<Object> handleSignatureException() {
 		ApiException apiException =
 			ApiException.builder().message("Invalid token").httpStatus(HttpStatus.UNAUTHORIZED).build();
 
@@ -68,8 +99,13 @@ public class ApiExceptionHandler {
 		                     .body(apiException);
 	}
 
+	/**
+	 * Handle general security exception response entity.
+	 *
+	 * @return the response entity
+	 */
 	@ExceptionHandler(value = {GeneralSecurityException.class})
-	public ResponseEntity<Object> handleGeneralSecurityException(GeneralSecurityException gse) {
+	public ResponseEntity<Object> handleGeneralSecurityException() {
 		ApiException apiException =
 			ApiException.builder().message("Invalid token").httpStatus(HttpStatus.UNAUTHORIZED).build();
 
@@ -77,6 +113,12 @@ public class ApiExceptionHandler {
 		                     .body(apiException);
 	}
 
+	/**
+	 * Handle email verification code not found response entity.
+	 *
+	 * @param e the e
+	 * @return the response entity
+	 */
 	@ExceptionHandler(value = {EmailVerificationCodeNotFound.class})
 	public ResponseEntity<Object> handleEmailVerificationCodeNotFound(EmailVerificationCodeNotFound e) {
 		ApiException apiException =
@@ -86,10 +128,31 @@ public class ApiExceptionHandler {
 		                     .body(apiException);
 	}
 
+	/**
+	 * Handle invalid verification code exception response entity.
+	 *
+	 * @param e the e
+	 * @return the response entity
+	 */
 	@ExceptionHandler(value = {InvalidVerificationCodeException.class})
 	public ResponseEntity<Object> handleInvalidVerificationCodeException(InvalidVerificationCodeException e) {
 		ApiException apiException =
 			ApiException.builder().message(e.getMessage()).httpStatus(HttpStatus.UNAUTHORIZED).build();
+
+		return ResponseEntity.status(apiException.getHttpStatus()).contentType(MediaType.APPLICATION_JSON)
+		                     .body(apiException);
+	}
+
+	/**
+	 * Handle service exception response entity.
+	 *
+	 * @param e the e
+	 * @return the response entity
+	 */
+	@ExceptionHandler(value = {ServiceException.class})
+	public ResponseEntity<Object> handleServiceException(ServiceException e) {
+		ApiException apiException =
+			ApiException.builder().message(e.getMessage()).httpStatus(HttpStatus.BAD_REQUEST).build();
 
 		return ResponseEntity.status(apiException.getHttpStatus()).contentType(MediaType.APPLICATION_JSON)
 		                     .body(apiException);

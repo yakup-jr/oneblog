@@ -1,7 +1,16 @@
 package com.oneblog.user.role;
 
 
+/**
+ * The enum Role name.
+ */
 public enum RoleName {
-    ROLE_USER,
-    ROLE_ADMIN
+	/**
+	 * Role user role name.
+	 */
+	ROLE_USER,
+	/**
+	 * Role admin role name.
+	 */
+	ROLE_ADMIN
 }

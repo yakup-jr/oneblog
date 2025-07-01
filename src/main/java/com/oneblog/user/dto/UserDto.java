@@ -6,15 +6,20 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.hateoas.server.core.Relation;
 
 import java.util.List;
 
+/**
+ * The type User dto.
+ */
 @Setter
 @Getter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Relation(collectionRelation = "users")
 public class UserDto {
 

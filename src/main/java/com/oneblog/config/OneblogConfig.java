@@ -11,6 +11,9 @@ import org.springframework.context.annotation.Import;
 import java.util.Collections;
 import java.util.Random;
 
+/**
+ * The type Oneblog config.
+ */
 @Import(SecurityConfig.class)
 @Configuration
 public class OneblogConfig {
@@ -18,11 +21,21 @@ public class OneblogConfig {
 	@Value("${spring.security.oauth2.client.registration.google.client-id}")
 	private String clientId;
 
+	/**
+	 * Random random.
+	 *
+	 * @return the random
+	 */
 	@Bean
 	public Random random() {
 		return new Random();
 	}
 
+	/**
+	 * Google id token verifier google id token verifier.
+	 *
+	 * @return the google id token verifier
+	 */
 	@Bean
 	public GoogleIdTokenVerifier googleIdTokenVerifier() {
 		return new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new GsonFactory())

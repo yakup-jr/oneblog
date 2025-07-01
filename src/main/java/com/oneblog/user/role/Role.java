@@ -9,6 +9,9 @@ import org.hibernate.proxy.HibernateProxy;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * The type Role.
+ */
 @Builder
 @Getter
 @Setter
