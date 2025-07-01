@@ -28,8 +28,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
     needs: build
-    container:
-      image: "gradle:8.13.0-jdk21"
     services:
       docker:
         image: docker:dind
