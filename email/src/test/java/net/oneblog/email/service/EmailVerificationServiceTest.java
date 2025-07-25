@@ -58,7 +58,8 @@ class EmailVerificationServiceTest {
         String email = "somemail@mail.com";
         when(emailVerificationRepository.existsByEmailAndCodeNotExpired(email)).thenReturn(true);
 
-        assertThrows(ServiceException.class, () -> emailVerificationService.sendVerificationCode(email));
+        assertThrows(ServiceException.class,
+            () -> emailVerificationService.sendVerificationCode(email));
         verify(verificationMailMessage, never()).sendVerificationCode(anyString());
         verify(emailVerificationRepository, never()).save(any(EmailEntity.class));
     }
@@ -87,7 +88,8 @@ class EmailVerificationServiceTest {
         String email = "somemail@mail.com";
         String code = "152734";
         String wrongCode = "999999";
-        RegistrationEmailVerification verification = new RegistrationEmailVerification(email, wrongCode);
+        RegistrationEmailVerification verification =
+            new RegistrationEmailVerification(email, wrongCode);
 
         EmailEntity emailEntity = EmailEntity.builder()
             .code(code)
@@ -129,7 +131,8 @@ class EmailVerificationServiceTest {
 
         when(emailVerificationRepository.findByEmail(email)).thenReturn(Optional.empty());
 
-        assertThrows(ServiceException.class, () -> emailVerificationService.verifyCode(verification));
+        assertThrows(ServiceException.class,
+            () -> emailVerificationService.verifyCode(verification));
         verify(emailVerificationRepository, never()).delete(any());
     }
 }

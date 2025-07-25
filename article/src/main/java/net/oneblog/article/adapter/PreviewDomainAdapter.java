@@ -3,7 +3,6 @@ package net.oneblog.article.adapter;
 import net.oneblog.api.interfaces.ArticleDomain;
 import net.oneblog.api.interfaces.PreviewDomain;
 import net.oneblog.article.entity.PreviewEntity;
-import org.springframework.stereotype.Component;
 
 public class PreviewDomainAdapter implements PreviewDomain {
 

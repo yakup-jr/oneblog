@@ -19,20 +19,20 @@ import org.springframework.hateoas.server.core.Relation;
 @Relation(collectionRelation = "users")
 public class UserDto {
 
-	@NotNull
-	@Min(1L)
-	private Long userId;
+    @NotNull
+    @Min(1L)
+    private Long userId;
 
-	@NotNull(groups = UserController.class)
-	@Length(min = 2, max = 60, groups = UserController.class)
-	private String name;
+    @NotNull(groups = UserController.class)
+    @Length(min = 2, max = 60, groups = UserController.class)
+    private String name;
 
-	@NotNull(groups = UserController.class)
-	@Length(min = 2, max = 60, groups = UserController.class)
-	private String nickname;
+    @NotNull(groups = UserController.class)
+    @Length(min = 2, max = 60, groups = UserController.class)
+    private String nickname;
 
-	@NotNull(groups = UserController.class)
-	@Email(groups = UserController.class)
-	private String email;
+    @NotNull(groups = UserController.class)
+    @Email(groups = UserController.class)
+    private String email;
 
 }

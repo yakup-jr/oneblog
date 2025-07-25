@@ -14,31 +14,31 @@ import java.util.Optional;
 @Repository
 public interface TokenRepository extends JpaRepository<TokenEntity, Long> {
 
-	/**
-	 * Find by access tokenEntity optional.
-	 *
-	 * @param accessToken the access tokenEntity
-	 * @return the optional
-	 */
-	Optional<TokenEntity> findByAccessToken(String accessToken);
+    /**
+     * Find by access tokenEntity optional.
+     *
+     * @param accessToken the access tokenEntity
+     * @return the optional
+     */
+    Optional<TokenEntity> findByAccessToken(String accessToken);
 
-	/**
-	 * Find by refresh tokenEntity optional.
-	 *
-	 * @param refreshToken the refresh tokenEntity
-	 * @return the optional
-	 */
-	Optional<TokenEntity> findByRefreshToken(String refreshToken);
+    /**
+     * Find by refresh tokenEntity optional.
+     *
+     * @param refreshToken the refresh tokenEntity
+     * @return the optional
+     */
+    Optional<TokenEntity> findByRefreshToken(String refreshToken);
 
-	/**
-	 * Find all access tokenEntity by user list.
-	 *
-	 * @param userId the user id
-	 * @return the list
-	 */
-	@Query("""
-		select t from TokenEntity t where t.tokenId = :userId
-		""")
-	List<TokenEntity> findAllAccessTokenByUser(Long userId);
+    /**
+     * Find all access tokenEntity by user list.
+     *
+     * @param userId the user id
+     * @return the list
+     */
+    @Query("""
+        select t from TokenEntity t where t.tokenId = :userId
+        """)
+    List<TokenEntity> findAllAccessTokenByUser(Long userId);
 
 }

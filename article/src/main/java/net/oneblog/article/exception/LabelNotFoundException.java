@@ -8,23 +8,23 @@ import net.oneblog.sharedexceptions.NotFoundException;
  */
 public class LabelNotFoundException extends NotFoundException {
 
-	/**
-	 * Instantiates a new Label not found exception.
-	 *
-	 * @param message the message
-	 */
-	public LabelNotFoundException(String message) {
-		super(message);
-	}
+    /**
+     * Instantiates a new Label not found exception.
+     *
+     * @param message the message
+     */
+    public LabelNotFoundException(String message) {
+        super(message);
+    }
 
-	/**
-	 * Instantiates a new Label not found exception.
-	 *
-	 * @param message the message
-	 * @param cause   the cause
-	 */
-	public LabelNotFoundException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    /**
+     * Instantiates a new Label not found exception.
+     *
+     * @param message the message
+     * @param cause   the cause
+     */
+    public LabelNotFoundException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
 }

@@ -13,53 +13,53 @@ import java.util.List;
  */
 public interface LabelService {
 
-	/**
-	 * Save label.
-	 *
-	 * @param labelEntity the label
-	 * @return the label
-	 */
-	LabelEntity save(LabelEntity labelEntity) throws ApiRequestException;
+    /**
+     * Save label.
+     *
+     * @param labelEntity the label
+     * @return the label
+     */
+    LabelEntity save(LabelEntity labelEntity) throws ApiRequestException;
 
-	/**
-	 * Find all page.
-	 *
-	 * @param page the page
-	 * @param size the size
-	 * @return the page
-	 */
-	Page<LabelEntity> findAll(Integer page, Integer size) throws PageNotFoundException;
+    /**
+     * Find all page.
+     *
+     * @param page the page
+     * @param size the size
+     * @return the page
+     */
+    Page<LabelEntity> findAll(Integer page, Integer size) throws PageNotFoundException;
 
-	/**
-	 * Find by id label.
-	 *
-	 * @param labelId the label id
-	 * @return the label
-	 */
-	LabelEntity findById(Long labelId) throws LabelNotFoundException;
+    /**
+     * Find by id label.
+     *
+     * @param labelId the label id
+     * @return the label
+     */
+    LabelEntity findById(Long labelId) throws LabelNotFoundException;
 
-	/**
-	 * Find by name label.
-	 *
-	 * @param name the name
-	 * @return the label
-	 */
-	LabelEntity findByName(String name) throws LabelNotFoundException;
+    /**
+     * Find by name label.
+     *
+     * @param name the name
+     * @return the label
+     */
+    LabelEntity findByName(String name) throws LabelNotFoundException;
 
-	/**
-	 * Find labels list.
-	 *
-	 * @param labelEntities the labels
-	 * @return the list
-	 */
-	List<LabelEntity> findLabels(List<LabelEntity> labelEntities) throws LabelNotFoundException;
+    /**
+     * Find labels list.
+     *
+     * @param labelEntities the labels
+     * @return the list
+     */
+    List<LabelEntity> findLabels(List<LabelEntity> labelEntities) throws LabelNotFoundException;
 
-	/**
-	 * Delete by id label.
-	 *
-	 * @param labelId the label id
-	 * @return the label
-	 */
-	LabelEntity deleteById(Long labelId) throws LabelNotFoundException;
+    /**
+     * Delete by id label.
+     *
+     * @param labelId the label id
+     * @return the label
+     */
+    LabelEntity deleteById(Long labelId) throws LabelNotFoundException;
 
 }

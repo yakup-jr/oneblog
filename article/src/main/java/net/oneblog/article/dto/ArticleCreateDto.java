@@ -22,26 +22,26 @@ import java.util.List;
 @Relation(collectionRelation = "articles")
 public class ArticleCreateDto {
 
-	@NotBlank
-	@Length(min = 1, max = 255)
-	private String title;
+    @NotBlank
+    @Length(min = 1, max = 255)
+    private String title;
 
-	@NotBlank
-	@Length(min = 10, max = 65000)
-	private String body;
+    @NotBlank
+    @Length(min = 10, max = 65000)
+    private String body;
 
-	private LocalDateTime createTime;
+    private LocalDateTime createTime;
 
-	@NotNull
-	@Valid
-	private PreviewCreateDto preview;
+    @NotNull
+    @Valid
+    private PreviewCreateDto preview;
 
-	@NotNull
-	@Valid
-	private List<LabelDto> labels;
+    @NotNull
+    @Valid
+    private List<LabelDto> labels;
 
-	@NotNull
-	@Valid
-	private UserDto user;
+    @NotNull
+    @Valid
+    private UserDto user;
 
 }

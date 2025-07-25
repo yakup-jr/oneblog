@@ -3,7 +3,6 @@ package net.oneblog.auth.adapter;
 import net.oneblog.api.interfaces.RoleDomain;
 import net.oneblog.api.interfaces.RoleNameDomain;
 import net.oneblog.auth.entity.RoleEntity;
-import org.springframework.stereotype.Component;
 
 public class RoleDomainAdapter implements RoleDomain {
 

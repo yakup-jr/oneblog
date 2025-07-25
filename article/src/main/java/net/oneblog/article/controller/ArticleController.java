@@ -6,7 +6,6 @@ import net.oneblog.article.ArticleModelAssembler;
 import net.oneblog.article.dto.ArticleCreateDto;
 import net.oneblog.article.dto.ArticleDto;
 import net.oneblog.article.exception.ArticleNotFoundException;
-import net.oneblog.article.mapper.ArticleMapper;
 import net.oneblog.article.service.ArticleService;
 import net.oneblog.sharedexceptions.ApiRequestException;
 import org.springframework.data.domain.Page;

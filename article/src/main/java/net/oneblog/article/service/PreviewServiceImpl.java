@@ -11,20 +11,20 @@ import org.springframework.stereotype.Service;
 @Service
 public class PreviewServiceImpl implements PreviewService {
 
-	private final PreviewRepository previewRepository;
+    private final PreviewRepository previewRepository;
 
-	/**
-	 * Instantiates a new Preview service.
-	 *
-	 * @param previewRepository the preview repository
-	 */
-	public PreviewServiceImpl(PreviewRepository previewRepository) {
-		this.previewRepository = previewRepository;
-	}
+    /**
+     * Instantiates a new Preview service.
+     *
+     * @param previewRepository the preview repository
+     */
+    public PreviewServiceImpl(PreviewRepository previewRepository) {
+        this.previewRepository = previewRepository;
+    }
 
-	@Override
-	public PreviewEntity findById(Long id) throws PreviewNotFoundException {
-		return previewRepository.findById(id).orElseThrow(
-			() -> new PreviewNotFoundException("Preview with id " + id + " not found"));
-	}
+    @Override
+    public PreviewEntity findById(Long id) throws PreviewNotFoundException {
+        return previewRepository.findById(id).orElseThrow(
+            () -> new PreviewNotFoundException("Preview with id " + id + " not found"));
+    }
 }

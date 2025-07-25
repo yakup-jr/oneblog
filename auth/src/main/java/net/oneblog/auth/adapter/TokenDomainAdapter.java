@@ -2,9 +2,6 @@ package net.oneblog.auth.adapter;
 
 import net.oneblog.api.interfaces.TokenDomain;
 import net.oneblog.auth.entity.TokenEntity;
-import org.springframework.stereotype.Component;
-
-import java.time.LocalDateTime;
 
 public class TokenDomainAdapter implements TokenDomain {
     private final TokenEntity entity;

@@ -1,12 +1,12 @@
 package net.oneblog.api.interfaces;
 
 public interface UserDomain {
-	Long getUserId();
+    Long getUserId();
 
-	String getName();
+    String getName();
 
-	String getNickname();
+    String getNickname();
 
-	String getEmail();
+    String getEmail();
 
 }

@@ -20,12 +20,12 @@ import org.springframework.hateoas.server.core.Relation;
 @Relation(collectionRelation = "previews")
 public class PreviewDto {
 
-	@NotNull
-	@Min(1L)
-	private Long articlePreviewId;
+    @NotNull
+    @Min(1L)
+    private Long articlePreviewId;
 
-	@NotNull
-	@Length(min = 10, max = 1000)
-	private String body;
+    @NotNull
+    @Length(min = 10, max = 1000)
+    private String body;
 
 }

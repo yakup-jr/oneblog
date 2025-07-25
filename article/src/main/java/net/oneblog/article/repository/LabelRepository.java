@@ -12,14 +12,15 @@ import java.util.Optional;
  * The interface Label repository.
  */
 @Repository
-public interface LabelRepository extends JpaRepository<LabelEntity, Long>, PagingAndSortingRepository<LabelEntity, Long> {
+public interface LabelRepository
+    extends JpaRepository<LabelEntity, Long>, PagingAndSortingRepository<LabelEntity, Long> {
 
-	/**
-	 * Find by name optional.
-	 *
-	 * @param name the name
-	 * @return the optional
-	 */
-	Optional<LabelEntity> findByName(LabelName name);
+    /**
+     * Find by name optional.
+     *
+     * @param name the name
+     * @return the optional
+     */
+    Optional<LabelEntity> findByName(LabelName name);
 
 }

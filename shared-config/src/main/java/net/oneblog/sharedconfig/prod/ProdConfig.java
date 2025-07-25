@@ -11,4 +11,5 @@ import org.springframework.context.annotation.Profile;
 @Configuration
 @Profile("prod")
 @Import({OneblogConfig.class})
-public class ProdConfig {}
+public class ProdConfig {
+}

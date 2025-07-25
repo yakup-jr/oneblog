@@ -12,18 +12,20 @@ import org.springframework.stereotype.Service;
 @Service
 public class RoleServiceImpl implements RoleService {
 
-	private final RoleRepository roleRepository;
+    private final RoleRepository roleRepository;
 
-	/**
-	 * Instantiates a new Role service.
-	 *
-	 * @param roleRepository the role repository
-	 */
-	public RoleServiceImpl(RoleRepository roleRepository) {this.roleRepository = roleRepository;}
+    /**
+     * Instantiates a new Role service.
+     *
+     * @param roleRepository the role repository
+     */
+    public RoleServiceImpl(RoleRepository roleRepository) {
+        this.roleRepository = roleRepository;
+    }
 
-	@Override
-	public RoleEntity findByName(String name) {
-		return roleRepository.findByName(RoleNameDomain.valueOf(name))
-		                     .orElseThrow(() -> new RoleNotFoundException("Role with name " + name + " not found"));
-	}
+    @Override
+    public RoleEntity findByName(String name) {
+        return roleRepository.findByName(RoleNameDomain.valueOf(name))
+            .orElseThrow(() -> new RoleNotFoundException("Role with name " + name + " not found"));
+    }
 }

@@ -18,32 +18,33 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class PreviewServiceTest {
 
-	@InjectMocks
-	private PreviewServiceImpl articlePreviewService;
+    @InjectMocks
+    private PreviewServiceImpl articlePreviewService;
 
-	@Mock
-	private PreviewRepository previewRepository;
+    @Mock
+    private PreviewRepository previewRepository;
 
-	private static final PreviewEntity
-		DEFAULT_PREVIEW_ENTITY = new PreviewEntity(1L, "Some body", null);
+    private static final PreviewEntity
+        DEFAULT_PREVIEW_ENTITY = new PreviewEntity(1L, "Some body", null);
 
-	@Test
-	void findById_ReturnArticlePreview() {
-		when(previewRepository.findById(1L)).thenReturn(Optional.of(DEFAULT_PREVIEW_ENTITY));
+    @Test
+    void findById_ReturnArticlePreview() {
+        when(previewRepository.findById(1L)).thenReturn(Optional.of(DEFAULT_PREVIEW_ENTITY));
 
-		PreviewEntity previewEntity = articlePreviewService.findById(1L);
+        PreviewEntity previewEntity = articlePreviewService.findById(1L);
 
-		assertThat(previewEntity).isNotNull().isInstanceOf(PreviewEntity.class);
-		assertThat(previewEntity.getArticlePreviewId()).isEqualTo(DEFAULT_PREVIEW_ENTITY.getArticlePreviewId());
-		assertThat(previewEntity).isEqualTo(DEFAULT_PREVIEW_ENTITY);
-	}
+        assertThat(previewEntity).isNotNull().isInstanceOf(PreviewEntity.class);
+        assertThat(previewEntity.getArticlePreviewId()).isEqualTo(
+            DEFAULT_PREVIEW_ENTITY.getArticlePreviewId());
+        assertThat(previewEntity).isEqualTo(DEFAULT_PREVIEW_ENTITY);
+    }
 
-	@Test
-	void findById_ThrowPreviewNotFoundException() {
-		when(previewRepository.findById(999L)).thenReturn(Optional.empty());
+    @Test
+    void findById_ThrowPreviewNotFoundException() {
+        when(previewRepository.findById(999L)).thenReturn(Optional.empty());
 
-		assertThatThrownBy(() -> articlePreviewService.findById(999L)).isInstanceOf(
+        assertThatThrownBy(() -> articlePreviewService.findById(999L)).isInstanceOf(
             PreviewNotFoundException.class);
-	}
+    }
 
 }

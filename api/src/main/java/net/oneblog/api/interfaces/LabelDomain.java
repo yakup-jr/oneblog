@@ -3,9 +3,9 @@ package net.oneblog.api.interfaces;
 import java.util.List;
 
 public interface LabelDomain {
-	Long getLabelId();
+    Long getLabelId();
 
-	String getName();
+    String getName();
 
-	List<ArticleDomain> getArticles();
+    List<ArticleDomain> getArticles();
 }

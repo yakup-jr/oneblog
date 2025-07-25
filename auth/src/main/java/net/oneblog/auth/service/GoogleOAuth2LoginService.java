@@ -5,10 +5,9 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import net.oneblog.auth.dto.AuthenticationResponseDto;
 import net.oneblog.auth.entity.AuthEntity;
 import net.oneblog.auth.repository.AuthRepository;
-import net.oneblog.user.repository.UserRepository;
 import net.oneblog.user.entity.UserEntity;
+import net.oneblog.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -34,7 +33,6 @@ public class GoogleOAuth2LoginService {
         this.tokenService = tokenService;
         this.verifier = verifier;
     }
-
 
 
     //todo: throw if nickname exists

@@ -18,7 +18,7 @@ import org.springframework.hateoas.server.core.Relation;
 @Relation(collectionRelation = "labels")
 public class LabelCreateDto {
 
-	@NotNull
-	private LabelName name;
+    @NotNull
+    private LabelName name;
 
 }

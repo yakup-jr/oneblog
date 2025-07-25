@@ -44,7 +44,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
             throw new ServiceException("Verification code already send");
         }
         String code = mailMessage.sendVerificationCode(email);
-        System.out.println("Code is " +code);
+        System.out.println("Code is " + code);
         UserDto userEntity = userService.findByEmail(email);
         EmailEntity emailEntity =
             EmailEntity.builder()

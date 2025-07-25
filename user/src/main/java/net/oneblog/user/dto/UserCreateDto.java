@@ -19,17 +19,17 @@ import org.springframework.hateoas.server.core.Relation;
 @Relation(collectionRelation = "users")
 public class UserCreateDto {
 
-	@NotNull
-	@Length(min = 2, max = 60)
-	private String name;
+    @NotNull
+    @Length(min = 2, max = 60)
+    private String name;
 
-	@NotNull
-	@Length(min = 2, max = 60)
-	private String nickname;
+    @NotNull
+    @Length(min = 2, max = 60)
+    private String nickname;
 
-	@NotNull
-	@Email
-	private String email;
+    @NotNull
+    @Email
+    private String email;
 
 }
 

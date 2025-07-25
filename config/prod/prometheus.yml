@@ -6,12 +6,12 @@ scrape_configs:
   - job_name: "oneblog"
     metrics_path: "/actuator/prometheus"
     static_configs:
-      - targets: ["app:8080"]
+      - targets: [ "app:8080" ]
 
   - job_name: "prometheus"
     static_configs:
-      - targets: ["prometheus:9090"]
+      - targets: [ "prometheus:9090" ]
 
   - job_name: "loki"
     static_configs:
-      - targets: ["loki:3100"]
+      - targets: [ "loki:3100" ]

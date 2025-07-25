@@ -3,7 +3,6 @@ package net.oneblog.user.service;
 import net.oneblog.user.dto.UserCreateDto;
 import net.oneblog.user.dto.UserDto;
 import org.springframework.data.domain.Page;
-import org.springframework.security.core.userdetails.UserDetailsService;
 
 /**
  * The interface User service.

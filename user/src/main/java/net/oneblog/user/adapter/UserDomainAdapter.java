@@ -2,7 +2,6 @@ package net.oneblog.user.adapter;
 
 import net.oneblog.api.interfaces.UserDomain;
 import net.oneblog.user.entity.UserEntity;
-import org.springframework.stereotype.Component;
 
 public class UserDomainAdapter implements UserDomain {
 

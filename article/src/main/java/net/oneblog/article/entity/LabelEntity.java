@@ -17,15 +17,15 @@ import java.util.List;
 @Table(name = "T_LABEL")
 @Entity
 public class LabelEntity {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "LABEL_ID", nullable = false, updatable = false, unique = true)
-	private Long labelId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "LABEL_ID", nullable = false, updatable = false, unique = true)
+    private Long labelId;
 
-	@Column(name = "NAME", nullable = false, unique = true)
-	@Enumerated(EnumType.STRING)
-	private LabelName name;
+    @Column(name = "NAME", nullable = false, unique = true)
+    @Enumerated(EnumType.STRING)
+    private LabelName name;
 
-	@ManyToMany(mappedBy = "labelEntities", fetch = FetchType.LAZY)
-	private List<ArticleEntity> articleEntities;
+    @ManyToMany(mappedBy = "labelEntities", fetch = FetchType.LAZY)
+    private List<ArticleEntity> articleEntities;
 }

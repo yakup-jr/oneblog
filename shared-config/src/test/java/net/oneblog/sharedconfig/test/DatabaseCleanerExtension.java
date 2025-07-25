@@ -9,22 +9,24 @@ import java.util.List;
 
 public class DatabaseCleanerExtension implements AfterEachCallback {
 
-	private JdbcTemplate jdbcTemplate;
+    private JdbcTemplate jdbcTemplate;
 
-	@Override
-	public void afterEach(ExtensionContext extensionContext) throws Exception {
-		if (jdbcTemplate == null) {
-			jdbcTemplate = SpringExtension.getApplicationContext(extensionContext).getBean(JdbcTemplate.class);
-		}
-		cleanDatabase();
-	}
+    @Override
+    public void afterEach(ExtensionContext extensionContext) throws Exception {
+        if (jdbcTemplate == null) {
+            jdbcTemplate =
+                SpringExtension.getApplicationContext(extensionContext).getBean(JdbcTemplate.class);
+        }
+        cleanDatabase();
+    }
 
-	public void cleanDatabase() {
-		List<String> tableNames =
-			jdbcTemplate.queryForList("SELECT table_name FROM information_schema.tables WHERE table_schema='public'",
-			                          String.class);
-		for (String tableName : tableNames) {
-			jdbcTemplate.execute("TRUNCATE TABLE " + tableName + " RESTART IDENTITY CASCADE");
-		}
-	}
+    public void cleanDatabase() {
+        List<String> tableNames =
+            jdbcTemplate.queryForList(
+                "SELECT table_name FROM information_schema.tables WHERE table_schema='public'",
+                String.class);
+        for (String tableName : tableNames) {
+            jdbcTemplate.execute("TRUNCATE TABLE " + tableName + " RESTART IDENTITY CASCADE");
+        }
+    }
 }

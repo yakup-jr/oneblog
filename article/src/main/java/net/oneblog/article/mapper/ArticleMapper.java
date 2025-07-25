@@ -3,7 +3,6 @@ package net.oneblog.article.mapper;
 import net.oneblog.article.dto.ArticleCreateDto;
 import net.oneblog.article.dto.ArticleDto;
 import net.oneblog.article.entity.ArticleEntity;
-import net.oneblog.user.mappers.UserMapper;
 import org.mapstruct.*;
 
 /**

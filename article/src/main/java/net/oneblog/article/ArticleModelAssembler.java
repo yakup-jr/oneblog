@@ -1,7 +1,6 @@
 package net.oneblog.article;
 
 import net.oneblog.article.dto.ArticleDto;
-import net.oneblog.user.UserLink;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.lang.NonNull;

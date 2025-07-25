@@ -9,11 +9,10 @@ import net.oneblog.auth.entity.TokenEntity;
 import net.oneblog.auth.repository.AuthRepository;
 import net.oneblog.auth.repository.TokenRepository;
 import net.oneblog.sharedexceptions.ServiceException;
+import net.oneblog.user.entity.UserEntity;
 import net.oneblog.user.exceptions.UserNotFoundException;
 import net.oneblog.user.repository.UserRepository;
-import net.oneblog.user.entity.UserEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

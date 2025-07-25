@@ -1,9 +1,7 @@
 package net.oneblog.article.service;
 
-import net.oneblog.api.interfaces.ArticleDomain;
 import net.oneblog.article.dto.ArticleCreateDto;
 import net.oneblog.article.dto.ArticleDto;
-import net.oneblog.article.exception.ArticleNotFoundException;
 import net.oneblog.article.exception.LabelNotFoundException;
 import net.oneblog.sharedexceptions.ApiRequestException;
 import org.springframework.data.domain.Page;

@@ -6,11 +6,11 @@ package net.oneblog.email.service;
 @FunctionalInterface
 public interface CodeGenerator {
 
-	/**
-	 * Generate six digits string.
-	 *
-	 * @return the string
-	 */
-	String generateSixDigits();
+    /**
+     * Generate six digits string.
+     *
+     * @return the string
+     */
+    String generateSixDigits();
 
 }

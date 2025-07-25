@@ -23,7 +23,6 @@ public class CodeGeneratorTest {
 
     @Test
     void generateSixDigits() {
-        when(random.nextInt(999999)).thenReturn(261723);
         assertThat(codeGenerator.generateSixDigits()).hasSize(6);
     }
 }

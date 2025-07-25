@@ -10,22 +10,24 @@ import org.springframework.stereotype.Component;
  * The type User model assembler.
  */
 @Component
-public class UserModelAssembler implements RepresentationModelAssembler<UserDto, EntityModel<UserDto>> {
+public class UserModelAssembler
+    implements RepresentationModelAssembler<UserDto, EntityModel<UserDto>> {
 
-	private final UserLink userLink;
+    private final UserLink userLink;
 
-	/**
-	 * Instantiates a new User model assembler.
-	 *
-	 * @param userLink the user link
-	 */
-	public UserModelAssembler(UserLink userLink) {
-		this.userLink = userLink;
-	}
+    /**
+     * Instantiates a new User model assembler.
+     *
+     * @param userLink the user link
+     */
+    public UserModelAssembler(UserLink userLink) {
+        this.userLink = userLink;
+    }
 
-	@Override
-	@NonNull
-	public EntityModel<UserDto> toModel(@NonNull UserDto userDto) {
-		return EntityModel.of(userDto, userLink.findUserByUserId(userDto.getUserId()).withSelfRel());
-	}
+    @Override
+    @NonNull
+    public EntityModel<UserDto> toModel(@NonNull UserDto userDto) {
+        return EntityModel.of(userDto,
+            userLink.findUserByUserId(userDto.getUserId()).withSelfRel());
+    }
 }

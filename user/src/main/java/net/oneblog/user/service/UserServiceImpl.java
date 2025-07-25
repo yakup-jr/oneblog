@@ -1,6 +1,5 @@
 package net.oneblog.user.service;
 
-import net.oneblog.sharedexceptions.ApiRequestException;
 import net.oneblog.sharedexceptions.PageNotFoundException;
 import net.oneblog.sharedexceptions.ServiceException;
 import net.oneblog.user.dto.UserCreateDto;

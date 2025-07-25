@@ -11,23 +11,24 @@ import org.mapstruct.ReportingPolicy;
  * The type Role mapper.
  */
 @Mapper(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
-	componentModel = MappingConstants.ComponentModel.SPRING, unmappedTargetPolicy = ReportingPolicy.WARN)
+    componentModel = MappingConstants.ComponentModel.SPRING,
+    unmappedTargetPolicy = ReportingPolicy.WARN)
 public interface RoleMapper {
 
-	/**
-	 * Map role.
-	 *
-	 * @param role the role
-	 * @return the role
-	 */
-	RoleEntity map(RoleDto role);
+    /**
+     * Map role.
+     *
+     * @param role the role
+     * @return the role
+     */
+    RoleEntity map(RoleDto role);
 
-	/**
-	 * Map role dto.
-	 *
-	 * @param roleEntity the role
-	 * @return the role dto
-	 */
-	RoleDto map(RoleEntity roleEntity);
+    /**
+     * Map role dto.
+     *
+     * @param roleEntity the role
+     * @return the role dto
+     */
+    RoleDto map(RoleEntity roleEntity);
 
 }

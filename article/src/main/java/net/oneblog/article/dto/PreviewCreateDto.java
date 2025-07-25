@@ -18,8 +18,8 @@ import org.springframework.hateoas.server.core.Relation;
 @Relation(collectionRelation = "previews")
 public class PreviewCreateDto {
 
-	@NotNull
-	@Length(min = 10, max = 1000)
-	private String body;
+    @NotNull
+    @Length(min = 10, max = 1000)
+    private String body;
 
 }

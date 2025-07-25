@@ -3,7 +3,6 @@ package net.oneblog.email.adapter;
 import net.oneblog.api.interfaces.EmailDomain;
 import net.oneblog.api.interfaces.UserDomain;
 import net.oneblog.email.entity.EmailEntity;
-import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 

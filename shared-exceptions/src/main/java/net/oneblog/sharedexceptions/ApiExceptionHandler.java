@@ -150,7 +150,7 @@ public class ApiExceptionHandler {
             ApiException.builder().message(e.getMessage()).httpStatus(HttpStatus.BAD_REQUEST)
                 .build();
 
-        return ResponseEntity.status(apiException.getHttpStatus())
+        return ResponseEntity.status(apiException.httpStatus())
             .contentType(MediaType.APPLICATION_JSON)
             .body(apiException);
     }

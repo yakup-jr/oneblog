@@ -14,7 +14,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class RegistrationEmailVerification {
 
-	private String email;
-	private String verificationCode;
+    private String email;
+    private String verificationCode;
 
 }

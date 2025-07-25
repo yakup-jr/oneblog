@@ -1,13 +1,11 @@
 package net.oneblog.api.interfaces;
 
-import java.time.LocalDateTime;
-
 public interface TokenDomain {
-	Long getTokenId();
+    Long getTokenId();
 
-	String getAccessToken();
+    String getAccessToken();
 
-	String getRefreshToken();
+    String getRefreshToken();
 
-	Boolean isRevoked();
+    Boolean isRevoked();
 }

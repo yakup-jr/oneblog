@@ -14,5 +14,5 @@ import org.springframework.hateoas.server.core.Relation;
 @AllArgsConstructor
 @Relation(collectionRelation = "roles")
 public class RoleDto {
-	private RoleApiDto apiDto;
+    private RoleApiDto apiDto;
 }

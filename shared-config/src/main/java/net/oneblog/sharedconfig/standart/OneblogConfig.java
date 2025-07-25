@@ -10,13 +10,13 @@ import java.util.Random;
  */
 @Configuration
 public class OneblogConfig {
-	/**
-	 * Random random.
-	 *
-	 * @return the random
-	 */
-	@Bean
-	public Random random() {
-		return new Random();
-	}
+    /**
+     * Random random.
+     *
+     * @return the random
+     */
+    @Bean
+    public Random random() {
+        return new Random();
+    }
 }

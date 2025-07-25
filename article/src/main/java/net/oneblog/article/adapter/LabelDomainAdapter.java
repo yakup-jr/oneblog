@@ -3,7 +3,6 @@ package net.oneblog.article.adapter;
 import net.oneblog.api.interfaces.ArticleDomain;
 import net.oneblog.api.interfaces.LabelDomain;
 import net.oneblog.article.entity.LabelEntity;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 
