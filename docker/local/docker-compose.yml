@@ -22,10 +22,8 @@ services:
     image: postgres:15
     container_name: db
     hostname: db
-    environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: root
-      POSTGRES_DB: oneblog
+    env_file:
+      - .env
     ports:
       - target: 5432
         published: 5432
@@ -34,8 +32,6 @@ services:
     networks:
       - app-network
     volumes:
-      - ../../secrets/local/db_username.txt:/run/secrets/db_username:ro
-      - ../../secrets/local/db_password.txt:/run/secrets/db_password:ro
       - /var/lib/postgresql/data
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U $$(cat /run/secrets/db_username) -d oneblog" ]
@@ -50,6 +46,8 @@ services:
       dockerfile: ./Dockerfile
     container_name: oneblog
     hostname: oneblog
+    env_file:
+      - .env
     depends_on:
       - db
     environment:
@@ -66,14 +64,14 @@ services:
       app-network:
         aliases:
           - oneblog
-    volumes:
-      - ../../secrets/local/db_username.txt:/run/secrets/db_username:ro
-      - ../../secrets/local/db_password.txt:/run/secrets/db_password:ro
-      - ../../secrets/local/oauth_google_client_id.txt:/run/secrets/oauth_google_client_id:ro
-      - ../../secrets/local/oauth_google_client_secret.txt:/run/secrets/oauth_google_client_secret:ro
-      - ../../secrets/local/jwt_secret_key.txt:/run/secrets/jwt_secret_key:ro
-      - ../../secrets/local/mail_username.txt:/run/secrets/mail_username:ro
-      - ../../secrets/local/mail_password.txt:/run/secrets/mail_password:ro
+  #    volumes:
+  #      - ../../secrets/local/db_username.txt:/run/secrets/db_username:ro
+  #      - ../../secrets/local/db_password.txt:/run/secrets/db_password:ro
+  #      - ../../secrets/local/oauth_google_client_id.txt:/run/secrets/oauth_google_client_id:ro
+  #      - ../../secrets/local/oauth_google_client_secret.txt:/run/secrets/oauth_google_client_secret:ro
+  #      - ../../secrets/local/jwt_secret_key.txt:/run/secrets/jwt_secret_key:ro
+  #      - ../../secrets/local/mail_username.txt:/run/secrets/mail_username:ro
+  #      - ../../secrets/local/mail_password.txt:/run/secrets/mail_password:ro
 
   promtail:
     image: grafana/promtail:latest
@@ -138,6 +136,8 @@ services:
     hostname: grafana
     depends_on:
       - prometheus
+    env_file:
+      - .env
     environment:
       GF_SECURITY_ADMIN_USER: admin
       GF_SECURITY_ADMIN_PASSWORD: admin
@@ -151,7 +151,7 @@ services:
         aliases:
           - grafana
     volumes:
-      - ../../secrets/local/jwt_secret_key.txt:/run/secrets/jwt_secret_key:ro
+      #      - ../../secrets/local/jwt_secret_key.txt:/run/secrets/jwt_secret_key:ro
       - grafanadata:/var/lib/grafana
 
 volumes:
