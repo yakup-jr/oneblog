@@ -1,3 +1,6 @@
+import org.gradle.kotlin.dsl.named
+import org.springframework.boot.gradle.tasks.bundling.BootJar
+
 plugins {
     java
     id("org.springframework.boot") version "3.3.1"
@@ -48,11 +51,12 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 
-tasks.bootJar {
+tasks.named<BootJar>("bootJar") {
     enabled = false
 }
 
-tasks.jar {
+tasks.named<Jar>("jar") {
     enabled = true
     archiveClassifier = ""
 }
+
