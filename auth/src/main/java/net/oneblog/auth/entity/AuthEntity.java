@@ -6,6 +6,9 @@ import net.oneblog.user.entity.UserEntity;
 
 import java.util.List;
 
+/**
+ * The type Auth entity.
+ */
 @Builder
 @Setter
 @Getter

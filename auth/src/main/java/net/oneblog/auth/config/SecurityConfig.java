@@ -48,6 +48,7 @@ public class SecurityConfig {
      * Instantiates a new Security config.
      *
      * @param jwtFIlter           the jwt f ilter
+     * @param userDetailsService  the user details service
      * @param accessDeniedHandler the access denied handler
      * @param customLogoutHandler the custom logout handler
      */

@@ -87,6 +87,12 @@ public class ApiExceptionHandler {
             .body(apiException);
     }
 
+    /**
+     * Handle constraint violation exception response entity.
+     *
+     * @param e the e
+     * @return the response entity
+     */
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<Object> handleConstraintViolationException(

@@ -17,6 +17,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * The type Token service.
+ */
 @Service
 public class TokenServiceImpl implements TokenService {
 
@@ -25,6 +28,14 @@ public class TokenServiceImpl implements TokenService {
     private final TokenRepository tokenRepository;
     private final AuthRepository authRepository;
 
+    /**
+     * Instantiates a new Token service.
+     *
+     * @param jwtService      the jwt service
+     * @param userRepository  the user repository
+     * @param tokenRepository the token repository
+     * @param authRepository  the auth repository
+     */
     public TokenServiceImpl(JwtService jwtService, UserRepository userRepository,
                             TokenRepository tokenRepository, AuthRepository authRepository) {
         this.jwtService = jwtService;

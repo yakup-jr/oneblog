@@ -37,6 +37,8 @@ public class ArticleServiceImpl implements ArticleService {
      * @param articleRepository the article repository
      * @param userService       the user service
      * @param labelService      the label service
+     * @param articleMapper     the article mapper
+     * @param userMapper        the user mapper
      */
     public ArticleServiceImpl(ArticleRepository articleRepository, UserService userService,
                               LabelService labelService, ArticleMapper articleMapper,

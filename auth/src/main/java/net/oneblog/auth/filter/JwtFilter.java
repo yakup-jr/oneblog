@@ -31,7 +31,8 @@ public class JwtFilter extends OncePerRequestFilter {
     /**
      * Instantiates a new Jwt filter.
      *
-     * @param jwtService the jwt service
+     * @param jwtService         the jwt service
+     * @param userDetailsService the user details service
      */
     public JwtFilter(JwtService jwtService, UserDetailsService userDetailsService) {
         this.jwtService = jwtService;

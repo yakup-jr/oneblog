@@ -14,6 +14,9 @@ import java.security.GeneralSecurityException;
 import java.util.Optional;
 import java.util.Random;
 
+/**
+ * The type Google o auth 2 login service.
+ */
 @Service
 public class GoogleOAuth2LoginService {
 
@@ -24,6 +27,15 @@ public class GoogleOAuth2LoginService {
     private final GoogleIdTokenVerifier verifier;
 
 
+    /**
+     * Instantiates a new Google o auth 2 login service.
+     *
+     * @param userRepository the user repository
+     * @param authRepository the auth repository
+     * @param jwtService     the jwt service
+     * @param tokenService   the token service
+     * @param verifier       the verifier
+     */
     public GoogleOAuth2LoginService(UserRepository userRepository, AuthRepository authRepository,
                                     JwtService jwtService, TokenService tokenService,
                                     GoogleIdTokenVerifier verifier) {
@@ -35,7 +47,13 @@ public class GoogleOAuth2LoginService {
     }
 
 
-    //todo: throw if nickname exists
+    /**
+     * Sign up authentication response dto.
+     *
+     * @param payload the payload
+     * @return the authentication response dto
+     */
+//todo: throw if nickname exists
     public AuthenticationResponseDto signUp(GoogleIdToken.Payload payload) {
         String nickname = String.valueOf(payload.get("given_name"));
         if (userRepository.findByNickname(nickname).isPresent()) {
@@ -56,6 +74,14 @@ public class GoogleOAuth2LoginService {
         return new AuthenticationResponseDto(accessToken, refreshToken);
     }
 
+    /**
+     * Login authentication response dto.
+     *
+     * @param token the token
+     * @return the authentication response dto
+     * @throws GeneralSecurityException the general security exception
+     * @throws IOException              the io exception
+     */
     public AuthenticationResponseDto login(String token)
         throws GeneralSecurityException, IOException {
         GoogleIdToken.Payload payload = verify(token);
@@ -92,6 +118,14 @@ public class GoogleOAuth2LoginService {
         return signUp(payload);
     }
 
+    /**
+     * Verify google id token . payload.
+     *
+     * @param token the token
+     * @return the google id token . payload
+     * @throws GeneralSecurityException the general security exception
+     * @throws IOException              the io exception
+     */
     public GoogleIdToken.Payload verify(String token) throws GeneralSecurityException,
         IOException {
         GoogleIdToken idToken = verifier.verify(getTokenToVerify(token));

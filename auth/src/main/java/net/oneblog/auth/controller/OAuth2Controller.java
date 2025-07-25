@@ -13,12 +13,20 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 
+/**
+ * The type O auth 2 controller.
+ */
 @RestController
 @RequestMapping("/login/oauth2")
 public class OAuth2Controller {
 
     private final GoogleOAuth2LoginService oauthService;
 
+    /**
+     * Instantiates a new O auth 2 controller.
+     *
+     * @param oauthService the oauth service
+     */
     public OAuth2Controller(GoogleOAuth2LoginService oauthService) {
         this.oauthService = oauthService;
     }

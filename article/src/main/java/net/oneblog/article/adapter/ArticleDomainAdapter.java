@@ -10,10 +10,18 @@ import net.oneblog.user.adapter.UserDomainAdapter;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * The type Article domain adapter.
+ */
 public class ArticleDomainAdapter implements ArticleDomain {
 
     private final ArticleEntity entity;
 
+    /**
+     * Instantiates a new Article domain adapter.
+     *
+     * @param entity the entity
+     */
     public ArticleDomainAdapter(ArticleEntity entity) {
         this.entity = entity;
     }

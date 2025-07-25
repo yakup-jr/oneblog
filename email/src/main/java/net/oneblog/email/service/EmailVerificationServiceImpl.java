@@ -28,6 +28,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
      * @param emailVerificationRepository the email verification repository
      * @param mailMessage                 the mail message
      * @param userService                 the user service
+     * @param userMapper                  the user mapper
      */
     public EmailVerificationServiceImpl(EmailVerificationRepository emailVerificationRepository,
                                         VerificationMailMessage mailMessage,

@@ -6,9 +6,17 @@ import net.oneblog.article.entity.LabelEntity;
 
 import java.util.List;
 
+/**
+ * The type Label domain adapter.
+ */
 public class LabelDomainAdapter implements LabelDomain {
     private final LabelEntity entity;
 
+    /**
+     * Instantiates a new Label domain adapter.
+     *
+     * @param entity the entity
+     */
     public LabelDomainAdapter(LabelEntity entity) {
         this.entity = entity;
     }

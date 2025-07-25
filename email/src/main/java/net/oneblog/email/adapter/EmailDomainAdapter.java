@@ -6,9 +6,17 @@ import net.oneblog.email.entity.EmailEntity;
 
 import java.time.LocalDateTime;
 
+/**
+ * The type Email domain adapter.
+ */
 public class EmailDomainAdapter implements EmailDomain {
     private final EmailEntity entity;
 
+    /**
+     * Instantiates a new Email domain adapter.
+     *
+     * @param entity the entity
+     */
     public EmailDomainAdapter(EmailEntity entity) {
         this.entity = entity;
     }

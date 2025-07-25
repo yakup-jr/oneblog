@@ -7,9 +7,17 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 
+/**
+ * The type Auth adapter.
+ */
 public class AuthAdapter implements UserDetails {
     private final AuthEntity entity;
 
+    /**
+     * Instantiates a new Auth adapter.
+     *
+     * @param authEntity the auth entity
+     */
     public AuthAdapter(AuthEntity authEntity) {
         this.entity = authEntity;
     }

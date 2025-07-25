@@ -18,6 +18,7 @@ public interface LabelService {
      *
      * @param labelEntity the label
      * @return the label
+     * @throws ApiRequestException the api request exception
      */
     LabelEntity save(LabelEntity labelEntity) throws ApiRequestException;
 
@@ -27,6 +28,7 @@ public interface LabelService {
      * @param page the page
      * @param size the size
      * @return the page
+     * @throws PageNotFoundException the page not found exception
      */
     Page<LabelEntity> findAll(Integer page, Integer size) throws PageNotFoundException;
 
@@ -35,6 +37,7 @@ public interface LabelService {
      *
      * @param labelId the label id
      * @return the label
+     * @throws LabelNotFoundException the label not found exception
      */
     LabelEntity findById(Long labelId) throws LabelNotFoundException;
 
@@ -43,6 +46,7 @@ public interface LabelService {
      *
      * @param name the name
      * @return the label
+     * @throws LabelNotFoundException the label not found exception
      */
     LabelEntity findByName(String name) throws LabelNotFoundException;
 
@@ -51,6 +55,7 @@ public interface LabelService {
      *
      * @param labelEntities the labels
      * @return the list
+     * @throws LabelNotFoundException the label not found exception
      */
     List<LabelEntity> findLabels(List<LabelEntity> labelEntities) throws LabelNotFoundException;
 
@@ -59,6 +64,7 @@ public interface LabelService {
      *
      * @param labelId the label id
      * @return the label
+     * @throws LabelNotFoundException the label not found exception
      */
     LabelEntity deleteById(Long labelId) throws LabelNotFoundException;
 

@@ -17,7 +17,8 @@ public interface ArticleService {
      *
      * @param articleDomain the article
      * @return the article
-     * @throws ApiRequestException the api request exception
+     * @throws ApiRequestException    the api request exception
+     * @throws LabelNotFoundException the label not found exception
      */
     ArticleDto save(ArticleCreateDto articleDomain)
         throws ApiRequestException, LabelNotFoundException;

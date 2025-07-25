@@ -29,5 +29,11 @@ public interface UserMapper {
      */
     UserEntity map(UserDto userDto);
 
+    /**
+     * Map user dto.
+     *
+     * @param userEntity the user entity
+     * @return the user dto
+     */
     UserDto map(UserEntity userEntity);
 }

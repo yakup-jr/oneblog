@@ -25,6 +25,7 @@ public class UserServiceImpl implements UserService {
      * Instantiates a new User service.
      *
      * @param userRepository the user repository
+     * @param userMapper     the user mapper
      */
     public UserServiceImpl(UserRepository userRepository, UserMapper userMapper) {
         this.userRepository = userRepository;
