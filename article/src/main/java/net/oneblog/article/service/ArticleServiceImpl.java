@@ -1,7 +1,7 @@
 package net.oneblog.article.service;
 
-import net.oneblog.article.dto.ArticleCreateDto;
-import net.oneblog.article.dto.ArticleDto;
+import net.oneblog.article.models.ArticleModel;
+import net.oneblog.article.models.ArticleCreateModel;
 import net.oneblog.article.entity.ArticleEntity;
 import net.oneblog.article.exception.ArticleNotFoundException;
 import net.oneblog.article.mapper.ArticleMapper;
@@ -51,7 +51,7 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public ArticleDto save(ArticleCreateDto article) {
+    public ArticleModel save(ArticleCreateModel article) {
         ArticleEntity articleEntity = articleMapper.map(article);
         articleEntity.setLabelEntities(labelService.findLabels(articleEntity.getLabelEntities()));
         articleEntity.setUserEntity(
@@ -60,13 +60,13 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public ArticleDto findByArticleId(Long id) {
+    public ArticleModel findByArticleId(Long id) {
         return articleMapper.map(articleRepository.findById(id).orElseThrow(
             () -> new ArticleNotFoundException("Article with id: " + id + " not found")));
     }
 
     @Override
-    public List<ArticleDto> findByUserId(Long userId)
+    public List<ArticleModel> findByUserId(Long userId)
         throws ArticleNotFoundException {
         List<ArticleEntity> articleEntities = articleRepository.findByUserId(userId);
         if (articleEntities.isEmpty()) {
@@ -76,10 +76,10 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public Page<ArticleDto> findAll(Integer page, Integer size) {
+    public Page<ArticleModel> findAll(Integer page, Integer size) {
         try {
             Pageable pageRequest = PageRequest.of(page, size, Sort.by("createdAt").descending());
-            Page<ArticleDto> pageContent =
+            Page<ArticleModel> pageContent =
                 articleRepository.findAll(pageRequest).map(articleMapper::map);
             if (pageContent.isEmpty()) {
                 throw new ApiRequestException(

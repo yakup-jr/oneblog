@@ -1,9 +1,9 @@
 package net.oneblog.auth.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import net.oneblog.auth.dto.LoginRequestDto;
-import net.oneblog.auth.dto.RegistrationRequestDto;
-import net.oneblog.email.dto.RegistrationEmailVerification;
+import net.oneblog.auth.models.LoginRequestModel;
+import net.oneblog.auth.models.RegistrationRequestModel;
+import net.oneblog.email.models.RegistrationEmailVerificationModel;
 import net.oneblog.email.service.CodeGenerator;
 import net.oneblog.sharedconfig.test.IntegrationTest;
 import org.junit.jupiter.api.Disabled;
@@ -39,8 +39,8 @@ class BasicAuthControllerTest {
 
     @Test
     void register_Success() throws Exception {
-        RegistrationRequestDto request =
-            new RegistrationRequestDto("testname", "testuser", "test@example.com", "password123");
+        RegistrationRequestModel request =
+            new RegistrationRequestModel("testname", "testuser", "test@example.com", "password123");
 
         when(codeGenerator.generateSixDigits()).thenReturn("123456");
 
@@ -50,8 +50,8 @@ class BasicAuthControllerTest {
 
     @Test
     void register_UsernameAlreadyTaken() throws Exception {
-        RegistrationRequestDto request =
-            new RegistrationRequestDto("testname", "shadow", "test@example.com ",
+        RegistrationRequestModel request =
+            new RegistrationRequestModel("testname", "shadow", "test@example.com ",
                 "password123");
 
         mockMvc.perform(post("/registration").contentType(MediaType.APPLICATION_JSON)
@@ -60,8 +60,8 @@ class BasicAuthControllerTest {
 
     @Test
     void register_EmailAlreadyTaken() throws Exception {
-        RegistrationRequestDto request =
-            new RegistrationRequestDto("testname", "testuser", "shadow@mail.com",
+        RegistrationRequestModel request =
+            new RegistrationRequestModel("testname", "testuser", "shadow@mail.com",
                 "password123");
 
         mockMvc.perform(post("/registration").contentType(MediaType.APPLICATION_JSON)
@@ -72,8 +72,8 @@ class BasicAuthControllerTest {
     void verifyEmail_Success() throws Exception {
         when(codeGenerator.generateSixDigits()).thenReturn("123456");
 
-        RegistrationRequestDto registerRequest =
-            new RegistrationRequestDto("testname", "verifyuser", "verify@example.com",
+        RegistrationRequestModel registerRequest =
+            new RegistrationRequestModel("testname", "verifyuser", "verify@example.com",
                 "password123");
 
         mockMvc.perform(post("/registration")
@@ -81,8 +81,8 @@ class BasicAuthControllerTest {
                 .content(objectMapper.writeValueAsString(registerRequest)))
             .andExpect(status().isCreated());
 
-        RegistrationEmailVerification request =
-            new RegistrationEmailVerification("verify@example.com", "123456");
+        RegistrationEmailVerificationModel request =
+            new RegistrationEmailVerificationModel("verify@example.com", "123456");
 
         mockMvc.perform(post("/registration/email/verify")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -92,8 +92,8 @@ class BasicAuthControllerTest {
 
     @Test
     void verifyEmail_InvalidCode() throws Exception {
-        RegistrationEmailVerification request =
-            new RegistrationEmailVerification("test@example.com", "invalid");
+        RegistrationEmailVerificationModel request =
+            new RegistrationEmailVerificationModel("test@example.com", "invalid");
 
         mockMvc.perform(post("/registration/email/verify").contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))).andExpect(status().isBadRequest());
@@ -102,7 +102,7 @@ class BasicAuthControllerTest {
     @Test
     @Disabled
     void login_Success() throws Exception {
-        LoginRequestDto request = new LoginRequestDto("shadow", "strongPass2");
+        LoginRequestModel request = new LoginRequestModel("shadow", "strongPass2");
 
         when(passwordEncoder.encode(anyString())).thenReturn("strongPass2");
 
@@ -116,7 +116,7 @@ class BasicAuthControllerTest {
 
     @Test
     void login_UserNotFound() throws Exception {
-        LoginRequestDto request = new LoginRequestDto("nonexistent", "password123");
+        LoginRequestModel request = new LoginRequestModel("nonexistent", "password123");
 
         mockMvc.perform(post("/login/basic").contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))).andExpect(status().isNotFound());

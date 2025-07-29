@@ -1,7 +1,7 @@
 package net.oneblog.user.service;
 
+import net.oneblog.api.dto.UserDto;
 import net.oneblog.user.dto.UserCreateDto;
-import net.oneblog.user.dto.UserDto;
 import org.springframework.data.domain.Page;
 
 /**

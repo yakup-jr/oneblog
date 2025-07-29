@@ -2,11 +2,11 @@ package net.oneblog.article.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.oneblog.api.interfaces.LabelName;
-import net.oneblog.article.dto.ArticleCreateDto;
-import net.oneblog.article.dto.LabelDto;
-import net.oneblog.article.dto.PreviewCreateDto;
+import net.oneblog.article.models.LabelModel;
+import net.oneblog.article.models.ArticleCreateModel;
+import net.oneblog.article.models.PreviewCreateModel;
 import net.oneblog.sharedconfig.test.IntegrationTest;
-import net.oneblog.user.dto.UserDto;
+import net.oneblog.validationapi.models.ValidatedUserModel;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -30,26 +30,26 @@ public class ArticleControllerTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
 
-    private ArticleCreateDto createValidArticleCreateDto() {
-        return ArticleCreateDto.builder()
+    private ArticleCreateModel createValidArticleCreateDto() {
+        return ArticleCreateModel.builder()
             .title("the best president")
             .body("more and more text...")
-            .preview(new PreviewCreateDto("Something interesting preview"))
+            .preview(new PreviewCreateModel("Something interesting preview"))
             .labels(List.of(
-                LabelDto.builder().labelId(1L).name(LabelName.Assembler).build(),
-                LabelDto.builder().labelId(2L).name(LabelName.C).build()))
-            .user(UserDto.builder().userId(2L).name("Emily").nickname("shadow")
+                LabelModel.builder().labelId(1L).name(LabelName.Assembler).build(),
+                LabelModel.builder().labelId(2L).name(LabelName.C).build()))
+            .user(ValidatedUserModel.builder().userId(2L).name("Emily").nickname("shadow")
                 .email("shadow@mail.com").build())
             .build();
     }
 
     @Test
     void createArticle_ReturnArticle() throws Exception {
-        ArticleCreateDto articleCreateDto = createValidArticleCreateDto();
+        ArticleCreateModel articleCreateModel = createValidArticleCreateDto();
 
-        mockMvc.perform(post("/api/v1/article/")
+        mockMvc.perform(post("/api/v1/article")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(articleCreateDto)))
+                .content(objectMapper.writeValueAsString(articleCreateModel)))
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.articleId", notNullValue()))
             .andExpect(jsonPath("$.preview.body", notNullValue()))
@@ -59,48 +59,48 @@ public class ArticleControllerTest {
 
     @Test
     void createArticle_ThrowMethodArgumentNotValidException_TitleBlank() throws Exception {
-        ArticleCreateDto articleCreateDto = createValidArticleCreateDto();
-        articleCreateDto.setTitle("");
+        ArticleCreateModel articleCreateModel = createValidArticleCreateDto();
+        articleCreateModel.setTitle("");
 
-        mockMvc.perform(post("/api/v1/article/")
+        mockMvc.perform(post("/api/v1/article")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(articleCreateDto)))
+                .content(objectMapper.writeValueAsString(articleCreateModel)))
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.message", containsString("title")));
     }
 
     @Test
     void createArticle_ThrowMethodArgumentNotValidException_PreviewBodyBlank() throws Exception {
-        ArticleCreateDto articleCreateDto = createValidArticleCreateDto();
-        articleCreateDto.getPreview().setBody("");
+        ArticleCreateModel articleCreateModel = createValidArticleCreateDto();
+        articleCreateModel.getPreview().setBody("");
 
-        mockMvc.perform(post("/api/v1/article/")
+        mockMvc.perform(post("/api/v1/article")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(articleCreateDto)))
+                .content(objectMapper.writeValueAsString(articleCreateModel)))
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.message", containsString("body")));
     }
 
     @Test
     void createArticle_ThrowMethodArgumentNotValidException_LabelIdNull() throws Exception {
-        ArticleCreateDto articleCreateDto = createValidArticleCreateDto();
-        articleCreateDto.setLabels(null);
+        ArticleCreateModel articleCreateModel = createValidArticleCreateDto();
+        articleCreateModel.setLabels(null);
 
-        mockMvc.perform(post("/api/v1/article/")
+        mockMvc.perform(post("/api/v1/article")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(articleCreateDto)))
+                .content(objectMapper.writeValueAsString(articleCreateModel)))
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.message", containsString("labels")));
     }
 
     @Test
     void createArticle_ThrowMethodArgumentNotValidException_UserIdNull() throws Exception {
-        ArticleCreateDto articleCreateDto = createValidArticleCreateDto();
-        articleCreateDto.setUser(null);
+        ArticleCreateModel articleCreateModel = createValidArticleCreateDto();
+        articleCreateModel.setUser(null);
 
-        mockMvc.perform(post("/api/v1/article/")
+        mockMvc.perform(post("/api/v1/article")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(articleCreateDto)))
+                .content(objectMapper.writeValueAsString(articleCreateModel)))
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.message", containsString("user")));
     }

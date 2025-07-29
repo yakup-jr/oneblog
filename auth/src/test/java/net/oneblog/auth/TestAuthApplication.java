@@ -7,11 +7,11 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
 @ComponentScan(basePackages = {"net.oneblog.sharedconfig", "net.oneblog.user", "net.oneblog" +
-    ".sharedexceptions", "net.oneblog.auth", "net.oneblog.email"})
+    ".sharedexceptions", "net.oneblog.auth", "net.oneblog.email", "net.oneblog.validationapi"})
 @EntityScan(basePackages = {"net.oneblog.sharedconfig", "net.oneblog.user", "net.oneblog" +
-    ".sharedexceptions", "net.oneblog.auth", "net.oneblog.email"})
+    ".sharedexceptions", "net.oneblog.auth", "net.oneblog.email", "net.oneblog.validationapi"})
 @EnableJpaRepositories(
     basePackages = {"net.oneblog.sharedconfig", "net.oneblog.user", "net.oneblog" +
-        ".sharedexceptions", "net.oneblog.auth", "net.oneblog.email"})
+        ".sharedexceptions", "net.oneblog.auth", "net.oneblog.email", "net.oneblog.validationapi"})
 public class TestAuthApplication {
 }

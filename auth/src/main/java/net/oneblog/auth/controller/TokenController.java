@@ -1,7 +1,7 @@
 package net.oneblog.auth.controller;
 
-import net.oneblog.auth.dto.AuthenticationResponseDto;
-import net.oneblog.auth.dto.RefreshTokenRequestDto;
+import net.oneblog.auth.models.AuthenticationResponseModel;
+import net.oneblog.auth.models.RefreshTokenRequestModel;
 import net.oneblog.auth.service.TokenService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,8 +32,8 @@ public class TokenController {
      * @return the response entity
      */
     @PostMapping("/refresh-token")
-    public ResponseEntity<AuthenticationResponseDto> refreshToken(
-        RefreshTokenRequestDto refreshTokenDto) {
+    public ResponseEntity<AuthenticationResponseModel> refreshToken(
+        RefreshTokenRequestModel refreshTokenDto) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(tokenService.reIssueRefreshToken(refreshTokenDto));
     }

@@ -1,6 +1,6 @@
 package net.oneblog.article;
 
-import net.oneblog.article.dto.LabelDto;
+import net.oneblog.article.models.LabelModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.lang.NonNull;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class LabelModelAssembler
-    implements RepresentationModelAssembler<LabelDto, EntityModel<LabelDto>> {
+    implements RepresentationModelAssembler<LabelModel, EntityModel<LabelModel>> {
 
 
     private final LabelLink labelLink;
@@ -28,8 +28,8 @@ public class LabelModelAssembler
 
     @Override
     @NonNull
-    public EntityModel<LabelDto> toModel(@NonNull LabelDto labelDto) {
-        return EntityModel.of(labelDto,
-            labelLink.findLabelByLabelId(labelDto.getLabelId()).withSelfRel());
+    public EntityModel<LabelModel> toModel(@NonNull LabelModel labelModel) {
+        return EntityModel.of(labelModel,
+            labelLink.findLabelByLabelId(labelModel.getLabelId()).withSelfRel());
     }
 }

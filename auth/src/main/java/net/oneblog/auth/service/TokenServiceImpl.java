@@ -2,8 +2,8 @@ package net.oneblog.auth.service;
 
 import io.jsonwebtoken.io.SerialException;
 import jakarta.servlet.http.HttpServletRequest;
-import net.oneblog.auth.dto.AuthenticationResponseDto;
-import net.oneblog.auth.dto.RefreshTokenRequestDto;
+import net.oneblog.auth.models.AuthenticationResponseModel;
+import net.oneblog.auth.models.RefreshTokenRequestModel;
 import net.oneblog.auth.entity.AuthEntity;
 import net.oneblog.auth.entity.TokenEntity;
 import net.oneblog.auth.repository.AuthRepository;
@@ -45,7 +45,7 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    public AuthenticationResponseDto reIssueAccessToken(HttpServletRequest request) {
+    public AuthenticationResponseModel reIssueAccessToken(HttpServletRequest request) {
         String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
         if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
@@ -66,13 +66,13 @@ public class TokenServiceImpl implements TokenService {
             revokeAllTokensForUser(user);
             saveUserToken(accessToken, refreshToken, user);
 
-            return new AuthenticationResponseDto(accessToken, refreshToken);
+            return new AuthenticationResponseModel(accessToken, refreshToken);
         }
         throw new ServiceException("Invalid token");
     }
 
     @Override
-    public AuthenticationResponseDto reIssueRefreshToken(RefreshTokenRequestDto refreshToken) {
+    public AuthenticationResponseModel reIssueRefreshToken(RefreshTokenRequestModel refreshToken) {
         String username = jwtService.extractUsername(refreshToken.refreshToken());
 
         UserEntity userEntity = userRepository.findByNickname(username).orElseThrow(
@@ -86,7 +86,7 @@ public class TokenServiceImpl implements TokenService {
             revokeAllTokensForUser(userEntity);
             saveUserToken(newAccessToken, newRefreshToken, userEntity);
 
-            return new AuthenticationResponseDto(newAccessToken, newRefreshToken);
+            return new AuthenticationResponseModel(newAccessToken, newRefreshToken);
         }
         throw new ServiceException("Invalid token");
     }

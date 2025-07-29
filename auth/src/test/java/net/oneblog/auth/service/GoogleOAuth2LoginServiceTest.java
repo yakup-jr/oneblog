@@ -2,7 +2,7 @@ package net.oneblog.auth.service;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
-import net.oneblog.auth.dto.AuthenticationResponseDto;
+import net.oneblog.auth.models.AuthenticationResponseModel;
 import net.oneblog.auth.entity.AuthEntity;
 import net.oneblog.auth.repository.AuthRepository;
 import net.oneblog.user.entity.UserEntity;
@@ -67,7 +67,7 @@ class GoogleOAuth2LoginServiceTest {
         when(jwtService.generateAccessToken(any())).thenReturn("access-token");
         when(jwtService.generateRefreshToken(any())).thenReturn("refresh-token");
 
-        AuthenticationResponseDto response = googleOAuth2LoginService.signUp(payload);
+        AuthenticationResponseModel response = googleOAuth2LoginService.signUp(payload);
 
         assertNotNull(response);
         assertEquals("access-token", response.accessToken());
@@ -93,7 +93,7 @@ class GoogleOAuth2LoginServiceTest {
         when(jwtService.generateAccessToken(any())).thenReturn("access-token");
         when(jwtService.generateRefreshToken(any())).thenReturn("refresh-token");
 
-        AuthenticationResponseDto response = googleOAuth2LoginService.signUp(payload);
+        AuthenticationResponseModel response = googleOAuth2LoginService.signUp(payload);
 
         assertNotNull(response);
         verify(authRepository).save(any(AuthEntity.class));
@@ -120,7 +120,7 @@ class GoogleOAuth2LoginServiceTest {
         when(jwtService.generateAccessToken(userEntity)).thenReturn("access-token");
         when(jwtService.generateRefreshToken(userEntity)).thenReturn("refresh-token");
 
-        AuthenticationResponseDto response = googleOAuth2LoginService.login(token);
+        AuthenticationResponseModel response = googleOAuth2LoginService.login(token);
 
         assertNotNull(response);
         assertEquals("access-token", response.accessToken());
@@ -147,7 +147,7 @@ class GoogleOAuth2LoginServiceTest {
         when(jwtService.generateAccessToken(any())).thenReturn("access-token");
         when(jwtService.generateRefreshToken(any())).thenReturn("refresh-token");
 
-        AuthenticationResponseDto response = googleOAuth2LoginService.login(token);
+        AuthenticationResponseModel response = googleOAuth2LoginService.login(token);
 
         assertNotNull(response);
         assertEquals("google123", authEntity.getGoogleUserId());
@@ -176,7 +176,7 @@ class GoogleOAuth2LoginServiceTest {
         when(jwtService.generateAccessToken(any())).thenReturn("access-token");
         when(jwtService.generateRefreshToken(any())).thenReturn("refresh-token");
 
-        AuthenticationResponseDto response = googleOAuth2LoginService.login(token);
+        AuthenticationResponseModel response = googleOAuth2LoginService.login(token);
 
         assertNotNull(response);
         verify(authRepository).save(any(AuthEntity.class));

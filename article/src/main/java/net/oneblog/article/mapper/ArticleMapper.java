@@ -1,7 +1,7 @@
 package net.oneblog.article.mapper;
 
-import net.oneblog.article.dto.ArticleCreateDto;
-import net.oneblog.article.dto.ArticleDto;
+import net.oneblog.article.models.ArticleCreateModel;
+import net.oneblog.article.models.ArticleModel;
 import net.oneblog.article.entity.ArticleEntity;
 import org.mapstruct.*;
 
@@ -16,21 +16,21 @@ public interface ArticleMapper {
     /**
      * Map article.
      *
-     * @param articleCreateDto the article create dto
+     * @param articleCreateModel the article create dto
      * @return the article
      */
     @Mapping(source = "labels", target = "labelEntities")
     @Mapping(source = "preview", target = "previewEntity")
     @Mapping(source = "user", target = "userEntity")
-    ArticleEntity map(ArticleCreateDto articleCreateDto);
+    ArticleEntity map(ArticleCreateModel articleCreateModel);
 
     /**
      * Map article.
      *
-     * @param articleDto the article dto
+     * @param articleModel the article dto
      * @return the article
      */
-    ArticleEntity map(ArticleDto articleDto);
+    ArticleEntity map(ArticleModel articleModel);
 
     /**
      * Map article dto.
@@ -41,5 +41,5 @@ public interface ArticleMapper {
     @Mapping(source = "labelEntities", target = "labels")
     @Mapping(source = "previewEntity", target = "preview")
     @Mapping(source = "userEntity", target = "user")
-    ArticleDto map(ArticleEntity articleEntity);
+    ArticleModel map(ArticleEntity articleEntity);
 }

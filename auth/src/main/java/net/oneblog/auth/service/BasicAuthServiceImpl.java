@@ -2,25 +2,23 @@ package net.oneblog.auth.service;
 
 import lombok.AllArgsConstructor;
 import net.oneblog.api.interfaces.RoleNameDomain;
-import net.oneblog.auth.dto.AuthenticationResponseDto;
-import net.oneblog.auth.dto.LoginRequestDto;
-import net.oneblog.auth.dto.RegistrationRequestDto;
+import net.oneblog.auth.models.AuthenticationResponseModel;
+import net.oneblog.auth.models.LoginRequestModel;
+import net.oneblog.auth.models.RegistrationRequestModel;
 import net.oneblog.auth.entity.AuthEntity;
 import net.oneblog.auth.repository.AuthRepository;
 import net.oneblog.auth.repository.RoleRepository;
-import net.oneblog.email.dto.RegistrationEmailVerification;
+import net.oneblog.email.models.RegistrationEmailVerificationModel;
 import net.oneblog.email.exceptions.InvalidVerificationCodeException;
 import net.oneblog.email.service.EmailVerificationService;
 import net.oneblog.sharedexceptions.ServiceException;
 import net.oneblog.user.entity.UserEntity;
 import net.oneblog.user.exceptions.UserNotFoundException;
 import net.oneblog.user.repository.UserRepository;
-import net.oneblog.user.service.UserService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -35,7 +33,6 @@ public class BasicAuthServiceImpl implements BasicAuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
-    private final UserService userService;
     private final RoleRepository roleRepository;
     private final EmailVerificationService emailVerificationService;
     private final AuthRepository authRepository;
@@ -43,34 +40,33 @@ public class BasicAuthServiceImpl implements BasicAuthService {
 
 
     @Override
-    @Transactional
-    public void register(RegistrationRequestDto request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
+    public void register(RegistrationRequestModel request) {
+        if (userRepository.existsByEmail(request.email())) {
             throw new ServiceException("User already exists");
         }
         AuthEntity authEntity = new AuthEntity();
 
-        UserEntity user = UserEntity.builder().email(request.getEmail()).name(request.getName())
-            .nickname(request.getUsername()).build();
+        UserEntity user = UserEntity.builder().email(request.email()).name(request.name())
+            .nickname(request.username()).build();
         authEntity.setUserEntity(user);
 
-        authEntity.setPassword(passwordEncoder.encode(request.getPassword()));
+        authEntity.setPassword(passwordEncoder.encode(request.password()));
         authEntity.setRoleEntities(
             List.of(roleRepository.findByName(RoleNameDomain.ROLE_USER).get()));
         authEntity.setVerificated(false);
 
         authRepository.save(authEntity);
-        emailVerificationService.sendVerificationCode(request.getEmail());
+        emailVerificationService.sendVerificationCode(request.email());
     }
 
     @Override
-    public void verifyEmail(RegistrationEmailVerification request) {
+    public void verifyEmail(RegistrationEmailVerificationModel request) {
         boolean verified = emailVerificationService.verifyCode(request);
         if (!verified) {
             throw new InvalidVerificationCodeException("Code is invalid");
         }
         AuthEntity entity =
-            authRepository.findByEmail(request.getEmail())
+            authRepository.findByEmail(request.email())
                 .orElseThrow(() -> new ServiceException("User not found"));
         entity.setVerificated(true);
 
@@ -79,14 +75,14 @@ public class BasicAuthServiceImpl implements BasicAuthService {
 
 
     @Override
-    public AuthenticationResponseDto authenticate(LoginRequestDto request) {
+    public AuthenticationResponseModel authenticate(LoginRequestModel request) {
         authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+            new UsernamePasswordAuthenticationToken(request.username(), request.password()));
 
         UserEntity userEntity =
-            userRepository.findByNickname(request.getUsername())
+            userRepository.findByNickname(request.username())
                 .orElseThrow(() -> new UserNotFoundException(
-                    "User with username " + request.getUsername() + " not found"));
+                    "User with username " + request.username() + " not found"));
 
         String accessToken = jwtService.generateAccessToken(userEntity);
         String refreshToken = jwtService.generateRefreshToken(userEntity);
@@ -94,6 +90,6 @@ public class BasicAuthServiceImpl implements BasicAuthService {
         tokenService.revokeAllTokensForUser(userEntity);
         tokenService.saveUserToken(accessToken, refreshToken, userEntity);
 
-        return new AuthenticationResponseDto(accessToken, refreshToken);
+        return new AuthenticationResponseModel(accessToken, refreshToken);
     }
 }

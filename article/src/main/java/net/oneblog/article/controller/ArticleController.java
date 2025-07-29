@@ -3,8 +3,8 @@ package net.oneblog.article.controller;
 import lombok.AllArgsConstructor;
 import net.oneblog.article.ArticleLink;
 import net.oneblog.article.ArticleModelAssembler;
-import net.oneblog.article.dto.ArticleCreateDto;
-import net.oneblog.article.dto.ArticleDto;
+import net.oneblog.article.models.ArticleModel;
+import net.oneblog.article.models.ArticleCreateModel;
 import net.oneblog.article.exception.ArticleNotFoundException;
 import net.oneblog.article.service.ArticleService;
 import net.oneblog.sharedexceptions.ApiRequestException;
@@ -32,7 +32,7 @@ public class ArticleController {
     private final ArticleService articleService;
     private final ArticleLink articleLink;
     private final ArticleModelAssembler articleModelAssembler;
-    private final PagedResourcesAssembler<ArticleDto> pagedResourcesAssembler;
+    private final PagedResourcesAssembler<ArticleModel> pagedResourcesAssembler;
 
     /**
      * Create article response entity.
@@ -40,11 +40,11 @@ public class ArticleController {
      * @param articleDto the article dto
      * @return the response entity
      */
-    @PostMapping("/article/")
-    public ResponseEntity<EntityModel<ArticleDto>> createArticle(
-        @RequestBody @Validated ArticleCreateDto articleDto) {
+    @PostMapping("/article")
+    public ResponseEntity<EntityModel<ArticleModel>> createArticle(
+        @RequestBody @Validated ArticleCreateModel articleDto) {
         try {
-            ArticleDto savedArticleEntity = articleService.save(articleDto);
+            ArticleModel savedArticleEntity = articleService.save(articleDto);
             List<Link> links = List.of(
                 articleLink.findArticleByArticleId(savedArticleEntity.getArticleId())
                     .withSelfRel());
@@ -62,10 +62,10 @@ public class ArticleController {
      * @return the response entity
      */
     @GetMapping("/article/{articleId}")
-    public ResponseEntity<EntityModel<ArticleDto>> findArticleByArticleId(
+    public ResponseEntity<EntityModel<ArticleModel>> findArticleByArticleId(
         @PathVariable @Validated Long articleId) {
         try {
-            ArticleDto foundArticleEntity = articleService.findByArticleId(articleId);
+            ArticleModel foundArticleEntity = articleService.findByArticleId(articleId);
             List<Link> links = List.of(articleLink.findArticleByArticleId(articleId).withSelfRel());
             return ResponseEntity.status(HttpStatus.OK)
                 .body(EntityModel.of(foundArticleEntity, links));
@@ -82,11 +82,11 @@ public class ArticleController {
      * @return the response entity
      */
     @GetMapping("/articles")
-    public ResponseEntity<PagedModel<EntityModel<ArticleDto>>> findAllArticles(
+    public ResponseEntity<PagedModel<EntityModel<ArticleModel>>> findAllArticles(
         @RequestParam Integer page,
         @RequestParam(required = false, defaultValue = "10") Integer size) {
         try {
-            Page<ArticleDto> articlesPage =
+            Page<ArticleModel> articlesPage =
                 articleService.findAll(page, size);
             return ResponseEntity.status(HttpStatus.OK)
                 .body(pagedResourcesAssembler.toModel(articlesPage, articleModelAssembler));
@@ -102,16 +102,16 @@ public class ArticleController {
      * @return the response entity
      */
     @GetMapping("/article/user/{userId}")
-    public ResponseEntity<CollectionModel<EntityModel<ArticleDto>>> findArticleByUserId(
+    public ResponseEntity<CollectionModel<EntityModel<ArticleModel>>> findArticleByUserId(
         @PathVariable @Validated Long userId) {
         try {
-            List<ArticleDto> foundArticleEntities = articleService.findByUserId(userId);
+            List<ArticleModel> foundArticleEntities = articleService.findByUserId(userId);
             List<Link> links = List.of(articleLink.findArticleByUserId(userId).withSelfRel());
-            List<EntityModel<ArticleDto>> rawArticles = foundArticleEntities.stream().map(
+            List<EntityModel<ArticleModel>> rawArticles = foundArticleEntities.stream().map(
                     article -> EntityModel.of(article,
                         articleLink.findArticleByArticleId(article.getArticleId()).withSelfRel()))
                 .toList();
-            CollectionModel<EntityModel<ArticleDto>> articles =
+            CollectionModel<EntityModel<ArticleModel>> articles =
                 CollectionModel.of(rawArticles, links);
             return ResponseEntity.status(HttpStatus.OK).body(articles);
         } catch (ArticleNotFoundException e) {

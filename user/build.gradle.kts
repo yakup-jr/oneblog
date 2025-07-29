@@ -24,6 +24,7 @@ dependencies {
     implementation(project(":shared-config"))
     implementation(project(":shared-exceptions"))
     implementation(project(":api"))
+    implementation(project(":validation-api"))
 
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
@@ -32,7 +33,6 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("com.fasterxml.jackson.core:jackson-annotations:2.19.1")
     implementation("org.mapstruct:mapstruct:1.6.3")
-
 
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")

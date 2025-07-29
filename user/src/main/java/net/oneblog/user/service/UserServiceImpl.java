@@ -3,7 +3,7 @@ package net.oneblog.user.service;
 import net.oneblog.sharedexceptions.PageNotFoundException;
 import net.oneblog.sharedexceptions.ServiceException;
 import net.oneblog.user.dto.UserCreateDto;
-import net.oneblog.user.dto.UserDto;
+import net.oneblog.api.dto.UserDto;
 import net.oneblog.user.exceptions.UserNotFoundException;
 import net.oneblog.user.mappers.UserMapper;
 import net.oneblog.user.repository.UserRepository;
@@ -34,12 +34,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto save(UserCreateDto user) {
-        if (userRepository.existsByNickname(user.getNickname())) {
+        if (userRepository.existsByNickname(user.nickname())) {
             throw new ServiceException(
-                "User nickname " + user.getNickname() + " already exists");
+                "User nickname " + user.nickname() + " already exists");
         }
-        if (userRepository.existsByEmail(user.getEmail())) {
-            throw new ServiceException("User email " + user.getEmail() + " already exists");
+        if (userRepository.existsByEmail(user.email())) {
+            throw new ServiceException("User email " + user.email() + " already exists");
         }
 
         return userMapper.map(userRepository.save(userMapper.map(user)));

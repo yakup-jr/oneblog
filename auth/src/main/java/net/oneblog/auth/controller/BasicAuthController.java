@@ -1,10 +1,10 @@
 package net.oneblog.auth.controller;
 
-import net.oneblog.auth.dto.AuthenticationResponseDto;
-import net.oneblog.auth.dto.LoginRequestDto;
-import net.oneblog.auth.dto.RegistrationRequestDto;
+import net.oneblog.auth.models.AuthenticationResponseModel;
+import net.oneblog.auth.models.LoginRequestModel;
+import net.oneblog.auth.models.RegistrationRequestModel;
 import net.oneblog.auth.service.BasicAuthService;
-import net.oneblog.email.dto.RegistrationEmailVerification;
+import net.oneblog.email.models.RegistrationEmailVerificationModel;
 import net.oneblog.sharedexceptions.ApiRequestException;
 import net.oneblog.user.service.UserService;
 import org.springframework.http.HttpStatus;
@@ -39,21 +39,21 @@ public class BasicAuthController {
     /**
      * Register response entity.
      *
-     * @param registrationRequestDto the registration request dto
+     * @param registrationRequestModel the registration request dto
      * @return the response entity
      */
     @PostMapping("/registration")
     public ResponseEntity<String> register(
-        @RequestBody RegistrationRequestDto registrationRequestDto) {
-        if (userService.existsByNickname(registrationRequestDto.getUsername())) {
+        @RequestBody RegistrationRequestModel registrationRequestModel) {
+        if (userService.existsByNickname(registrationRequestModel.username())) {
             throw new ApiRequestException("Username is already taken");
         }
 
-        if (userService.existsByEmail(registrationRequestDto.getEmail())) {
+        if (userService.existsByEmail(registrationRequestModel.email())) {
             throw new ApiRequestException("Email is already taken");
         }
 
-        basicAuthService.register(registrationRequestDto);
+        basicAuthService.register(registrationRequestModel);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -65,7 +65,7 @@ public class BasicAuthController {
      */
     @PostMapping("/registration/email/verify")
     public ResponseEntity<String> verifyEmail(
-        @RequestBody RegistrationEmailVerification emailVerification) {
+        @RequestBody RegistrationEmailVerificationModel emailVerification) {
         basicAuthService.verifyEmail(emailVerification);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -77,7 +77,7 @@ public class BasicAuthController {
      * @return the response entity
      */
     @PostMapping("/login/basic")
-    public ResponseEntity<AuthenticationResponseDto> login(@RequestBody LoginRequestDto request) {
+    public ResponseEntity<AuthenticationResponseModel> login(@RequestBody LoginRequestModel request) {
         return ResponseEntity.status(HttpStatus.OK).body(basicAuthService.authenticate(request));
     }
 }

@@ -1,17 +1,20 @@
 package net.oneblog.article.service;
 
-import net.oneblog.article.dto.ArticleCreateDto;
-import net.oneblog.article.dto.ArticleDto;
+import net.oneblog.article.models.ArticleModel;
+import net.oneblog.article.models.ArticleCreateModel;
 import net.oneblog.article.entity.ArticleEntity;
 import net.oneblog.article.exception.ArticleNotFoundException;
 import net.oneblog.article.mapper.ArticleMapper;
 import net.oneblog.article.repository.ArticleRepository;
 import net.oneblog.sharedexceptions.ApiRequestException;
-import net.oneblog.user.dto.UserDto;
+import net.oneblog.api.dto.UserDto;
 import net.oneblog.user.entity.UserEntity;
 import net.oneblog.user.exceptions.UserNotFoundException;
 import net.oneblog.user.mappers.UserMapper;
 import net.oneblog.user.service.UserService;
+import net.oneblog.validationapi.mappers.ValidatedUserModelMapper;
+import net.oneblog.validationapi.mappers.ValidatedUserModelMapperImpl;
+import net.oneblog.validationapi.models.ValidatedUserModel;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -42,13 +45,15 @@ class ArticleServiceTest {
     private ArticleMapper articleMapper;
     @Mock
     private UserMapper userMapper;
+    @Mock
+    private ValidatedUserModelMapperImpl validatedUserModelMapper;
 
     @InjectMocks
     private ArticleServiceImpl articleService;
 
     @Test
     void save_Success() {
-        ArticleCreateDto createDto = new ArticleCreateDto();
+        ArticleCreateModel createDto = ArticleCreateModel.builder().build();
 
         UserEntity userEntity = UserEntity.builder().userId(1L).build();
         ArticleEntity entity = ArticleEntity.builder()
@@ -56,8 +61,9 @@ class ArticleServiceTest {
             .labelEntities(List.of())
             .build();
 
-        ArticleDto savedDto = new ArticleDto();
-        UserDto userDto = UserDto.builder().userId(1L).build();
+        ArticleModel savedDto = new ArticleModel();
+        UserDto userDto =
+            validatedUserModelMapper.map(ValidatedUserModel.builder().userId(1L).build());
 
         when(articleMapper.map(createDto)).thenReturn(entity);
         when(labelService.findLabels(any())).thenReturn(List.of());
@@ -66,7 +72,7 @@ class ArticleServiceTest {
         when(articleRepository.save(entity)).thenReturn(entity);
         when(articleMapper.map(entity)).thenReturn(savedDto);
 
-        ArticleDto result = articleService.save(createDto);
+        ArticleModel result = articleService.save(createDto);
 
         assertNotNull(result);
         verify(articleRepository).save(entity);
@@ -76,12 +82,12 @@ class ArticleServiceTest {
     @Test
     void findByArticleId_Success() {
         ArticleEntity entity = new ArticleEntity();
-        ArticleDto dto = new ArticleDto();
+        ArticleModel dto = new ArticleModel();
 
         when(articleRepository.findById(1L)).thenReturn(Optional.of(entity));
         when(articleMapper.map(entity)).thenReturn(dto);
 
-        ArticleDto result = articleService.findByArticleId(1L);
+        ArticleModel result = articleService.findByArticleId(1L);
 
         assertNotNull(result);
     }
@@ -95,12 +101,12 @@ class ArticleServiceTest {
     @Test
     void findByUserId_Success() {
         List<ArticleEntity> entities = List.of(new ArticleEntity());
-        ArticleDto dto = new ArticleDto();
+        ArticleModel dto = new ArticleModel();
 
         when(articleRepository.findByUserId(1L)).thenReturn(entities);
         when(articleMapper.map(any(ArticleEntity.class))).thenReturn(dto);
 
-        List<ArticleDto> result = articleService.findByUserId(1L);
+        List<ArticleModel> result = articleService.findByUserId(1L);
 
         assertEquals(1, result.size());
     }
@@ -116,12 +122,12 @@ class ArticleServiceTest {
     @Test
     void findAll_Success() {
         Page<ArticleEntity> entityPage = new PageImpl<>(List.of(new ArticleEntity()));
-        ArticleDto dto = new ArticleDto();
+        ArticleModel dto = new ArticleModel();
 
         when(articleRepository.findAll(any(PageRequest.class))).thenReturn(entityPage);
         when(articleMapper.map(any(ArticleEntity.class))).thenReturn(dto);
 
-        Page<ArticleDto> result = articleService.findAll(0, 10);
+        Page<ArticleModel> result = articleService.findAll(0, 10);
 
         assertFalse(result.isEmpty());
     }

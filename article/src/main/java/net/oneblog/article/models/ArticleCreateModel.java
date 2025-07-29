@@ -1,27 +1,25 @@
-package net.oneblog.article.dto;
+package net.oneblog.article.models;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
-import net.oneblog.user.dto.UserDto;
+import net.oneblog.validationapi.models.ValidatedUserModel;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.hateoas.server.core.Relation;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**
  * The type Article creates dto.
  */
-@Setter
 @Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Relation(collectionRelation = "articles")
-public class ArticleCreateDto {
-
+public class ArticleCreateModel {
     @NotBlank
     @Length(min = 1, max = 255)
     private String title;
@@ -30,18 +28,16 @@ public class ArticleCreateDto {
     @Length(min = 10, max = 65000)
     private String body;
 
-    private LocalDateTime createTime;
+    @NotNull
+    @Valid
+    private PreviewCreateModel preview;
 
     @NotNull
     @Valid
-    private PreviewCreateDto preview;
+    private List<LabelModel> labels;
 
     @NotNull
     @Valid
-    private List<LabelDto> labels;
-
-    @NotNull
-    @Valid
-    private UserDto user;
+    private ValidatedUserModel user;
 
 }

@@ -1,8 +1,8 @@
 package net.oneblog.user;
 
+import net.oneblog.api.dto.UserDto;
 import net.oneblog.sharedexceptions.ServiceException;
 import net.oneblog.user.dto.UserCreateDto;
-import net.oneblog.user.dto.UserDto;
 import net.oneblog.user.entity.UserEntity;
 import net.oneblog.user.exceptions.UserNotFoundException;
 import net.oneblog.user.mappers.UserMapper;
@@ -25,7 +25,6 @@ public class UserServiceTest {
 
     @Mock
     private UserRepository userRepository;
-
     @Mock
     private UserMapper userMapper;
 
@@ -39,51 +38,39 @@ public class UserServiceTest {
         .email("somemail@mail.com")
         .build();
 
-    private static final UserDto defaultUserDto = UserDto.builder()
-        .userId(1L)
-        .name("Dima")
-        .nickname("yakup_jr")
-        .email("somemail@mail.com")
-        .build();
+    private final UserDto defaultUserDto = new UserDto(1L, "Dima", "yakup_jr", "somemail@mail.com");
 
     private static final UserCreateDto defaultUserCreateDto = new UserCreateDto(
         "Dima", "yakup_jr", "somemail@mail.com");
 
     @Test
     void save_ReturnUser() {
-        // Arrange
-        when(userRepository.existsByNickname(defaultUserCreateDto.getNickname())).thenReturn(false);
-        when(userRepository.existsByEmail(defaultUserCreateDto.getEmail())).thenReturn(false);
+        when(userRepository.existsByNickname(defaultUserCreateDto.nickname())).thenReturn(false);
+        when(userRepository.existsByEmail(defaultUserCreateDto.email())).thenReturn(false);
         when(userMapper.map(defaultUserCreateDto)).thenReturn(defaultUser);
         when(userRepository.save(defaultUser)).thenReturn(defaultUser);
         when(userMapper.map(defaultUser)).thenReturn(defaultUserDto);
 
-        // Act
         UserDto savedUser = userService.save(defaultUserCreateDto);
 
-        // Assert
         assertThat(savedUser).isNotNull().isInstanceOf(UserDto.class);
-        assertThat(savedUser.getUserId()).isEqualTo(defaultUserDto.getUserId());
         assertThat(savedUser).isEqualTo(defaultUserDto);
+        assertThat(savedUser.userId()).isEqualTo(defaultUserDto.userId());
     }
 
     @Test
     void save_ThrowApiRequestException_NicknameExists() {
-        // Arrange
-        when(userRepository.existsByNickname(defaultUserCreateDto.getNickname())).thenReturn(true);
+        when(userRepository.existsByNickname(defaultUserCreateDto.nickname())).thenReturn(true);
 
-        // Act & Assert
         assertThatThrownBy(() -> userService.save(defaultUserCreateDto)).isInstanceOf(
             ServiceException.class);
     }
 
     @Test
     void save_ThrowApiRequestException_EmailExists() {
-        // Arrange
-        when(userRepository.existsByNickname(defaultUserCreateDto.getNickname())).thenReturn(false);
-        when(userRepository.existsByEmail(defaultUserCreateDto.getEmail())).thenReturn(true);
+        when(userRepository.existsByNickname(defaultUserCreateDto.nickname())).thenReturn(false);
+        when(userRepository.existsByEmail(defaultUserCreateDto.email())).thenReturn(true);
 
-        // Act & Assert
         assertThatThrownBy(() -> userService.save(defaultUserCreateDto)).isInstanceOf(
             ServiceException.class);
     }
@@ -108,16 +95,13 @@ public class UserServiceTest {
 
     @Test
     void findById_ReturnUser() {
-        // Arrange
         when(userRepository.findById(1L)).thenReturn(Optional.of(defaultUser));
         when(userMapper.map(defaultUser)).thenReturn(defaultUserDto);
 
-        // Act
         UserDto responseUser = userService.findById(1L);
 
-        // Assert
         assertThat(responseUser).isNotNull().isInstanceOf(UserDto.class);
-        assertThat(responseUser.getUserId()).isEqualTo(1L);
+        assertThat(responseUser.userId()).isEqualTo(1L);
         assertThat(responseUser).isEqualTo(defaultUserDto);
     }
 
@@ -131,17 +115,14 @@ public class UserServiceTest {
 
     @Test
     void findByNickname_ReturnUser() {
-        // Arrange
         when(userRepository.findByNickname(defaultUser.getNickname())).thenReturn(
             Optional.of(defaultUser));
         when(userMapper.map(defaultUser)).thenReturn(defaultUserDto);
 
-        // Act
         UserDto responseUser = userService.findByNickname(defaultUser.getNickname());
 
-        // Assert
         assertThat(responseUser).isNotNull().isInstanceOf(UserDto.class);
-        assertThat(responseUser.getUserId()).isEqualTo(defaultUser.getUserId());
+        assertThat(responseUser.userId()).isEqualTo(defaultUser.getUserId());
         assertThat(responseUser).isEqualTo(defaultUserDto);
     }
 
@@ -156,17 +137,14 @@ public class UserServiceTest {
 
     @Test
     void findByEmail_ReturnUser() {
-        // Arrange
         when(userRepository.findByEmail(defaultUser.getEmail())).thenReturn(
             Optional.of(defaultUser));
         when(userMapper.map(defaultUser)).thenReturn(defaultUserDto);
 
-        // Act
         UserDto responseUser = userService.findByEmail(defaultUser.getEmail());
 
-        // Assert
         assertThat(responseUser).isNotNull().isInstanceOf(UserDto.class);
-        assertThat(responseUser.getUserId()).isEqualTo(defaultUser.getUserId());
+        assertThat(responseUser.userId()).isEqualTo(defaultUser.getUserId());
         assertThat(responseUser).isEqualTo(defaultUserDto);
     }
 

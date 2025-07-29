@@ -5,6 +5,7 @@ import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
 @ComponentScan(
-    basePackages = {"net.oneblog.sharedexceptions", "net.oneblog.sharedconfig", "net.oneblog.user"})
+    basePackages = {"net.oneblog.sharedexceptions", "net.oneblog.sharedconfig", "net.oneblog" +
+        ".user", "net.oneblog.validationapi"})
 public class TestUserApplication {
 }

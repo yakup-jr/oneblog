@@ -1,8 +1,8 @@
 package net.oneblog.auth.service;
 
 import jakarta.servlet.http.HttpServletRequest;
-import net.oneblog.auth.dto.AuthenticationResponseDto;
-import net.oneblog.auth.dto.RefreshTokenRequestDto;
+import net.oneblog.auth.models.AuthenticationResponseModel;
+import net.oneblog.auth.models.RefreshTokenRequestModel;
 import net.oneblog.user.entity.UserEntity;
 
 /**
@@ -16,7 +16,7 @@ public interface TokenService {
      * @param refreshToken the refresh token
      * @return the authentication response dto
      */
-    AuthenticationResponseDto reIssueRefreshToken(RefreshTokenRequestDto refreshToken);
+    AuthenticationResponseModel reIssueRefreshToken(RefreshTokenRequestModel refreshToken);
 
     /**
      * Re issue access token authentication response dto.
@@ -24,7 +24,7 @@ public interface TokenService {
      * @param request the request
      * @return the authentication response dto
      */
-    AuthenticationResponseDto reIssueAccessToken(HttpServletRequest request);
+    AuthenticationResponseModel reIssueAccessToken(HttpServletRequest request);
 
     /**
      * Revoke all tokens for user.

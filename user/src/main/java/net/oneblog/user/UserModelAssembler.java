@@ -28,6 +28,6 @@ public class UserModelAssembler
     @NonNull
     public EntityModel<UserDto> toModel(@NonNull UserDto userDto) {
         return EntityModel.of(userDto,
-            userLink.findUserByUserId(userDto.getUserId()).withSelfRel());
+            userLink.findUserByUserId(userDto.userId()).withSelfRel());
     }
 }

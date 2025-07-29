@@ -1,7 +1,7 @@
 package net.oneblog.article.service;
 
-import net.oneblog.article.dto.ArticleCreateDto;
-import net.oneblog.article.dto.ArticleDto;
+import net.oneblog.article.models.ArticleModel;
+import net.oneblog.article.models.ArticleCreateModel;
 import net.oneblog.article.exception.LabelNotFoundException;
 import net.oneblog.sharedexceptions.ApiRequestException;
 import org.springframework.data.domain.Page;
@@ -20,7 +20,7 @@ public interface ArticleService {
      * @throws ApiRequestException    the api request exception
      * @throws LabelNotFoundException the label not found exception
      */
-    ArticleDto save(ArticleCreateDto articleDomain)
+    ArticleModel save(ArticleCreateModel articleDomain)
         throws ApiRequestException, LabelNotFoundException;
 
     /**
@@ -29,7 +29,7 @@ public interface ArticleService {
      * @param id the id
      * @return the article
      */
-    ArticleDto findByArticleId(Long id);
+    ArticleModel findByArticleId(Long id);
 
     /**
      * Find by user id list.
@@ -37,7 +37,7 @@ public interface ArticleService {
      * @param userId the user id
      * @return the list
      */
-    List<ArticleDto> findByUserId(Long userId);
+    List<ArticleModel> findByUserId(Long userId);
 
     /**
      * Find all page.
@@ -46,7 +46,7 @@ public interface ArticleService {
      * @param size the size
      * @return the page
      */
-    Page<ArticleDto> findAll(Integer page, Integer size);
+    Page<ArticleModel> findAll(Integer page, Integer size);
 
     /**
      * Delete by article id.

@@ -2,7 +2,7 @@ package net.oneblog.auth.service;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
-import net.oneblog.auth.dto.AuthenticationResponseDto;
+import net.oneblog.auth.models.AuthenticationResponseModel;
 import net.oneblog.auth.entity.AuthEntity;
 import net.oneblog.auth.repository.AuthRepository;
 import net.oneblog.user.entity.UserEntity;
@@ -54,7 +54,7 @@ public class GoogleOAuth2LoginService {
      * @return the authentication response dto
      */
 //todo: throw if nickname exists
-    public AuthenticationResponseDto signUp(GoogleIdToken.Payload payload) {
+    public AuthenticationResponseModel signUp(GoogleIdToken.Payload payload) {
         String nickname = String.valueOf(payload.get("given_name"));
         if (userRepository.findByNickname(nickname).isPresent()) {
             nickname = nickname.concat(String.valueOf(new Random().nextInt(10000)));
@@ -71,7 +71,7 @@ public class GoogleOAuth2LoginService {
         tokenService.revokeAllTokensForUser(savedAuthEntity.getUserEntity());
         tokenService.saveUserToken(accessToken, refreshToken, savedAuthEntity.getUserEntity());
 
-        return new AuthenticationResponseDto(accessToken, refreshToken);
+        return new AuthenticationResponseModel(accessToken, refreshToken);
     }
 
     /**
@@ -82,7 +82,7 @@ public class GoogleOAuth2LoginService {
      * @throws GeneralSecurityException the general security exception
      * @throws IOException              the io exception
      */
-    public AuthenticationResponseDto login(String token)
+    public AuthenticationResponseModel login(String token)
         throws GeneralSecurityException, IOException {
         GoogleIdToken.Payload payload = verify(token);
 
@@ -99,7 +99,7 @@ public class GoogleOAuth2LoginService {
             tokenService.revokeAllTokensForUser(userEntity);
             tokenService.saveUserToken(accessToken, refreshToken, userEntity);
 
-            return new AuthenticationResponseDto(accessToken, refreshToken);
+            return new AuthenticationResponseModel(accessToken, refreshToken);
         }
         Optional<AuthEntity> byEmail = authRepository.findByEmail(email);
         if (byEmail.isPresent()) {
@@ -113,7 +113,7 @@ public class GoogleOAuth2LoginService {
             tokenService.revokeAllTokensForUser(savedUserEntity.getUserEntity());
             tokenService.saveUserToken(accessToken, refreshToken, savedUserEntity.getUserEntity());
 
-            return new AuthenticationResponseDto(accessToken, refreshToken);
+            return new AuthenticationResponseModel(accessToken, refreshToken);
         }
         return signUp(payload);
     }

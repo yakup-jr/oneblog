@@ -1,6 +1,6 @@
 package net.oneblog.email.service;
 
-import net.oneblog.email.dto.RegistrationEmailVerification;
+import net.oneblog.email.models.RegistrationEmailVerificationModel;
 
 /**
  * The interface Email verification service.
@@ -20,6 +20,6 @@ public interface EmailVerificationService {
      * @param verification the verification
      * @return the boolean
      */
-    boolean verifyCode(RegistrationEmailVerification verification);
+    boolean verifyCode(RegistrationEmailVerificationModel verification);
 
 }

@@ -1,10 +1,10 @@
 package net.oneblog.email.service;
 
-import net.oneblog.email.dto.RegistrationEmailVerification;
+import net.oneblog.api.dto.UserDto;
 import net.oneblog.email.entity.EmailEntity;
+import net.oneblog.email.models.RegistrationEmailVerificationModel;
 import net.oneblog.email.repository.EmailVerificationRepository;
 import net.oneblog.sharedexceptions.ServiceException;
-import net.oneblog.user.dto.UserDto;
 import net.oneblog.user.mappers.UserMapper;
 import net.oneblog.user.service.UserService;
 import org.springframework.stereotype.Service;
@@ -57,12 +57,12 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
     }
 
     @Override
-    public boolean verifyCode(RegistrationEmailVerification verificationPayload) {
+    public boolean verifyCode(RegistrationEmailVerificationModel verificationPayload) {
         EmailEntity verification =
-            emailVerificationRepository.findByEmail(verificationPayload.getEmail()).orElseThrow(
+            emailVerificationRepository.findByEmail(verificationPayload.email()).orElseThrow(
                 () -> new ServiceException("Invalid code"));
         emailVerificationRepository.delete(verification);
-        return verification.getCode().equals(verificationPayload.getVerificationCode()) &&
+        return verification.getCode().equals(verificationPayload.verificationCode()) &&
             verification.getExpiresAt().isAfter(LocalDateTime.now());
     }
 }

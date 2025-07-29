@@ -1,4 +1,4 @@
-package net.oneblog.article.dto;
+package net.oneblog.article.models;
 
 
 import jakarta.validation.constraints.Min;
@@ -17,7 +17,7 @@ import org.springframework.hateoas.server.core.Relation;
 @AllArgsConstructor
 @NoArgsConstructor
 @Relation(collectionRelation = "labels")
-public class LabelDto {
+public class LabelModel {
 
     @NotNull
     @Min(value = 1L, message = "must be greater than or equal to 1")

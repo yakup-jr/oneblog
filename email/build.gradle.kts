@@ -25,6 +25,7 @@ dependencies {
     implementation(project(":shared-config"))
     implementation(project(":user"))
     implementation(project(":shared-exceptions"))
+    implementation(project(":validation-api"))
 
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-mail")

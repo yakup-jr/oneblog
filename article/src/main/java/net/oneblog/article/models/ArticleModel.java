@@ -1,10 +1,10 @@
-package net.oneblog.article.dto;
+package net.oneblog.article.models;
 
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
-import net.oneblog.user.dto.UserDto;
+import net.oneblog.validationapi.models.ValidatedUserModel;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.hateoas.server.core.Relation;
 
@@ -20,7 +20,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @Relation(collectionRelation = "articles")
-public class ArticleDto {
+public class ArticleModel {
 
     @NotNull
     @Min(value = 1L)
@@ -38,11 +38,11 @@ public class ArticleDto {
     private LocalDateTime createdAt;
 
     @NotNull
-    private PreviewDto preview;
+    private PreviewModel preview;
 
     @NotNull
-    private List<LabelDto> labels;
+    private List<LabelModel> labels;
 
     @NotNull
-    private UserDto user;
+    private ValidatedUserModel user;
 }

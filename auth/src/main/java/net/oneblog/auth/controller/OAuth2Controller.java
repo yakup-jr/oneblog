@@ -1,6 +1,6 @@
 package net.oneblog.auth.controller;
 
-import net.oneblog.auth.dto.AuthenticationResponseDto;
+import net.oneblog.auth.models.AuthenticationResponseModel;
 import net.oneblog.auth.service.GoogleOAuth2LoginService;
 import net.oneblog.sharedexceptions.ApiRequestException;
 import org.springframework.http.HttpStatus;
@@ -39,11 +39,11 @@ public class OAuth2Controller {
      * @throws GeneralSecurityException the general security exception
      */
     @PostMapping("/google")
-    public ResponseEntity<AuthenticationResponseDto> authenticationOauth(@RequestBody String token)
+    public ResponseEntity<AuthenticationResponseModel> authenticationOauth(@RequestBody String token)
         throws GeneralSecurityException {
         try {
-            AuthenticationResponseDto authenticationResponseDto = oauthService.login(token);
-            return ResponseEntity.status(HttpStatus.OK).body(authenticationResponseDto);
+            AuthenticationResponseModel authenticationResponseModel = oauthService.login(token);
+            return ResponseEntity.status(HttpStatus.OK).body(authenticationResponseModel);
         } catch (GeneralSecurityException e) {
             throw new java.security.SignatureException(e);
         } catch (IOException e) {

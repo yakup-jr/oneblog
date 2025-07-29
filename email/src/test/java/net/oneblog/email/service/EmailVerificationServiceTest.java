@@ -1,13 +1,15 @@
 package net.oneblog.email.service;
 
-import net.oneblog.email.dto.RegistrationEmailVerification;
+import net.oneblog.api.dto.UserDto;
 import net.oneblog.email.entity.EmailEntity;
+import net.oneblog.email.models.RegistrationEmailVerificationModel;
 import net.oneblog.email.repository.EmailVerificationRepository;
 import net.oneblog.sharedexceptions.ServiceException;
-import net.oneblog.user.dto.UserDto;
 import net.oneblog.user.entity.UserEntity;
 import net.oneblog.user.mappers.UserMapper;
 import net.oneblog.user.service.UserService;
+import net.oneblog.validationapi.mappers.ValidatedUserModelMapper;
+import net.oneblog.validationapi.models.ValidatedUserModel;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -35,12 +37,15 @@ class EmailVerificationServiceTest {
     private UserService userService;
     @Mock
     private UserMapper userMapper;
+    @Mock
+    private ValidatedUserModelMapper validatedUserModelMapper;
 
     @Test
     void sendVerificationCode_Success() {
         String email = "somemail@mail.com";
         String code = "152734";
-        UserDto userDto = UserDto.builder().email(email).build();
+        UserDto userDto =
+            validatedUserModelMapper.map(ValidatedUserModel.builder().email(email).build());
         UserEntity userEntity = new UserEntity();
 
         when(emailVerificationRepository.existsByEmailAndCodeNotExpired(email)).thenReturn(false);
@@ -68,7 +73,8 @@ class EmailVerificationServiceTest {
     void verifyCode_Success() {
         String email = "somemail@mail.com";
         String code = "152734";
-        RegistrationEmailVerification verification = new RegistrationEmailVerification(email, code);
+        RegistrationEmailVerificationModel
+            verification = new RegistrationEmailVerificationModel(email, code);
 
         EmailEntity emailEntity = EmailEntity.builder()
             .code(code)
@@ -88,8 +94,8 @@ class EmailVerificationServiceTest {
         String email = "somemail@mail.com";
         String code = "152734";
         String wrongCode = "999999";
-        RegistrationEmailVerification verification =
-            new RegistrationEmailVerification(email, wrongCode);
+        RegistrationEmailVerificationModel verification =
+            new RegistrationEmailVerificationModel(email, wrongCode);
 
         EmailEntity emailEntity = EmailEntity.builder()
             .code(code)
@@ -108,7 +114,8 @@ class EmailVerificationServiceTest {
     void verifyCode_ExpiredCode() {
         String email = "somemail@mail.com";
         String code = "152734";
-        RegistrationEmailVerification verification = new RegistrationEmailVerification(email, code);
+        RegistrationEmailVerificationModel
+            verification = new RegistrationEmailVerificationModel(email, code);
 
         EmailEntity emailEntity = EmailEntity.builder()
             .code(code)
@@ -127,7 +134,8 @@ class EmailVerificationServiceTest {
     void verifyCode_EmailNotFound() {
         String email = "somemail@mail.com";
         String code = "152734";
-        RegistrationEmailVerification verification = new RegistrationEmailVerification(email, code);
+        RegistrationEmailVerificationModel
+            verification = new RegistrationEmailVerificationModel(email, code);
 
         when(emailVerificationRepository.findByEmail(email)).thenReturn(Optional.empty());
 

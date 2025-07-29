@@ -2,7 +2,6 @@ package net.oneblog.user.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import net.oneblog.api.interfaces.UserDomain;
 import org.hibernate.proxy.HibernateProxy;
 
 import java.util.Objects;
@@ -17,7 +16,7 @@ import java.util.Objects;
 @Setter
 @Entity
 @Table(name = "T_USER")
-public class UserEntity implements UserDomain {
+public class UserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

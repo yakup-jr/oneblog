@@ -1,8 +1,8 @@
 package net.oneblog.auth.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import net.oneblog.auth.dto.AuthenticationResponseDto;
-import net.oneblog.auth.dto.RefreshTokenRequestDto;
+import net.oneblog.auth.models.AuthenticationResponseModel;
+import net.oneblog.auth.models.RefreshTokenRequestModel;
 import net.oneblog.auth.service.TokenService;
 import net.oneblog.sharedconfig.test.IntegrationTest;
 import net.oneblog.sharedexceptions.ServiceException;
@@ -35,11 +35,11 @@ class TokenControllerTest {
 
     @Test
     void refreshToken_Success() throws Exception {
-        RefreshTokenRequestDto request = new RefreshTokenRequestDto("valid-refresh-token");
-        AuthenticationResponseDto response =
-            new AuthenticationResponseDto("new-access-token", "new-refresh-token");
+        RefreshTokenRequestModel request = new RefreshTokenRequestModel("valid-refresh-token");
+        AuthenticationResponseModel response =
+            new AuthenticationResponseModel("new-access-token", "new-refresh-token");
 
-        when(tokenService.reIssueRefreshToken(any(RefreshTokenRequestDto.class))).thenReturn(
+        when(tokenService.reIssueRefreshToken(any(RefreshTokenRequestModel.class))).thenReturn(
             response);
 
         mockMvc.perform(post("/refresh-token")
@@ -52,9 +52,9 @@ class TokenControllerTest {
 
     @Test
     void refreshToken_InvalidToken() throws Exception {
-        RefreshTokenRequestDto request = new RefreshTokenRequestDto("invalid-refresh-token");
+        RefreshTokenRequestModel request = new RefreshTokenRequestModel("invalid-refresh-token");
 
-        when(tokenService.reIssueRefreshToken(any(RefreshTokenRequestDto.class)))
+        when(tokenService.reIssueRefreshToken(any(RefreshTokenRequestModel.class)))
             .thenThrow(new ServiceException("Invalid token"));
 
         mockMvc.perform(post("/refresh-token")
@@ -65,10 +65,10 @@ class TokenControllerTest {
 
     @Test
     void refreshToken_UserNotFound() throws Exception {
-        RefreshTokenRequestDto request =
-            new RefreshTokenRequestDto("valid-token-but-user-not-found");
+        RefreshTokenRequestModel request =
+            new RefreshTokenRequestModel("valid-token-but-user-not-found");
 
-        when(tokenService.reIssueRefreshToken(any(RefreshTokenRequestDto.class)))
+        when(tokenService.reIssueRefreshToken(any(RefreshTokenRequestModel.class)))
             .thenThrow(new UserNotFoundException("User not found"));
 
         mockMvc.perform(post("/refresh-token")
@@ -79,9 +79,9 @@ class TokenControllerTest {
 
     @Test
     void refreshToken_ExpiredToken() throws Exception {
-        RefreshTokenRequestDto request = new RefreshTokenRequestDto("expired-refresh-token");
+        RefreshTokenRequestModel request = new RefreshTokenRequestModel("expired-refresh-token");
 
-        when(tokenService.reIssueRefreshToken(any(RefreshTokenRequestDto.class)))
+        when(tokenService.reIssueRefreshToken(any(RefreshTokenRequestModel.class)))
             .thenThrow(new ServiceException("Token expired"));
 
         mockMvc.perform(post("/refresh-token")
@@ -92,9 +92,9 @@ class TokenControllerTest {
 
     @Test
     void refreshToken_EmptyToken() throws Exception {
-        RefreshTokenRequestDto request = new RefreshTokenRequestDto("");
+        RefreshTokenRequestModel request = new RefreshTokenRequestModel("");
 
-        when(tokenService.reIssueRefreshToken(any(RefreshTokenRequestDto.class)))
+        when(tokenService.reIssueRefreshToken(any(RefreshTokenRequestModel.class)))
             .thenThrow(new ServiceException("Token cannot be empty"));
 
         mockMvc.perform(post("/refresh-token")
@@ -105,9 +105,9 @@ class TokenControllerTest {
 
     @Test
     void refreshToken_NullToken() throws Exception {
-        RefreshTokenRequestDto request = new RefreshTokenRequestDto(null);
+        RefreshTokenRequestModel request = new RefreshTokenRequestModel(null);
 
-        when(tokenService.reIssueRefreshToken(any(RefreshTokenRequestDto.class)))
+        when(tokenService.reIssueRefreshToken(any(RefreshTokenRequestModel.class)))
             .thenThrow(new ServiceException("Token cannot be null"));
 
         mockMvc.perform(post("/refresh-token")

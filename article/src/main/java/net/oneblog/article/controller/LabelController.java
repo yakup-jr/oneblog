@@ -4,8 +4,8 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import net.oneblog.article.LabelLink;
 import net.oneblog.article.LabelModelAssembler;
-import net.oneblog.article.dto.LabelCreateDto;
-import net.oneblog.article.dto.LabelDto;
+import net.oneblog.article.models.LabelModel;
+import net.oneblog.article.models.LabelCreateModel;
 import net.oneblog.article.entity.LabelEntity;
 import net.oneblog.article.exception.LabelNotFoundException;
 import net.oneblog.article.mapper.LabelMapper;
@@ -37,7 +37,7 @@ public class LabelController {
 
     private final LabelModelAssembler labelModelAssembler;
 
-    private final PagedResourcesAssembler<LabelDto> pagedResourcesAssembler;
+    private final PagedResourcesAssembler<LabelModel> pagedResourcesAssembler;
 
     /**
      * Instantiates a new Label controller.
@@ -51,7 +51,7 @@ public class LabelController {
     public LabelController(
         LabelMapper labelMapper, LabelService labelService, LabelLink labelLink,
         LabelModelAssembler labelModelAssembler,
-        PagedResourcesAssembler<LabelDto> pagedResourcesAssembler) {
+        PagedResourcesAssembler<LabelModel> pagedResourcesAssembler) {
         this.labelMapper = labelMapper;
         this.labelService = labelService;
         this.labelLink = labelLink;
@@ -66,8 +66,8 @@ public class LabelController {
      * @return the response entity
      */
     @PostMapping("/label")
-    public ResponseEntity<EntityModel<LabelDto>> saveLabel(
-        @RequestBody @Validated LabelCreateDto labelDto) {
+    public ResponseEntity<EntityModel<LabelModel>> saveLabel(
+        @RequestBody @Validated LabelCreateModel labelDto) {
         try {
             LabelEntity labelEntity = labelMapper.map(labelDto);
             LabelEntity createLabelEntity = labelService.save(labelEntity);
@@ -88,14 +88,14 @@ public class LabelController {
      * @return the response entity
      */
     @GetMapping("label/{labelId}")
-    public ResponseEntity<EntityModel<LabelDto>> findLabelByLabelId(
+    public ResponseEntity<EntityModel<LabelModel>> findLabelByLabelId(
         @PathVariable @Validated Long labelId) {
         try {
             LabelEntity labelEntity = labelService.findById(labelId);
-            LabelDto labelDto = labelMapper.map(labelEntity);
+            LabelModel labelModel = labelMapper.map(labelEntity);
             Links links = Links.of(labelLink.findLabelByLabelId(labelId).withSelfRel(),
                 labelLink.findAllLabels().withRel("labels"));
-            return ResponseEntity.status(200).body(EntityModel.of(labelDto, links));
+            return ResponseEntity.status(200).body(EntityModel.of(labelModel, links));
         } catch (LabelNotFoundException e) {
             throw new LabelNotFoundException(e.getMessage());
         }
@@ -108,14 +108,14 @@ public class LabelController {
      * @return the response entity
      */
     @GetMapping("label/name/{name}")
-    public ResponseEntity<EntityModel<LabelDto>> findLabelByLabelName(
+    public ResponseEntity<EntityModel<LabelModel>> findLabelByLabelName(
         @PathVariable @Validated String name) {
         try {
             LabelEntity labelEntityByName = labelService.findByName(name);
-            LabelDto labelDto = labelMapper.map(labelEntityByName);
+            LabelModel labelModel = labelMapper.map(labelEntityByName);
             Links links = Links.of(labelLink.findLabelByLabelName(name).withSelfRel(),
                 labelLink.findAllLabels().withRel("labels"));
-            return ResponseEntity.status(HttpStatus.OK).body(EntityModel.of(labelDto, links));
+            return ResponseEntity.status(HttpStatus.OK).body(EntityModel.of(labelModel, links));
         } catch (LabelNotFoundException e) {
             throw new LabelNotFoundException(e.getMessage());
         }
@@ -129,12 +129,12 @@ public class LabelController {
      * @return the response entity
      */
     @GetMapping("/labels")
-    public ResponseEntity<PagedModel<EntityModel<LabelDto>>> findAllLabels(
+    public ResponseEntity<PagedModel<EntityModel<LabelModel>>> findAllLabels(
         @RequestParam @Validated @Min(0L) Integer page,
         @RequestParam(required = false, defaultValue = "10") @Validated @Min(1) @Max(50)
         Integer size) {
         try {
-            Page<LabelDto> labelPage = labelService.findAll(page, size).map(labelMapper::map);
+            Page<LabelModel> labelPage = labelService.findAll(page, size).map(labelMapper::map);
             return ResponseEntity.status(HttpStatus.OK)
                 .body(pagedResourcesAssembler.toModel(labelPage, labelModelAssembler));
         } catch (PageNotFoundException e) {
@@ -149,13 +149,13 @@ public class LabelController {
      * @return the response entity
      */
     @DeleteMapping("/label/{labelId}")
-    public ResponseEntity<EntityModel<LabelDto>> deleteLabel(
+    public ResponseEntity<EntityModel<LabelModel>> deleteLabel(
         @PathVariable @Validated Long labelId) {
         try {
             LabelEntity labelEntity = labelService.deleteById(labelId);
-            LabelDto labelDto = labelMapper.map(labelEntity);
+            LabelModel labelModel = labelMapper.map(labelEntity);
             return ResponseEntity.status(HttpStatus.OK).body(
-                EntityModel.of(labelDto, labelLink.findLabelByLabelId(labelId).withRel("label")));
+                EntityModel.of(labelModel, labelLink.findLabelByLabelId(labelId).withRel("label")));
         } catch (LabelNotFoundException e) {
             throw new LabelNotFoundException(e.getMessage());
         }

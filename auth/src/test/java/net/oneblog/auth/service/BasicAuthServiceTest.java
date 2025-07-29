@@ -1,14 +1,14 @@
 package net.oneblog.auth.service;
 
 import net.oneblog.api.interfaces.RoleNameDomain;
-import net.oneblog.auth.dto.AuthenticationResponseDto;
-import net.oneblog.auth.dto.LoginRequestDto;
-import net.oneblog.auth.dto.RegistrationRequestDto;
+import net.oneblog.auth.models.AuthenticationResponseModel;
+import net.oneblog.auth.models.LoginRequestModel;
+import net.oneblog.auth.models.RegistrationRequestModel;
 import net.oneblog.auth.entity.AuthEntity;
 import net.oneblog.auth.entity.RoleEntity;
 import net.oneblog.auth.repository.AuthRepository;
 import net.oneblog.auth.repository.RoleRepository;
-import net.oneblog.email.dto.RegistrationEmailVerification;
+import net.oneblog.email.models.RegistrationEmailVerificationModel;
 import net.oneblog.email.exceptions.InvalidVerificationCodeException;
 import net.oneblog.email.service.EmailVerificationService;
 import net.oneblog.sharedexceptions.ServiceException;
@@ -59,27 +59,27 @@ class BasicAuthServiceTest {
 
     @Test
     void register_Success() {
-        RegistrationRequestDto request = new RegistrationRequestDto("name",
+        RegistrationRequestModel request = new RegistrationRequestModel("name",
             "testuser", "test@example.com", "password123");
 
         RoleEntity userRole = new RoleEntity();
         userRole.setName(RoleNameDomain.ROLE_USER);
 
-        when(userRepository.existsByEmail(request.getEmail())).thenReturn(false);
+        when(userRepository.existsByEmail(request.email())).thenReturn(false);
         when(roleRepository.findByName(RoleNameDomain.ROLE_USER)).thenReturn(Optional.of(userRole));
         when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
 
         basicAuthService.register(request);
 
-        verify(emailVerificationService).sendVerificationCode(request.getEmail());
+        verify(emailVerificationService).sendVerificationCode(request.email());
     }
 
     @Test
     void register_UserAlreadyExists() {
-        RegistrationRequestDto request = new RegistrationRequestDto("name",
+        RegistrationRequestModel request = new RegistrationRequestModel("name",
             "testuser", "existing@example.com", "password123");
 
-        when(userRepository.existsByEmail(request.getEmail())).thenReturn(true);
+        when(userRepository.existsByEmail(request.email())).thenReturn(true);
 
         assertThrows(ServiceException.class, () -> basicAuthService.register(request));
         verify(userRepository, never()).save(any(UserEntity.class));
@@ -87,13 +87,13 @@ class BasicAuthServiceTest {
 
     @Test
     void verifyEmail_Success() {
-        RegistrationEmailVerification request = new RegistrationEmailVerification(
+        RegistrationEmailVerificationModel request = new RegistrationEmailVerificationModel(
             "test@example.com", "123456");
 
         AuthEntity authEntity = new AuthEntity();
 
         when(emailVerificationService.verifyCode(request)).thenReturn(true);
-        when(authRepository.findByEmail(request.getEmail())).thenReturn(Optional.of(authEntity));
+        when(authRepository.findByEmail(request.email())).thenReturn(Optional.of(authEntity));
 
         basicAuthService.verifyEmail(request);
 
@@ -103,7 +103,7 @@ class BasicAuthServiceTest {
 
     @Test
     void verifyEmail_InvalidCode() {
-        RegistrationEmailVerification request = new RegistrationEmailVerification(
+        RegistrationEmailVerificationModel request = new RegistrationEmailVerificationModel(
             "test@example.com", "invalid");
 
         when(emailVerificationService.verifyCode(request)).thenReturn(false);
@@ -117,36 +117,36 @@ class BasicAuthServiceTest {
 
     @Test
     void authenticate_Success() {
-        LoginRequestDto request = new LoginRequestDto("testuser", "password123");
+        LoginRequestModel request = new LoginRequestModel("testuser", "password123");
         UserEntity userEntity = new UserEntity();
 
-        when(userRepository.findByNickname(request.getUsername())).thenReturn(
+        when(userRepository.findByNickname(request.username())).thenReturn(
             Optional.of(userEntity));
         when(jwtService.generateAccessToken(userEntity)).thenReturn("access-token");
         when(jwtService.generateRefreshToken(userEntity)).thenReturn("refresh-token");
 
-        AuthenticationResponseDto response = basicAuthService.authenticate(request);
+        AuthenticationResponseModel response = basicAuthService.authenticate(request);
 
         assertNotNull(response);
         assertEquals("access-token", response.accessToken());
         assertEquals("refresh-token", response.refreshToken());
 
         verify(authenticationManager).authenticate(
-            new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+            new UsernamePasswordAuthenticationToken(request.username(), request.password()));
         verify(tokenService).revokeAllTokensForUser(userEntity);
         verify(tokenService).saveUserToken("access-token", "refresh-token", userEntity);
     }
 
     @Test
     void authenticate_UserNotFound() {
-        LoginRequestDto request = new LoginRequestDto("unknown", "password123");
+        LoginRequestModel request = new LoginRequestModel("unknown", "password123");
 
-        when(userRepository.findByNickname(request.getUsername())).thenReturn(Optional.empty());
+        when(userRepository.findByNickname(request.username())).thenReturn(Optional.empty());
 
         assertThrows(UserNotFoundException.class, () -> basicAuthService.authenticate(request));
 
         verify(authenticationManager).authenticate(
-            new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+            new UsernamePasswordAuthenticationToken(request.username(), request.password()));
         verify(tokenService, never()).revokeAllTokensForUser(any());
         verify(tokenService, never()).saveUserToken(anyString(), anyString(), any());
     }

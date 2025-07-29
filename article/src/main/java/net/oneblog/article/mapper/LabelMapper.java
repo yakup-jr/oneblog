@@ -1,7 +1,7 @@
 package net.oneblog.article.mapper;
 
-import net.oneblog.article.dto.LabelCreateDto;
-import net.oneblog.article.dto.LabelDto;
+import net.oneblog.article.models.LabelCreateModel;
+import net.oneblog.article.models.LabelModel;
 import net.oneblog.article.entity.LabelEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
@@ -22,7 +22,7 @@ public interface LabelMapper {
      * @param dto the dto
      * @return the label
      */
-    LabelEntity map(LabelCreateDto dto);
+    LabelEntity map(LabelCreateModel dto);
 
     /**
      * Map label dto.
@@ -30,6 +30,6 @@ public interface LabelMapper {
      * @param model the model
      * @return the label dto
      */
-    LabelDto map(LabelEntity model);
+    LabelModel map(LabelEntity model);
 
 }

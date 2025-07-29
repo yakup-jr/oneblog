@@ -1,25 +1,24 @@
-package net.oneblog.article.dto;
+package net.oneblog.article.models;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.validator.constraints.Length;
+import net.oneblog.api.interfaces.LabelName;
 import org.springframework.hateoas.server.core.Relation;
 
 /**
- * The type Preview create dto.
+ * The type Label create dto.
  */
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Relation(collectionRelation = "previews")
-public class PreviewCreateDto {
+@Relation(collectionRelation = "labels")
+public class LabelCreateModel {
 
     @NotNull
-    @Length(min = 10, max = 1000)
-    private String body;
+    private LabelName name;
 
 }

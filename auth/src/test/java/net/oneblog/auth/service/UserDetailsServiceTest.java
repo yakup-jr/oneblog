@@ -1,11 +1,13 @@
 package net.oneblog.auth.service;
 
+import net.oneblog.api.dto.UserDto;
 import net.oneblog.auth.adapter.AuthAdapter;
-import net.oneblog.user.dto.UserDto;
 import net.oneblog.user.entity.UserEntity;
 import net.oneblog.user.exceptions.UserNotFoundException;
 import net.oneblog.user.mappers.UserMapper;
 import net.oneblog.user.service.UserService;
+import net.oneblog.validationapi.mappers.ValidatedUserModelMapper;
+import net.oneblog.validationapi.models.ValidatedUserModel;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -21,21 +23,21 @@ class UserDetailsServiceTest {
 
     @InjectMocks
     private UserDetailsServiceImpl userDetailsService;
-
     @Mock
     private UserService userService;
-
     @Mock
     private UserMapper userMapper;
+    @Mock
+    private ValidatedUserModelMapper validatedUserModelMapper;
 
     @Test
     void loadUserByUsername_Success() {
         String username = "testuser";
-        UserDto userDto = UserDto.builder()
+        UserDto userDto = validatedUserModelMapper.map(ValidatedUserModel.builder()
             .userId(1L)
             .nickname(username)
             .email("test@example.com")
-            .build();
+            .build());
 
         UserEntity userEntity = UserEntity.builder()
             .userId(1L)

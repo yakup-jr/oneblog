@@ -3,6 +3,7 @@ package net.oneblog.email.adapter;
 import net.oneblog.api.interfaces.EmailDomain;
 import net.oneblog.api.interfaces.UserDomain;
 import net.oneblog.email.entity.EmailEntity;
+import net.oneblog.user.adapter.UserDomainAdapter;
 
 import java.time.LocalDateTime;
 
@@ -38,6 +39,6 @@ public class EmailDomainAdapter implements EmailDomain {
 
     @Override
     public UserDomain getUser() {
-        return entity.getUserEntity();
+        return new UserDomainAdapter(entity.getUserEntity());
     }
 }

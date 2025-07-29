@@ -2,14 +2,17 @@ package net.oneblog.user.controller;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import lombok.AllArgsConstructor;
+import net.oneblog.api.dto.UserDto;
 import net.oneblog.sharedexceptions.PageNotFoundException;
 import net.oneblog.user.UserLink;
-import net.oneblog.user.UserModelAssembler;
 import net.oneblog.user.dto.UserCreateDto;
-import net.oneblog.user.dto.UserDto;
 import net.oneblog.user.exceptions.UserNotFoundException;
 import net.oneblog.user.service.UserService;
+import net.oneblog.validationapi.mappers.ValidatedUserModelMapper;
+import net.oneblog.validationapi.models.ValidatedUserModel;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
@@ -20,36 +23,20 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * The type User controller.
  */
 @RestController
 @RequestMapping("/api/v1")
+@AllArgsConstructor
 public class UserController {
 
     private final UserService userService;
     private final UserLink userLink;
-    private final UserModelAssembler userModelAssembler;
-    private final PagedResourcesAssembler<UserDto> pagedResourcesAssembler;
-
-    /**
-     * Instantiates a new User controller.
-     *
-     * @param userService             the user service
-     * @param userLink                the user link
-     * @param userModelAssembler      the user model assembler
-     * @param pagedResourcesAssembler the paged resources assembler
-     */
-    public UserController(
-        UserService userService, UserLink userLink,
-        UserModelAssembler userModelAssembler,
-        PagedResourcesAssembler<UserDto> pagedResourcesAssembler) {
-        this.userService = userService;
-        this.userLink = userLink;
-        this.userModelAssembler = userModelAssembler;
-        this.pagedResourcesAssembler = pagedResourcesAssembler;
-    }
+    private final PagedResourcesAssembler<ValidatedUserModel> pagedResourcesAssembler;
+    private final ValidatedUserModelMapper modelMapper;
 
     /**
      * Save user response entity.
@@ -62,7 +49,7 @@ public class UserController {
         @RequestBody @Validated UserCreateDto userCreateDto) {
         UserDto savedUser = userService.save(userCreateDto);
         List<Link> links =
-            List.of(userLink.findUserByUserId(savedUser.getUserId()).withRel("user"));
+            List.of(userLink.findUserByUserId(savedUser.userId()).withRel("user"));
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(EntityModel.of(savedUser, links));
     }
@@ -75,14 +62,17 @@ public class UserController {
      * @return the response entity
      */
     @GetMapping("/users")
-    public ResponseEntity<PagedModel<EntityModel<UserDto>>> findAllUsers(
+    public ResponseEntity<PagedModel<EntityModel<ValidatedUserModel>>> findAllUsers(
         @RequestParam @Validated @Min(0) Integer page,
         @RequestParam(required = false, defaultValue = "10") @Validated @Min(1) @Max(50)
         Integer size) {
         try {
-            Page<UserDto> userPage = userService.findAll(page, size);
+            Page<ValidatedUserModel> userPage =
+                new PageImpl<>(
+                    userService.findAll(page, size).stream().map(modelMapper::map).collect(
+                        Collectors.toList()));
             return ResponseEntity.status(HttpStatus.OK)
-                .body(pagedResourcesAssembler.toModel(userPage, userModelAssembler));
+                .body(pagedResourcesAssembler.toModel(userPage));
         } catch (PageNotFoundException e) {
             throw new PageNotFoundException(e.getMessage());
         }
@@ -95,11 +85,12 @@ public class UserController {
      * @return the response entity
      */
     @GetMapping("/user/{userId}")
-    public ResponseEntity<EntityModel<UserDto>> findUserByUserId(@PathVariable Long userId) {
+    public ResponseEntity<EntityModel<ValidatedUserModel>> findUserByUserId(
+        @PathVariable Long userId) {
         try {
-            UserDto foundUser = userService.findById(userId);
+            ValidatedUserModel foundUser = modelMapper.map(userService.findById(userId));
             List<Link> links = List.of(userLink.findUserByUserId(userId).withSelfRel(),
-                userLink.findUserByNickname(foundUser.getNickname()).withRel("user"));
+                userLink.findUserByNickname(foundUser.nickname()).withRel("user"));
             return ResponseEntity.status(HttpStatus.OK)
                 .body(EntityModel.of(foundUser, links));
         } catch (UserNotFoundException e) {
@@ -118,7 +109,7 @@ public class UserController {
         try {
             UserDto foundUser = userService.findByNickname(nickname);
             List<Link> links = List.of(userLink.findUserByNickname(nickname).withSelfRel(),
-                userLink.findUserByUserId(foundUser.getUserId()).withRel("user"));
+                userLink.findUserByUserId(foundUser.userId()).withRel("user"));
             return ResponseEntity.status(HttpStatus.OK)
                 .body(EntityModel.of(foundUser, links));
         } catch (UserNotFoundException e) {

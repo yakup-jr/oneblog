@@ -2,8 +2,8 @@ package net.oneblog.auth.service;
 
 import io.jsonwebtoken.io.SerialException;
 import jakarta.servlet.http.HttpServletRequest;
-import net.oneblog.auth.dto.AuthenticationResponseDto;
-import net.oneblog.auth.dto.RefreshTokenRequestDto;
+import net.oneblog.auth.models.AuthenticationResponseModel;
+import net.oneblog.auth.models.RefreshTokenRequestModel;
 import net.oneblog.auth.entity.AuthEntity;
 import net.oneblog.auth.entity.TokenEntity;
 import net.oneblog.auth.repository.AuthRepository;
@@ -70,7 +70,7 @@ class TokenServiceTest {
             .build();
         when(authRepository.findByEmail(userEntity.getEmail())).thenReturn(Optional.of(authEntity));
 
-        AuthenticationResponseDto response = tokenService.reIssueAccessToken(request);
+        AuthenticationResponseModel response = tokenService.reIssueAccessToken(request);
 
         assertNotNull(response);
         assertEquals("new-access-token", response.accessToken());
@@ -131,7 +131,7 @@ class TokenServiceTest {
     void reIssueRefreshToken_Success() {
         String refreshToken = "valid-refresh-token";
         String username = "testuser";
-        RefreshTokenRequestDto request = new RefreshTokenRequestDto(refreshToken);
+        RefreshTokenRequestModel request = new RefreshTokenRequestModel(refreshToken);
         UserEntity userEntity = UserEntity.builder()
             .userId(1L)
             .nickname(username)
@@ -152,7 +152,7 @@ class TokenServiceTest {
             .build();
         when(authRepository.findByEmail(userEntity.getEmail())).thenReturn(Optional.of(authEntity));
 
-        AuthenticationResponseDto response = tokenService.reIssueRefreshToken(request);
+        AuthenticationResponseModel response = tokenService.reIssueRefreshToken(request);
 
         assertNotNull(response);
         assertEquals("new-access-token", response.accessToken());
@@ -163,7 +163,7 @@ class TokenServiceTest {
     void reIssueRefreshToken_UserNotFound() {
         String refreshToken = "valid-token";
         String username = "nonexistent";
-        RefreshTokenRequestDto request = new RefreshTokenRequestDto(refreshToken);
+        RefreshTokenRequestModel request = new RefreshTokenRequestModel(refreshToken);
 
         when(jwtService.extractUsername(refreshToken)).thenReturn(username);
         when(userRepository.findByNickname(username)).thenReturn(Optional.empty());
@@ -176,7 +176,7 @@ class TokenServiceTest {
     void reIssueRefreshToken_InvalidToken() {
         String refreshToken = "invalid-token";
         String username = "testuser";
-        RefreshTokenRequestDto request = new RefreshTokenRequestDto(refreshToken);
+        RefreshTokenRequestModel request = new RefreshTokenRequestModel(refreshToken);
         UserEntity userEntity = UserEntity.builder()
             .nickname(username)
             .build();

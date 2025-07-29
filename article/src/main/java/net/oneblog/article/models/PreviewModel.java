@@ -1,4 +1,4 @@
-package net.oneblog.article.dto;
+package net.oneblog.article.models;
 
 
 import jakarta.validation.constraints.Min;
@@ -18,7 +18,7 @@ import org.springframework.hateoas.server.core.Relation;
 @AllArgsConstructor
 @NoArgsConstructor
 @Relation(collectionRelation = "previews")
-public class PreviewDto {
+public class PreviewModel {
 
     @NotNull
     @Min(1L)

@@ -24,6 +24,10 @@ services:
     hostname: db
     env_file:
       - .env
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: oneblog
     ports:
       - target: 5432
         published: 5432

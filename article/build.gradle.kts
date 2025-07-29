@@ -20,10 +20,11 @@ repositories {
 }
 
 dependencies {
+    implementation(project(":api"))
+    implementation(project(":validation-api"))
     implementation(project(":user"))
     implementation(project(":shared-exceptions"))
     implementation(project(":shared-config"))
-    implementation(project(":api"))
 
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")

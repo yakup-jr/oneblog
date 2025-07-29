@@ -1,9 +1,9 @@
 package net.oneblog.auth.service;
 
-import net.oneblog.auth.dto.AuthenticationResponseDto;
-import net.oneblog.auth.dto.LoginRequestDto;
-import net.oneblog.auth.dto.RegistrationRequestDto;
-import net.oneblog.email.dto.RegistrationEmailVerification;
+import net.oneblog.auth.models.AuthenticationResponseModel;
+import net.oneblog.auth.models.LoginRequestModel;
+import net.oneblog.auth.models.RegistrationRequestModel;
+import net.oneblog.email.models.RegistrationEmailVerificationModel;
 
 /**
  * The interface Basic auth service.
@@ -15,14 +15,14 @@ public interface BasicAuthService {
      *
      * @param request the request
      */
-    void register(RegistrationRequestDto request);
+    void register(RegistrationRequestModel request);
 
     /**
      * Verify email.
      *
      * @param request the request
      */
-    void verifyEmail(RegistrationEmailVerification request);
+    void verifyEmail(RegistrationEmailVerificationModel request);
 
     /**
      * Authenticate authentication response dto.
@@ -30,5 +30,5 @@ public interface BasicAuthService {
      * @param request the request
      * @return the authentication response dto
      */
-    AuthenticationResponseDto authenticate(LoginRequestDto request);
+    AuthenticationResponseModel authenticate(LoginRequestModel request);
 }

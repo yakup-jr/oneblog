@@ -1,6 +1,6 @@
 package net.oneblog.auth.mapper;
 
-import net.oneblog.auth.dto.RoleDto;
+import net.oneblog.auth.models.RoleModel;
 import net.oneblog.auth.entity.RoleEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
@@ -21,7 +21,7 @@ public interface RoleMapper {
      * @param role the role
      * @return the role
      */
-    RoleEntity map(RoleDto role);
+    RoleEntity map(RoleModel role);
 
     /**
      * Map role dto.
@@ -29,6 +29,6 @@ public interface RoleMapper {
      * @param roleEntity the role
      * @return the role dto
      */
-    RoleDto map(RoleEntity roleEntity);
+    RoleModel map(RoleEntity roleEntity);
 
 }
