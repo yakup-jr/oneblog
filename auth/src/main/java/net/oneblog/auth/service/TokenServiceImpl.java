@@ -2,16 +2,17 @@ package net.oneblog.auth.service;
 
 import io.jsonwebtoken.io.SerialException;
 import jakarta.servlet.http.HttpServletRequest;
-import net.oneblog.auth.models.AuthenticationResponseModel;
-import net.oneblog.auth.models.RefreshTokenRequestModel;
+import lombok.AllArgsConstructor;
 import net.oneblog.auth.entity.AuthEntity;
 import net.oneblog.auth.entity.TokenEntity;
+import net.oneblog.auth.models.AuthenticationResponseModel;
+import net.oneblog.auth.models.RefreshTokenRequestModel;
 import net.oneblog.auth.repository.AuthRepository;
 import net.oneblog.auth.repository.TokenRepository;
 import net.oneblog.sharedexceptions.ServiceException;
-import net.oneblog.user.entity.UserEntity;
-import net.oneblog.user.exceptions.UserNotFoundException;
 import net.oneblog.user.repository.UserRepository;
+import net.oneblog.user.service.UserService;
+import net.oneblog.validationapi.models.ValidatedUserModel;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 
@@ -21,28 +22,14 @@ import java.util.List;
  * The type Token service.
  */
 @Service
+@AllArgsConstructor
 public class TokenServiceImpl implements TokenService {
 
     private final JwtService jwtService;
     private final UserRepository userRepository;
+    private final UserService userService;
     private final TokenRepository tokenRepository;
     private final AuthRepository authRepository;
-
-    /**
-     * Instantiates a new Token service.
-     *
-     * @param jwtService      the jwt service
-     * @param userRepository  the user repository
-     * @param tokenRepository the token repository
-     * @param authRepository  the auth repository
-     */
-    public TokenServiceImpl(JwtService jwtService, UserRepository userRepository,
-                            TokenRepository tokenRepository, AuthRepository authRepository) {
-        this.jwtService = jwtService;
-        this.userRepository = userRepository;
-        this.tokenRepository = tokenRepository;
-        this.authRepository = authRepository;
-    }
 
     @Override
     public AuthenticationResponseModel reIssueAccessToken(HttpServletRequest request) {
@@ -55,9 +42,7 @@ public class TokenServiceImpl implements TokenService {
         String token = authorizationHeader.substring(7);
         String username = jwtService.extractUsername(token);
 
-        UserEntity user = userRepository.findByNickname(username)
-            .orElseThrow(() -> new UserNotFoundException("User" +
-                " not found"));
+        ValidatedUserModel user = userService.findByNickname(username);
 
         if (jwtService.isValidRefresh(token, user)) {
             String accessToken = jwtService.generateAccessToken(user);
@@ -75,8 +60,7 @@ public class TokenServiceImpl implements TokenService {
     public AuthenticationResponseModel reIssueRefreshToken(RefreshTokenRequestModel refreshToken) {
         String username = jwtService.extractUsername(refreshToken.refreshToken());
 
-        UserEntity userEntity = userRepository.findByNickname(username).orElseThrow(
-            () -> new UserNotFoundException("User with username " + username + " not found"));
+        ValidatedUserModel userEntity = userService.findByNickname(username);
 
         if (jwtService.isValidRefresh(refreshToken.refreshToken(), userEntity)) {
 
@@ -92,8 +76,8 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    public void revokeAllTokensForUser(UserEntity user) {
-        List<TokenEntity> validToken = tokenRepository.findAllAccessTokenByUser(user.getUserId());
+    public void revokeAllTokensForUser(ValidatedUserModel user) {
+        List<TokenEntity> validToken = tokenRepository.findAllAccessTokenByUser(user.userId());
 
         if (!validToken.isEmpty()) {
             validToken.forEach(token -> {
@@ -105,9 +89,9 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    public void saveUserToken(String accessToken, String refreshToken, UserEntity user) {
+    public void saveUserToken(String accessToken, String refreshToken, ValidatedUserModel user) {
         AuthEntity authEntity =
-            authRepository.findByEmail(user.getEmail()).orElseThrow(() -> new SerialException(
+            authRepository.findByUserEntityEmail(user.email()).orElseThrow(() -> new SerialException(
                 "user not found"));
 
         TokenEntity tokenEntity = new TokenEntity();

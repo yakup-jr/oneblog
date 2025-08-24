@@ -1,8 +1,9 @@
 package net.oneblog.user.mappers;
 
 import net.oneblog.api.dto.UserDto;
-import net.oneblog.user.dto.UserCreateDto;
 import net.oneblog.user.entity.UserEntity;
+import net.oneblog.user.models.UserCreateRequest;
+import net.oneblog.validationapi.models.ValidatedUserModel;
 import org.mapstruct.*;
 
 /**
@@ -15,11 +16,11 @@ public interface UserMapper {
     /**
      * Map user.
      *
-     * @param userCreateDto the user create dto
+     * @param userCreateRequest the user create dto
      * @return the user
      */
     @Mapping(target = "userId", ignore = true)
-    UserEntity map(UserCreateDto userCreateDto);
+    UserEntity map(UserCreateRequest userCreateRequest);
 
     /**
      * Map user.
@@ -27,7 +28,7 @@ public interface UserMapper {
      * @param userDto the user dto
      * @return the user
      */
-    UserEntity map(UserDto userDto);
+    UserEntity map(ValidatedUserModel userDto);
 
     /**
      * Map user dto.
@@ -35,5 +36,5 @@ public interface UserMapper {
      * @param userEntity the user entity
      * @return the user dto
      */
-    UserDto map(UserEntity userEntity);
+    ValidatedUserModel map(UserEntity userEntity);
 }

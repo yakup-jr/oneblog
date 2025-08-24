@@ -1,7 +1,7 @@
 package net.oneblog.auth.repository;
 
 import net.oneblog.auth.entity.AuthEntity;
-import net.oneblog.user.entity.UserEntity;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -18,8 +18,8 @@ public interface AuthRepository extends JpaRepository<AuthEntity, Long> {
      * @param email the email
      * @return the optional
      */
-    @Query("select a from AuthEntity a where a.userEntity.email = :email")
-    Optional<AuthEntity> findByEmail(String email);
+    @EntityGraph(attributePaths = "userEntity")
+    Optional<AuthEntity> findByUserEntityEmail(String email);
 
     /**
      * Find by google user id optional.
@@ -27,6 +27,6 @@ public interface AuthRepository extends JpaRepository<AuthEntity, Long> {
      * @param googleUserId the google user id
      * @return the optional
      */
-    Optional<UserEntity> findByGoogleUserId(String googleUserId);
+    Optional<AuthEntity> findByGoogleUserId(String googleUserId);
 
 }

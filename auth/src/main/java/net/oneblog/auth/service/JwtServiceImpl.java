@@ -5,6 +5,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import net.oneblog.auth.repository.TokenRepository;
 import net.oneblog.user.entity.UserEntity;
+import net.oneblog.validationapi.models.ValidatedUserModel;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -56,14 +57,14 @@ JwtServiceImpl implements JwtService {
     }
 
 
-    public boolean isValidRefresh(String token, UserEntity userEntity) {
+    public boolean isValidRefresh(String token, ValidatedUserModel userEntity) {
         try {
             String username = extractUsername(token);
 
             boolean isValidRefreshToken = tokenRepository.findByRefreshToken(token)
                 .map(t -> !t.getIsRevoke()).orElse(false);
 
-            return username.equals(userEntity.getNickname())
+            return username.equals(userEntity.nickname())
                 && isAccessTokenExpired(token)
                 && isValidRefreshToken;
         } catch (ExpiredJwtException e) {
@@ -108,19 +109,19 @@ JwtServiceImpl implements JwtService {
     }
 
 
-    public String generateAccessToken(UserEntity userEntity) {
+    public String generateAccessToken(ValidatedUserModel userEntity) {
         return generateToken(userEntity, accessTokenExpiration);
     }
 
 
-    public String generateRefreshToken(UserEntity userEntity) {
+    public String generateRefreshToken(ValidatedUserModel userEntity) {
         return generateToken(userEntity, refreshTokenExpiration);
     }
 
 
-    private String generateToken(UserEntity userEntity, long expiryTime) {
+    private String generateToken(ValidatedUserModel userEntity, long expiryTime) {
         JwtBuilder builder = Jwts.builder()
-            .subject(userEntity.getNickname())
+            .subject(userEntity.nickname())
             .issuedAt(new Date(System.currentTimeMillis()))
             .expiration(new Date(System.currentTimeMillis() + expiryTime))
             .signWith(getSigningKey());

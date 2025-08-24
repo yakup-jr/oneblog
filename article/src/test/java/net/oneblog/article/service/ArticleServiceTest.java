@@ -1,18 +1,16 @@
 package net.oneblog.article.service;
 
-import net.oneblog.article.models.ArticleModel;
-import net.oneblog.article.models.ArticleCreateModel;
 import net.oneblog.article.entity.ArticleEntity;
 import net.oneblog.article.exception.ArticleNotFoundException;
 import net.oneblog.article.mapper.ArticleMapper;
+import net.oneblog.article.models.ArticleCreateModel;
+import net.oneblog.article.models.ArticleModel;
 import net.oneblog.article.repository.ArticleRepository;
 import net.oneblog.sharedexceptions.ApiRequestException;
-import net.oneblog.api.dto.UserDto;
 import net.oneblog.user.entity.UserEntity;
 import net.oneblog.user.exceptions.UserNotFoundException;
 import net.oneblog.user.mappers.UserMapper;
 import net.oneblog.user.service.UserService;
-import net.oneblog.validationapi.mappers.ValidatedUserModelMapper;
 import net.oneblog.validationapi.mappers.ValidatedUserModelMapperImpl;
 import net.oneblog.validationapi.models.ValidatedUserModel;
 import org.junit.jupiter.api.Test;
@@ -53,29 +51,25 @@ class ArticleServiceTest {
 
     @Test
     void save_Success() {
-        ArticleCreateModel createDto = ArticleCreateModel.builder().build();
+        ValidatedUserModel userModel = ValidatedUserModel.builder().userId(1L).build();
+        ArticleEntity notSaved =
+            ArticleEntity.builder().userEntity(UserEntity.builder().userId(1L).build()).build();
+        ArticleCreateModel createDto =
+            ArticleCreateModel.builder().user(userModel).labels(List.of()).build();
+        ArticleEntity saved =
+            ArticleEntity.builder().articleId(1L).userEntity(UserEntity.builder().userId(1L).build()).build();
+        ArticleModel savedDto = ArticleModel.builder().articleId(1L).user(userModel).build();
 
-        UserEntity userEntity = UserEntity.builder().userId(1L).build();
-        ArticleEntity entity = ArticleEntity.builder()
-            .userEntity(userEntity)
-            .labelEntities(List.of())
-            .build();
-
-        ArticleModel savedDto = new ArticleModel();
-        UserDto userDto =
-            validatedUserModelMapper.map(ValidatedUserModel.builder().userId(1L).build());
-
-        when(articleMapper.map(createDto)).thenReturn(entity);
+        when(articleMapper.map(createDto)).thenReturn(notSaved);
         when(labelService.findLabels(any())).thenReturn(List.of());
-        when(userService.findById(1L)).thenReturn(userDto);
-        when(userMapper.map(userDto)).thenReturn(userEntity);
-        when(articleRepository.save(entity)).thenReturn(entity);
-        when(articleMapper.map(entity)).thenReturn(savedDto);
+        when(userService.findById(1L)).thenReturn(userModel);
+        when(articleRepository.save(notSaved)).thenReturn(saved);
+        when(articleMapper.map(saved)).thenReturn(savedDto);
 
         ArticleModel result = articleService.save(createDto);
 
         assertNotNull(result);
-        verify(articleRepository).save(entity);
+        verify(articleRepository).save(notSaved);
     }
 
 

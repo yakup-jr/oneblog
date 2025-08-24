@@ -15,49 +15,19 @@ import java.util.Objects;
 @Getter
 @Setter
 @Entity
-@Table(name = "T_USER")
+@Table(name = "t_user")
 public class UserEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "USER_ID", unique = true, updatable = false, nullable = false)
+    @Column(name = "user_id", unique = true, updatable = false, nullable = false)
     private Long userId;
 
-    @Column(name = "NAME")
+    @Column(name = "name")
     private String name;
 
-    @Column(name = "NICKNAME", unique = true, nullable = false)
+    @Column(name = "nickname", unique = true, nullable = false)
     private String nickname;
 
-    @Column(name = "EMAIL", unique = true, nullable = false)
+    @Column(name = "email", unique = true, nullable = false)
     private String email;
-
-    @Override
-    public final boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null) {
-            return false;
-        }
-        Class<?> oEffectiveClass =
-            o instanceof HibernateProxy ?
-                ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() :
-                o.getClass();
-        Class<?> thisEffectiveClass = this instanceof HibernateProxy ?
-            ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() :
-            this.getClass();
-        if (thisEffectiveClass != oEffectiveClass) {
-            return false;
-        }
-        UserEntity userEntity = (UserEntity) o;
-        return getUserId() != null && Objects.equals(getUserId(), userEntity.getUserId());
-    }
-
-    @Override
-    public final int hashCode() {
-        return this instanceof HibernateProxy ?
-            ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() :
-            getClass().hashCode();
-    }
 }

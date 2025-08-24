@@ -2,6 +2,7 @@ package net.oneblog.auth.service;
 
 import io.jsonwebtoken.Claims;
 import net.oneblog.user.entity.UserEntity;
+import net.oneblog.validationapi.models.ValidatedUserModel;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.function.Function;
@@ -27,7 +28,7 @@ public interface JwtService {
      * @param userEntity the user
      * @return the boolean
      */
-    boolean isValidRefresh(String token, UserEntity userEntity);
+    boolean isValidRefresh(String token, ValidatedUserModel userEntity);
 
     /**
      * Extract username string.
@@ -53,7 +54,7 @@ public interface JwtService {
      * @param userEntity the user
      * @return the string
      */
-    String generateAccessToken(UserEntity userEntity);
+    String generateAccessToken(ValidatedUserModel userEntity);
 
     /**
      * Generate refresh token string.
@@ -61,6 +62,6 @@ public interface JwtService {
      * @param userEntity the user
      * @return the string
      */
-    String generateRefreshToken(UserEntity userEntity);
+    String generateRefreshToken(ValidatedUserModel userEntity);
 
 }

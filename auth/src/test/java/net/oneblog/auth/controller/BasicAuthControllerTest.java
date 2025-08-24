@@ -1,8 +1,10 @@
 package net.oneblog.auth.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import net.oneblog.auth.entity.AuthEntity;
+import net.oneblog.auth.models.BasicRegistrationRequestModel;
 import net.oneblog.auth.models.LoginRequestModel;
-import net.oneblog.auth.models.RegistrationRequestModel;
+import net.oneblog.auth.repository.AuthRepository;
 import net.oneblog.email.models.RegistrationEmailVerificationModel;
 import net.oneblog.email.service.CodeGenerator;
 import net.oneblog.sharedconfig.test.IntegrationTest;
@@ -16,6 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -30,6 +33,9 @@ class BasicAuthControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
+    private AuthRepository authRepository;
+
+    @MockBean
     private CodeGenerator codeGenerator;
 
     @MockBean
@@ -39,8 +45,8 @@ class BasicAuthControllerTest {
 
     @Test
     void register_Success() throws Exception {
-        RegistrationRequestModel request =
-            new RegistrationRequestModel("testname", "testuser", "test@example.com", "password123");
+        BasicRegistrationRequestModel request =
+            new BasicRegistrationRequestModel("testname", "testuser", "test@example.com", "password123");
 
         when(codeGenerator.generateSixDigits()).thenReturn("123456");
 
@@ -50,8 +56,8 @@ class BasicAuthControllerTest {
 
     @Test
     void register_UsernameAlreadyTaken() throws Exception {
-        RegistrationRequestModel request =
-            new RegistrationRequestModel("testname", "shadow", "test@example.com ",
+        BasicRegistrationRequestModel request =
+            new BasicRegistrationRequestModel("testname", "shadow", "test@example.com ",
                 "password123");
 
         mockMvc.perform(post("/registration").contentType(MediaType.APPLICATION_JSON)
@@ -60,8 +66,8 @@ class BasicAuthControllerTest {
 
     @Test
     void register_EmailAlreadyTaken() throws Exception {
-        RegistrationRequestModel request =
-            new RegistrationRequestModel("testname", "testuser", "shadow@mail.com",
+        BasicRegistrationRequestModel request =
+            new BasicRegistrationRequestModel("testname", "testuser", "shadow@mail.com",
                 "password123");
 
         mockMvc.perform(post("/registration").contentType(MediaType.APPLICATION_JSON)
@@ -70,10 +76,11 @@ class BasicAuthControllerTest {
 
     @Test
     void verifyEmail_Success() throws Exception {
-        when(codeGenerator.generateSixDigits()).thenReturn("123456");
+        String generatedCode = "123456";
+        when(codeGenerator.generateSixDigits()).thenReturn(generatedCode);
 
-        RegistrationRequestModel registerRequest =
-            new RegistrationRequestModel("testname", "verifyuser", "verify@example.com",
+        BasicRegistrationRequestModel registerRequest =
+            new BasicRegistrationRequestModel("verifyEmail", "verifyUser", "verify@example.com",
                 "password123");
 
         mockMvc.perform(post("/registration")
@@ -81,14 +88,19 @@ class BasicAuthControllerTest {
                 .content(objectMapper.writeValueAsString(registerRequest)))
             .andExpect(status().isCreated());
 
-        RegistrationEmailVerificationModel request =
-            new RegistrationEmailVerificationModel("verify@example.com", "123456");
+        RegistrationEmailVerificationModel verifyRequest =
+            new RegistrationEmailVerificationModel("verify@example.com", generatedCode);
 
         mockMvc.perform(post("/registration/email/verify")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
-            .andExpect(status().isOk());
+                .content(objectMapper.writeValueAsString(verifyRequest)))
+            .andExpect(status().isOk())
+            .andDo(result -> {
+                AuthEntity auth = authRepository.findByUserEntityEmail("verify@example.com").get();
+                assertThat(auth.getUserEntity().getEmail()).isEqualTo("verify@example.com");
+            });
     }
+
 
     @Test
     void verifyEmail_InvalidCode() throws Exception {

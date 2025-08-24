@@ -2,7 +2,7 @@ package net.oneblog.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.oneblog.sharedconfig.test.IntegrationTest;
-import net.oneblog.user.dto.UserCreateDto;
+import net.oneblog.user.models.UserCreateRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -27,11 +27,12 @@ public class UserControllerTest {
 
     @Test
     void saveUser_ReturnUser() throws Exception {
-        UserCreateDto userCreateDto = new UserCreateDto("Alex", "simple", "simple@mail.com");
+        UserCreateRequest
+            userCreateRequest = new UserCreateRequest("Alex", "simple", "simple@mail.com");
 
         mockMvc.perform(post("/api/v1/user")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(userCreateDto)))
+                .content(objectMapper.writeValueAsString(userCreateRequest)))
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.userId", notNullValue()))
             .andExpect(jsonPath("$._links.user.href", endsWith("user/6")));
@@ -39,11 +40,11 @@ public class UserControllerTest {
 
     @Test
     void saveUser_ThrowMethodArgumentNotValidException() throws Exception {
-        UserCreateDto userCreateDto = new UserCreateDto("", "", "somemail");
+        UserCreateRequest userCreateRequest = new UserCreateRequest("", "", "somemail");
 
         mockMvc.perform(post("/api/v1/user")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(userCreateDto)))
+                .content(objectMapper.writeValueAsString(userCreateRequest)))
             .andExpect(status().isBadRequest())
             .andExpect(
                 jsonPath("$.message", containsString("name: length must be between 2 and 60")))
@@ -56,22 +57,24 @@ public class UserControllerTest {
 
     @Test
     void saveUser_ThrowApiRequestException_NicknameIsNotUnique() throws Exception {
-        UserCreateDto userCreateDto = new UserCreateDto("Alex", "shadow", "alex@mail.com");
+        UserCreateRequest
+            userCreateRequest = new UserCreateRequest("Alex", "shadow", "alex@mail.com");
 
         mockMvc.perform(post("/api/v1/user")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(userCreateDto)))
+                .content(objectMapper.writeValueAsString(userCreateRequest)))
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.message", is("User nickname shadow already exists")));
     }
 
     @Test
     void saveUser_ThrowApiRequestException_EmailIsNotUnique() throws Exception {
-        UserCreateDto userCreateDto = new UserCreateDto("Alex", "simple", "shadow@mail.com");
+        UserCreateRequest
+            userCreateRequest = new UserCreateRequest("Alex", "simple", "shadow@mail.com");
 
         mockMvc.perform(post("/api/v1/user")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(userCreateDto)))
+                .content(objectMapper.writeValueAsString(userCreateRequest)))
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.message", is("User email shadow@mail.com already exists")));
     }

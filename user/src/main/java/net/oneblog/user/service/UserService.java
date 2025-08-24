@@ -1,7 +1,7 @@
 package net.oneblog.user.service;
 
-import net.oneblog.api.dto.UserDto;
-import net.oneblog.user.dto.UserCreateDto;
+import net.oneblog.user.models.UserCreateRequest;
+import net.oneblog.validationapi.models.ValidatedUserModel;
 import org.springframework.data.domain.Page;
 
 /**
@@ -15,7 +15,7 @@ public interface UserService {
      * @param user the user
      * @return the user
      */
-    UserDto save(UserCreateDto user);
+    ValidatedUserModel save(UserCreateRequest user);
 
     /**
      * Find all page.
@@ -24,7 +24,7 @@ public interface UserService {
      * @param size the size
      * @return the page
      */
-    Page<UserDto> findAll(Integer page, Integer size);
+    Page<ValidatedUserModel> findAll(Integer page, Integer size);
 
     /**
      * Exists by id boolean.
@@ -40,7 +40,7 @@ public interface UserService {
      * @param id the id
      * @return the user
      */
-    UserDto findById(Long id);
+    ValidatedUserModel findById(Long id);
 
     /**
      * Find by nickname user.
@@ -48,7 +48,7 @@ public interface UserService {
      * @param nickname the nickname
      * @return the user
      */
-    UserDto findByNickname(String nickname);
+    ValidatedUserModel findByNickname(String nickname);
 
     /**
      * Find by email user.
@@ -56,7 +56,7 @@ public interface UserService {
      * @param email the email
      * @return the user
      */
-    UserDto findByEmail(String email);
+    ValidatedUserModel findByEmail(String email);
 
     /**
      * Exists by nickname boolean.

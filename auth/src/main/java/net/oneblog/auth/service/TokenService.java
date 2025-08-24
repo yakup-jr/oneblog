@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import net.oneblog.auth.models.AuthenticationResponseModel;
 import net.oneblog.auth.models.RefreshTokenRequestModel;
 import net.oneblog.user.entity.UserEntity;
+import net.oneblog.validationapi.models.ValidatedUserModel;
 
 /**
  * The interface Token service.
@@ -31,7 +32,7 @@ public interface TokenService {
      *
      * @param user the user
      */
-    void revokeAllTokensForUser(UserEntity user);
+    void revokeAllTokensForUser(ValidatedUserModel user);
 
     /**
      * Save user token.
@@ -40,7 +41,7 @@ public interface TokenService {
      * @param refreshToken the refresh token
      * @param user         the user
      */
-    void saveUserToken(String accessToken, String refreshToken, UserEntity user);
+    void saveUserToken(String accessToken, String refreshToken, ValidatedUserModel user);
 
 
 }

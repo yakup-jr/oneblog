@@ -1,12 +1,13 @@
 package net.oneblog.user.service;
 
+import net.oneblog.api.dto.UserDto;
 import net.oneblog.sharedexceptions.PageNotFoundException;
 import net.oneblog.sharedexceptions.ServiceException;
-import net.oneblog.user.dto.UserCreateDto;
-import net.oneblog.api.dto.UserDto;
 import net.oneblog.user.exceptions.UserNotFoundException;
 import net.oneblog.user.mappers.UserMapper;
+import net.oneblog.user.models.UserCreateRequest;
 import net.oneblog.user.repository.UserRepository;
+import net.oneblog.validationapi.models.ValidatedUserModel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -33,7 +34,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto save(UserCreateDto user) {
+    public ValidatedUserModel save(UserCreateRequest user) {
         if (userRepository.existsByNickname(user.nickname())) {
             throw new ServiceException(
                 "User nickname " + user.nickname() + " already exists");
@@ -51,9 +52,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<UserDto> findAll(Integer page, Integer size) {
+    public Page<ValidatedUserModel> findAll(Integer page, Integer size) {
         Pageable pageRequest = PageRequest.of(page, size);
-        Page<UserDto> userPage = userRepository.findAll(pageRequest).map(userMapper::map);
+        Page<ValidatedUserModel> userPage = userRepository.findAll(pageRequest).map(userMapper::map);
         if (userPage.isEmpty()) {
             throw new PageNotFoundException("Page " + page + " with size " + size + " not found");
         }
@@ -61,19 +62,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto findById(Long id) {
+    public ValidatedUserModel findById(Long id) {
         return userRepository.findById(id).map(userMapper::map)
             .orElseThrow(() -> new UserNotFoundException("User with id " + id + " not found"));
     }
 
     @Override
-    public UserDto findByNickname(String nickname) {
+    public ValidatedUserModel findByNickname(String nickname) {
         return userRepository.findByNickname(nickname).map(userMapper::map).orElseThrow(
             () -> new UserNotFoundException("User with nickname " + nickname + " not found"));
     }
 
     @Override
-    public UserDto findByEmail(String email) throws UserNotFoundException {
+    public ValidatedUserModel findByEmail(String email) throws UserNotFoundException {
         return userRepository.findByEmail(email).map(userMapper::map)
             .orElseThrow(
                 () -> new UserNotFoundException("User with email " + email + " not found"));

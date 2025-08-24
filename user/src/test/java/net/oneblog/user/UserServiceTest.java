@@ -2,7 +2,7 @@ package net.oneblog.user;
 
 import net.oneblog.api.dto.UserDto;
 import net.oneblog.sharedexceptions.ServiceException;
-import net.oneblog.user.dto.UserCreateDto;
+import net.oneblog.user.models.UserCreateRequest;
 import net.oneblog.user.entity.UserEntity;
 import net.oneblog.user.exceptions.UserNotFoundException;
 import net.oneblog.user.mappers.UserMapper;
@@ -40,18 +40,18 @@ public class UserServiceTest {
 
     private final UserDto defaultUserDto = new UserDto(1L, "Dima", "yakup_jr", "somemail@mail.com");
 
-    private static final UserCreateDto defaultUserCreateDto = new UserCreateDto(
+    private static final UserCreateRequest DEFAULT_USER_CREATE_REQUEST = new UserCreateRequest(
         "Dima", "yakup_jr", "somemail@mail.com");
 
     @Test
     void save_ReturnUser() {
-        when(userRepository.existsByNickname(defaultUserCreateDto.nickname())).thenReturn(false);
-        when(userRepository.existsByEmail(defaultUserCreateDto.email())).thenReturn(false);
-        when(userMapper.map(defaultUserCreateDto)).thenReturn(defaultUser);
+        when(userRepository.existsByNickname(DEFAULT_USER_CREATE_REQUEST.nickname())).thenReturn(false);
+        when(userRepository.existsByEmail(DEFAULT_USER_CREATE_REQUEST.email())).thenReturn(false);
+        when(userMapper.map(DEFAULT_USER_CREATE_REQUEST)).thenReturn(defaultUser);
         when(userRepository.save(defaultUser)).thenReturn(defaultUser);
         when(userMapper.map(defaultUser)).thenReturn(defaultUserDto);
 
-        UserDto savedUser = userService.save(defaultUserCreateDto);
+        UserDto savedUser = userService.save(DEFAULT_USER_CREATE_REQUEST);
 
         assertThat(savedUser).isNotNull().isInstanceOf(UserDto.class);
         assertThat(savedUser).isEqualTo(defaultUserDto);
@@ -60,18 +60,18 @@ public class UserServiceTest {
 
     @Test
     void save_ThrowApiRequestException_NicknameExists() {
-        when(userRepository.existsByNickname(defaultUserCreateDto.nickname())).thenReturn(true);
+        when(userRepository.existsByNickname(DEFAULT_USER_CREATE_REQUEST.nickname())).thenReturn(true);
 
-        assertThatThrownBy(() -> userService.save(defaultUserCreateDto)).isInstanceOf(
+        assertThatThrownBy(() -> userService.save(DEFAULT_USER_CREATE_REQUEST)).isInstanceOf(
             ServiceException.class);
     }
 
     @Test
     void save_ThrowApiRequestException_EmailExists() {
-        when(userRepository.existsByNickname(defaultUserCreateDto.nickname())).thenReturn(false);
-        when(userRepository.existsByEmail(defaultUserCreateDto.email())).thenReturn(true);
+        when(userRepository.existsByNickname(DEFAULT_USER_CREATE_REQUEST.nickname())).thenReturn(false);
+        when(userRepository.existsByEmail(DEFAULT_USER_CREATE_REQUEST.email())).thenReturn(true);
 
-        assertThatThrownBy(() -> userService.save(defaultUserCreateDto)).isInstanceOf(
+        assertThatThrownBy(() -> userService.save(DEFAULT_USER_CREATE_REQUEST)).isInstanceOf(
             ServiceException.class);
     }
 

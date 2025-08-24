@@ -8,7 +8,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import net.oneblog.auth.entity.TokenEntity;
 import net.oneblog.auth.repository.TokenRepository;
-import net.oneblog.user.entity.UserEntity;
+import net.oneblog.validationapi.models.ValidatedUserModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,7 +39,7 @@ class JwtServiceTest {
     private final String secretKey = "dGVzdC1zZWNyZXQta2V5LWZvci1qd3QtdGVzdGluZy1wdXJwb3Nlcy1vbmx5";
     private final Long accessTokenExpiration = 86400000L;
     private final Long refreshTokenExpiration = 604800000L;
-    private UserEntity userEntity;
+    private ValidatedUserModel userModel;
     private UserDetails userDetails;
 
     @BeforeEach
@@ -48,7 +48,7 @@ class JwtServiceTest {
         ReflectionTestUtils.setField(jwtService, "accessTokenExpiration", accessTokenExpiration);
         ReflectionTestUtils.setField(jwtService, "refreshTokenExpiration", refreshTokenExpiration);
 
-        userEntity = UserEntity.builder()
+        userModel = ValidatedUserModel.builder()
             .userId(1L)
             .nickname("testuser")
             .email("test@example.com")
@@ -63,7 +63,7 @@ class JwtServiceTest {
 
     @Test
     void isValidAccess_Success() {
-        String token = jwtService.generateAccessToken(userEntity);
+        String token = jwtService.generateAccessToken(userModel);
         TokenEntity tokenEntity = TokenEntity.builder()
             .accessToken(token)
             .isRevoke(false)
@@ -75,8 +75,8 @@ class JwtServiceTest {
     }
 
     @Test
-    void isValidAccess_Invalid() {
-        String token = jwtService.generateAccessToken(userEntity);
+    void isValidAccess_RevokedToken() {
+        String token = jwtService.generateAccessToken(userModel);
         TokenEntity tokenEntity = TokenEntity.builder()
             .accessToken(token)
             .isRevoke(true)
@@ -88,19 +88,15 @@ class JwtServiceTest {
     }
 
     @Test
-    void isValidAccess_Expired() {
-        String expiredToken = generateExpiredToken(userEntity.getNickname());
-        TokenEntity tokenEntity = TokenEntity.builder()
-            .accessToken(expiredToken)
-            .isRevoke(false)
-            .build();
+    void isValidAccess_ExpiredToken() {
+        String expiredToken = generateExpiredToken(userModel.nickname());
 
         assertFalse(jwtService.isValidAccess(expiredToken, userDetails));
     }
 
     @Test
     void isValidAccess_TokenNotFound() {
-        String token = jwtService.generateAccessToken(userEntity);
+        String token = jwtService.generateAccessToken(userModel);
         when(tokenRepository.findByAccessToken(token)).thenReturn(Optional.empty());
 
         assertFalse(jwtService.isValidAccess(token, userDetails));
@@ -108,7 +104,7 @@ class JwtServiceTest {
 
     @Test
     void isValidAccess_UsernameMismatch() {
-        String token = jwtService.generateAccessToken(userEntity);
+        String token = jwtService.generateAccessToken(userModel);
         TokenEntity tokenEntity = TokenEntity.builder()
             .accessToken(token)
             .isRevoke(false)
@@ -127,7 +123,7 @@ class JwtServiceTest {
 
     @Test
     void isValidRefresh_Success() {
-        String token = jwtService.generateRefreshToken(userEntity);
+        String token = jwtService.generateRefreshToken(userModel);
         TokenEntity tokenEntity = TokenEntity.builder()
             .refreshToken(token)
             .isRevoke(false)
@@ -135,12 +131,12 @@ class JwtServiceTest {
 
         when(tokenRepository.findByRefreshToken(token)).thenReturn(Optional.of(tokenEntity));
 
-        assertTrue(jwtService.isValidRefresh(token, userEntity));
+        assertTrue(jwtService.isValidRefresh(token, userModel));
     }
 
     @Test
-    void isValidRefresh_Invalid() {
-        String token = jwtService.generateRefreshToken(userEntity);
+    void isValidRefresh_RevokedToken() {
+        String token = jwtService.generateRefreshToken(userModel);
         TokenEntity tokenEntity = TokenEntity.builder()
             .refreshToken(token)
             .isRevoke(true)
@@ -148,37 +144,33 @@ class JwtServiceTest {
 
         when(tokenRepository.findByRefreshToken(token)).thenReturn(Optional.of(tokenEntity));
 
-        assertFalse(jwtService.isValidRefresh(token, userEntity));
+        assertFalse(jwtService.isValidRefresh(token, userModel));
     }
 
     @Test
-    void isValidRefresh_Expired() {
-        String expiredToken = generateExpiredToken(userEntity.getNickname());
-        TokenEntity tokenEntity = TokenEntity.builder()
-            .refreshToken(expiredToken)
-            .isRevoke(false)
-            .build();
+    void isValidRefresh_ExpiredToken() {
+        String expiredToken = generateExpiredToken(userModel.nickname());
 
-        assertFalse(jwtService.isValidRefresh(expiredToken, userEntity));
+        assertFalse(jwtService.isValidRefresh(expiredToken, userModel));
     }
 
     @Test
     void isValidRefresh_TokenNotFound() {
-        String token = jwtService.generateRefreshToken(userEntity);
+        String token = jwtService.generateRefreshToken(userModel);
         when(tokenRepository.findByRefreshToken(token)).thenReturn(Optional.empty());
 
-        assertFalse(jwtService.isValidRefresh(token, userEntity));
+        assertFalse(jwtService.isValidRefresh(token, userModel));
     }
 
     @Test
     void isValidRefresh_UsernameMismatch() {
-        String token = jwtService.generateRefreshToken(userEntity);
+        String token = jwtService.generateRefreshToken(userModel);
         TokenEntity tokenEntity = TokenEntity.builder()
             .refreshToken(token)
             .isRevoke(false)
             .build();
 
-        UserEntity differentUser = UserEntity.builder()
+        ValidatedUserModel differentUser = ValidatedUserModel.builder()
             .nickname("differentuser")
             .build();
 
@@ -189,7 +181,7 @@ class JwtServiceTest {
 
     @Test
     void extractUsername_Success() {
-        String token = jwtService.generateAccessToken(userEntity);
+        String token = jwtService.generateAccessToken(userModel);
 
         assertEquals("testuser", jwtService.extractUsername(token));
     }
@@ -201,7 +193,7 @@ class JwtServiceTest {
 
     @Test
     void extractClaim_Success() {
-        String token = jwtService.generateAccessToken(userEntity);
+        String token = jwtService.generateAccessToken(userModel);
         Function<Claims, String> claimsResolver = Claims::getSubject;
 
         assertEquals("testuser", jwtService.extractClaim(token, claimsResolver));
@@ -209,7 +201,7 @@ class JwtServiceTest {
 
     @Test
     void extractClaim_ExpiredToken() {
-        String expiredToken = generateExpiredToken(userEntity.getNickname());
+        String expiredToken = generateExpiredToken(userModel.nickname());
         Function<Claims, String> claimsResolver = Claims::getSubject;
 
         assertThrows(ExpiredJwtException.class,
@@ -218,7 +210,7 @@ class JwtServiceTest {
 
     @Test
     void generateAccessToken_Success() {
-        String token = jwtService.generateAccessToken(userEntity);
+        String token = jwtService.generateAccessToken(userModel);
 
         assertNotNull(token);
         assertFalse(token.isEmpty());
@@ -227,7 +219,7 @@ class JwtServiceTest {
 
     @Test
     void generateRefreshToken_Success() {
-        String token = jwtService.generateRefreshToken(userEntity);
+        String token = jwtService.generateRefreshToken(userModel);
 
         assertNotNull(token);
         assertFalse(token.isEmpty());
@@ -236,8 +228,8 @@ class JwtServiceTest {
 
     @Test
     void generateTokens_DifferentExpirationTimes() {
-        String accessToken = jwtService.generateAccessToken(userEntity);
-        String refreshToken = jwtService.generateRefreshToken(userEntity);
+        String accessToken = jwtService.generateAccessToken(userModel);
+        String refreshToken = jwtService.generateRefreshToken(userModel);
 
         Date accessExpiration = jwtService.extractClaim(accessToken, Claims::getExpiration);
         Date refreshExpiration = jwtService.extractClaim(refreshToken, Claims::getExpiration);

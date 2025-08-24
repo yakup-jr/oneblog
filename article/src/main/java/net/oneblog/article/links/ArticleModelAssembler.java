@@ -1,4 +1,4 @@
-package net.oneblog.article;
+package net.oneblog.article.links;
 
 import net.oneblog.article.models.ArticleModel;
 import org.springframework.hateoas.EntityModel;

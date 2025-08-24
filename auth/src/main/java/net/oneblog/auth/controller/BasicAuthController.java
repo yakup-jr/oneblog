@@ -1,12 +1,11 @@
 package net.oneblog.auth.controller;
 
+import lombok.AllArgsConstructor;
 import net.oneblog.auth.models.AuthenticationResponseModel;
+import net.oneblog.auth.models.BasicRegistrationRequestModel;
 import net.oneblog.auth.models.LoginRequestModel;
-import net.oneblog.auth.models.RegistrationRequestModel;
 import net.oneblog.auth.service.BasicAuthService;
 import net.oneblog.email.models.RegistrationEmailVerificationModel;
-import net.oneblog.sharedexceptions.ApiRequestException;
-import net.oneblog.user.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,41 +18,21 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping
+@AllArgsConstructor
 public class BasicAuthController {
 
     private final BasicAuthService basicAuthService;
 
-    private final UserService userService;
-
-    /**
-     * Instantiates a new Auth controller.
-     *
-     * @param basicAuthService the auth service
-     * @param userService      the user service
-     */
-    public BasicAuthController(BasicAuthService basicAuthService, UserService userService) {
-        this.basicAuthService = basicAuthService;
-        this.userService = userService;
-    }
-
     /**
      * Register response entity.
      *
-     * @param registrationRequestModel the registration request dto
+     * @param basicRegistrationRequestModel the registration request dto
      * @return the response entity
      */
     @PostMapping("/registration")
     public ResponseEntity<String> register(
-        @RequestBody RegistrationRequestModel registrationRequestModel) {
-        if (userService.existsByNickname(registrationRequestModel.username())) {
-            throw new ApiRequestException("Username is already taken");
-        }
-
-        if (userService.existsByEmail(registrationRequestModel.email())) {
-            throw new ApiRequestException("Email is already taken");
-        }
-
-        basicAuthService.register(registrationRequestModel);
+        @RequestBody BasicRegistrationRequestModel basicRegistrationRequestModel) {
+        basicAuthService.register(basicRegistrationRequestModel);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -77,7 +56,8 @@ public class BasicAuthController {
      * @return the response entity
      */
     @PostMapping("/login/basic")
-    public ResponseEntity<AuthenticationResponseModel> login(@RequestBody LoginRequestModel request) {
+    public ResponseEntity<AuthenticationResponseModel> login(
+        @RequestBody LoginRequestModel request) {
         return ResponseEntity.status(HttpStatus.OK).body(basicAuthService.authenticate(request));
     }
 }

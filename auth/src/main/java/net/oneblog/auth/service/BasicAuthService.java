@@ -2,7 +2,7 @@ package net.oneblog.auth.service;
 
 import net.oneblog.auth.models.AuthenticationResponseModel;
 import net.oneblog.auth.models.LoginRequestModel;
-import net.oneblog.auth.models.RegistrationRequestModel;
+import net.oneblog.auth.models.BasicRegistrationRequestModel;
 import net.oneblog.email.models.RegistrationEmailVerificationModel;
 
 /**
@@ -15,7 +15,7 @@ public interface BasicAuthService {
      *
      * @param request the request
      */
-    void register(RegistrationRequestModel request);
+    void register(BasicRegistrationRequestModel request);
 
     /**
      * Verify email.

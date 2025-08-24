@@ -1,6 +1,5 @@
 package net.oneblog.auth.service;
 
-import net.oneblog.api.dto.UserDto;
 import net.oneblog.auth.adapter.AuthAdapter;
 import net.oneblog.user.entity.UserEntity;
 import net.oneblog.user.exceptions.UserNotFoundException;
@@ -33,20 +32,15 @@ class UserDetailsServiceTest {
     @Test
     void loadUserByUsername_Success() {
         String username = "testuser";
-        UserDto userDto = validatedUserModelMapper.map(ValidatedUserModel.builder()
-            .userId(1L)
-            .nickname(username)
-            .email("test@example.com")
-            .build());
 
-        UserEntity userEntity = UserEntity.builder()
+        ValidatedUserModel userModel = ValidatedUserModel.builder()
             .userId(1L)
             .nickname(username)
             .email("test@example.com")
             .build();
 
-        when(userService.findByNickname(username)).thenReturn(userDto);
-        when(userMapper.map(userDto)).thenReturn(userEntity);
+        when(userService.findByNickname(username)).thenReturn(userModel);
+        when(userMapper.map(userModel)).thenReturn(new UserEntity(1L, "testname", username, "test@example.com"));
 
         UserDetails result = userDetailsService.loadUserByUsername(username);
 

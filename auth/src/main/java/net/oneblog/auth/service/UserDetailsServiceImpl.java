@@ -1,5 +1,6 @@
 package net.oneblog.auth.service;
 
+import lombok.AllArgsConstructor;
 import net.oneblog.auth.adapter.AuthAdapter;
 import net.oneblog.auth.entity.AuthEntity;
 import net.oneblog.user.entity.UserEntity;
@@ -14,27 +15,16 @@ import org.springframework.stereotype.Service;
  * The type User details service.
  */
 @Service
+@AllArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final UserService userService;
     private final UserMapper userMapper;
 
-    /**
-     * Instantiates a new User details service.
-     *
-     * @param userService the user service
-     * @param userMapper  the user mapper
-     */
-    public UserDetailsServiceImpl(UserService userService, UserMapper userMapper) {
-        this.userService = userService;
-        this.userMapper = userMapper;
-    }
-
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         UserEntity userEntity = userMapper.map(userService.findByNickname(username));
-        AuthEntity authEntity = AuthEntity.builder().userEntity(userEntity).build();
 
-        return new AuthAdapter(authEntity);
+        return new AuthAdapter(AuthEntity.builder().userEntity(userEntity).build());
     }
 }

@@ -2,50 +2,37 @@ package net.oneblog.auth.service;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import lombok.AllArgsConstructor;
+import net.oneblog.auth.models.AuthModel;
 import net.oneblog.auth.models.AuthenticationResponseModel;
-import net.oneblog.auth.entity.AuthEntity;
+import net.oneblog.auth.models.GoogleRegistrationRequestModel;
 import net.oneblog.auth.repository.AuthRepository;
-import net.oneblog.user.entity.UserEntity;
+import net.oneblog.sharedexceptions.ServiceException;
 import net.oneblog.user.repository.UserRepository;
+import net.oneblog.user.service.UserService;
+import net.oneblog.validationapi.mappers.ValidatedUserModelMapper;
+import net.oneblog.validationapi.models.ValidatedUserModel;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.Optional;
 import java.util.Random;
 
 /**
  * The type Google o auth 2 login service.
  */
 @Service
+@AllArgsConstructor
 public class GoogleOAuth2LoginService {
 
     private final UserRepository userRepository;
+    private final UserService userService;
+    private final AuthService authService;
     private final AuthRepository authRepository;
     private final JwtService jwtService;
     private final TokenService tokenService;
     private final GoogleIdTokenVerifier verifier;
-
-
-    /**
-     * Instantiates a new Google o auth 2 login service.
-     *
-     * @param userRepository the user repository
-     * @param authRepository the auth repository
-     * @param jwtService     the jwt service
-     * @param tokenService   the token service
-     * @param verifier       the verifier
-     */
-    public GoogleOAuth2LoginService(UserRepository userRepository, AuthRepository authRepository,
-                                    JwtService jwtService, TokenService tokenService,
-                                    GoogleIdTokenVerifier verifier) {
-        this.userRepository = userRepository;
-        this.authRepository = authRepository;
-        this.jwtService = jwtService;
-        this.tokenService = tokenService;
-        this.verifier = verifier;
-    }
-
+    private final ValidatedUserModelMapper userMapper;
 
     /**
      * Sign up authentication response dto.
@@ -53,23 +40,23 @@ public class GoogleOAuth2LoginService {
      * @param payload the payload
      * @return the authentication response dto
      */
-//todo: throw if nickname exists
     public AuthenticationResponseModel signUp(GoogleIdToken.Payload payload) {
         String nickname = String.valueOf(payload.get("given_name"));
-        if (userRepository.findByNickname(nickname).isPresent()) {
+        if (userService.existsByNickname(nickname)) {
             nickname = nickname.concat(String.valueOf(new Random().nextInt(10000)));
         }
 
-        UserEntity user = UserEntity.builder().email(String.valueOf(payload.get("email"))).name(
-            String.valueOf(payload.get("name"))).nickname(nickname).build();
-        AuthEntity savedAuthEntity = authRepository.save(
-            AuthEntity.builder().userEntity(user).googleUserId(payload.getSubject()).build());
+        ValidatedUserModel user =
+            ValidatedUserModel.builder().email(String.valueOf(payload.get("email"))).name(
+                String.valueOf(payload.get("name"))).nickname(nickname).build();
+        AuthModel savedAuthEntity = authService.save(
+            new GoogleRegistrationRequestModel(String.valueOf(payload.getSubject()), user));
 
-        String accessToken = jwtService.generateAccessToken(savedAuthEntity.getUserEntity());
-        String refreshToken = jwtService.generateRefreshToken(savedAuthEntity.getUserEntity());
+        String accessToken = jwtService.generateAccessToken(savedAuthEntity.getUserDto());
+        String refreshToken = jwtService.generateRefreshToken(savedAuthEntity.getUserDto());
 
-        tokenService.revokeAllTokensForUser(savedAuthEntity.getUserEntity());
-        tokenService.saveUserToken(accessToken, refreshToken, savedAuthEntity.getUserEntity());
+        tokenService.revokeAllTokensForUser(savedAuthEntity.getUserDto());
+        tokenService.saveUserToken(accessToken, refreshToken, savedAuthEntity.getUserDto());
 
         return new AuthenticationResponseModel(accessToken, refreshToken);
     }
@@ -79,43 +66,31 @@ public class GoogleOAuth2LoginService {
      *
      * @param token the token
      * @return the authentication response dto
-     * @throws GeneralSecurityException the general security exception
-     * @throws IOException              the io exception
      */
-    public AuthenticationResponseModel login(String token)
-        throws GeneralSecurityException, IOException {
-        GoogleIdToken.Payload payload = verify(token);
-
-        String email = String.valueOf(payload.get("email"));
+    public AuthenticationResponseModel login(String token) {
+        GoogleIdToken.Payload payload = verifyByGoogle(token);
         String googleUserId = String.valueOf(payload.getSubject());
 
-        Optional<UserEntity> byGoogleUserId = authRepository.findByGoogleUserId(googleUserId);
-        if (byGoogleUserId.isPresent()) {
-            UserEntity userEntity = byGoogleUserId.get();
+        AuthModel authModel = authService.findByGoogleUserId(googleUserId);
 
-            String accessToken = jwtService.generateAccessToken(userEntity);
-            String refreshToken = jwtService.generateRefreshToken(userEntity);
+        ValidatedUserModel userEntity = authModel.getUserDto();
 
-            tokenService.revokeAllTokensForUser(userEntity);
-            tokenService.saveUserToken(accessToken, refreshToken, userEntity);
+        String accessToken = jwtService.generateAccessToken(userEntity);
+        String refreshToken = jwtService.generateRefreshToken(userEntity);
 
-            return new AuthenticationResponseModel(accessToken, refreshToken);
+        tokenService.revokeAllTokensForUser(userEntity);
+        tokenService.saveUserToken(accessToken, refreshToken, userEntity);
+
+        return new AuthenticationResponseModel(accessToken, refreshToken);
+
+    }
+
+    private GoogleIdToken.Payload verifyByGoogle(String token) {
+        try {
+            return verify(token);
+        } catch (GeneralSecurityException | IOException e) {
+            throw new ServiceException(e.getMessage());
         }
-        Optional<AuthEntity> byEmail = authRepository.findByEmail(email);
-        if (byEmail.isPresent()) {
-            AuthEntity authEntity = byEmail.get();
-            authEntity.setGoogleUserId(googleUserId);
-            AuthEntity savedUserEntity = authRepository.save(authEntity);
-
-            String accessToken = jwtService.generateAccessToken(savedUserEntity.getUserEntity());
-            String refreshToken = jwtService.generateRefreshToken(savedUserEntity.getUserEntity());
-
-            tokenService.revokeAllTokensForUser(savedUserEntity.getUserEntity());
-            tokenService.saveUserToken(accessToken, refreshToken, savedUserEntity.getUserEntity());
-
-            return new AuthenticationResponseModel(accessToken, refreshToken);
-        }
-        return signUp(payload);
     }
 
     /**

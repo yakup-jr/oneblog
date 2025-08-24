@@ -1,4 +1,4 @@
-package net.oneblog.user;
+package net.oneblog.user.links;
 
 import net.oneblog.user.controller.UserController;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;

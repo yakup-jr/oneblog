@@ -1,12 +1,12 @@
 package net.oneblog.email.service;
 
-import net.oneblog.api.dto.UserDto;
 import net.oneblog.email.entity.EmailEntity;
 import net.oneblog.email.models.RegistrationEmailVerificationModel;
 import net.oneblog.email.repository.EmailVerificationRepository;
 import net.oneblog.sharedexceptions.ServiceException;
 import net.oneblog.user.mappers.UserMapper;
 import net.oneblog.user.service.UserService;
+import net.oneblog.validationapi.models.ValidatedUserModel;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -46,11 +46,11 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
         }
         String code = mailMessage.sendVerificationCode(email);
         System.out.println("Code is " + code);
-        UserDto userEntity = userService.findByEmail(email);
+        ValidatedUserModel userDto = userService.findByEmail(email);
         EmailEntity emailEntity =
             EmailEntity.builder()
                 .code(code)
-                .userEntity(userMapper.map(userEntity))
+                .userEntity(userMapper.map(userDto))
                 .expiresAt(LocalDateTime.now().plusMinutes(10))
                 .build();
         emailVerificationRepository.save(emailEntity);

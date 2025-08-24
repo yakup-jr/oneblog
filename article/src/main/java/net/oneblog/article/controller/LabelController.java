@@ -2,16 +2,13 @@ package net.oneblog.article.controller;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import net.oneblog.article.LabelLink;
-import net.oneblog.article.LabelModelAssembler;
-import net.oneblog.article.models.LabelModel;
-import net.oneblog.article.models.LabelCreateModel;
 import net.oneblog.article.entity.LabelEntity;
-import net.oneblog.article.exception.LabelNotFoundException;
+import net.oneblog.article.links.LabelLink;
+import net.oneblog.article.links.LabelModelAssembler;
 import net.oneblog.article.mapper.LabelMapper;
+import net.oneblog.article.models.LabelCreateModel;
+import net.oneblog.article.models.LabelModel;
 import net.oneblog.article.service.LabelService;
-import net.oneblog.sharedexceptions.ApiRequestException;
-import net.oneblog.sharedexceptions.PageNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
@@ -68,17 +65,13 @@ public class LabelController {
     @PostMapping("/label")
     public ResponseEntity<EntityModel<LabelModel>> saveLabel(
         @RequestBody @Validated LabelCreateModel labelDto) {
-        try {
-            LabelEntity labelEntity = labelMapper.map(labelDto);
-            LabelEntity createLabelEntity = labelService.save(labelEntity);
-            return ResponseEntity.status(HttpStatus.CREATED).body(EntityModel.of(labelMapper.map(
-                    createLabelEntity),
-                labelLink.findLabelByLabelId(
-                        createLabelEntity.getLabelId())
-                    .withRel("label")));
-        } catch (ApiRequestException e) {
-            throw new ApiRequestException(e.getMessage());
-        }
+        LabelEntity labelEntity = labelMapper.map(labelDto);
+        LabelEntity createLabelEntity = labelService.save(labelEntity);
+        return ResponseEntity.status(HttpStatus.CREATED).body(EntityModel.of(labelMapper.map(
+                createLabelEntity),
+            labelLink.findLabelByLabelId(
+                    createLabelEntity.getLabelId())
+                .withRel("label")));
     }
 
     /**
@@ -90,15 +83,11 @@ public class LabelController {
     @GetMapping("label/{labelId}")
     public ResponseEntity<EntityModel<LabelModel>> findLabelByLabelId(
         @PathVariable @Validated Long labelId) {
-        try {
-            LabelEntity labelEntity = labelService.findById(labelId);
-            LabelModel labelModel = labelMapper.map(labelEntity);
-            Links links = Links.of(labelLink.findLabelByLabelId(labelId).withSelfRel(),
-                labelLink.findAllLabels().withRel("labels"));
-            return ResponseEntity.status(200).body(EntityModel.of(labelModel, links));
-        } catch (LabelNotFoundException e) {
-            throw new LabelNotFoundException(e.getMessage());
-        }
+        LabelEntity labelEntity = labelService.findById(labelId);
+        LabelModel labelModel = labelMapper.map(labelEntity);
+        Links links = Links.of(labelLink.findLabelByLabelId(labelId).withSelfRel(),
+            labelLink.findAllLabels().withRel("labels"));
+        return ResponseEntity.status(200).body(EntityModel.of(labelModel, links));
     }
 
     /**
@@ -110,15 +99,11 @@ public class LabelController {
     @GetMapping("label/name/{name}")
     public ResponseEntity<EntityModel<LabelModel>> findLabelByLabelName(
         @PathVariable @Validated String name) {
-        try {
-            LabelEntity labelEntityByName = labelService.findByName(name);
-            LabelModel labelModel = labelMapper.map(labelEntityByName);
-            Links links = Links.of(labelLink.findLabelByLabelName(name).withSelfRel(),
-                labelLink.findAllLabels().withRel("labels"));
-            return ResponseEntity.status(HttpStatus.OK).body(EntityModel.of(labelModel, links));
-        } catch (LabelNotFoundException e) {
-            throw new LabelNotFoundException(e.getMessage());
-        }
+        LabelEntity labelEntityByName = labelService.findByName(name);
+        LabelModel labelModel = labelMapper.map(labelEntityByName);
+        Links links = Links.of(labelLink.findLabelByLabelName(name).withSelfRel(),
+            labelLink.findAllLabels().withRel("labels"));
+        return ResponseEntity.status(HttpStatus.OK).body(EntityModel.of(labelModel, links));
     }
 
     /**
@@ -133,13 +118,9 @@ public class LabelController {
         @RequestParam @Validated @Min(0L) Integer page,
         @RequestParam(required = false, defaultValue = "10") @Validated @Min(1) @Max(50)
         Integer size) {
-        try {
-            Page<LabelModel> labelPage = labelService.findAll(page, size).map(labelMapper::map);
-            return ResponseEntity.status(HttpStatus.OK)
-                .body(pagedResourcesAssembler.toModel(labelPage, labelModelAssembler));
-        } catch (PageNotFoundException e) {
-            throw new PageNotFoundException(e.getMessage());
-        }
+        Page<LabelModel> labelPage = labelService.findAll(page, size).map(labelMapper::map);
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(pagedResourcesAssembler.toModel(labelPage, labelModelAssembler));
     }
 
     /**
@@ -151,13 +132,9 @@ public class LabelController {
     @DeleteMapping("/label/{labelId}")
     public ResponseEntity<EntityModel<LabelModel>> deleteLabel(
         @PathVariable @Validated Long labelId) {
-        try {
-            LabelEntity labelEntity = labelService.deleteById(labelId);
-            LabelModel labelModel = labelMapper.map(labelEntity);
-            return ResponseEntity.status(HttpStatus.OK).body(
-                EntityModel.of(labelModel, labelLink.findLabelByLabelId(labelId).withRel("label")));
-        } catch (LabelNotFoundException e) {
-            throw new LabelNotFoundException(e.getMessage());
-        }
+        LabelEntity labelEntity = labelService.deleteById(labelId);
+        LabelModel labelModel = labelMapper.map(labelEntity);
+        return ResponseEntity.status(HttpStatus.OK).body(
+            EntityModel.of(labelModel, labelLink.findLabelByLabelId(labelId).withRel("label")));
     }
 }

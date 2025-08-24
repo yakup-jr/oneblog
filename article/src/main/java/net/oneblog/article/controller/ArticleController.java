@@ -1,13 +1,11 @@
 package net.oneblog.article.controller;
 
 import lombok.AllArgsConstructor;
-import net.oneblog.article.ArticleLink;
-import net.oneblog.article.ArticleModelAssembler;
-import net.oneblog.article.models.ArticleModel;
+import net.oneblog.article.links.ArticleLink;
+import net.oneblog.article.links.ArticleModelAssembler;
 import net.oneblog.article.models.ArticleCreateModel;
-import net.oneblog.article.exception.ArticleNotFoundException;
+import net.oneblog.article.models.ArticleModel;
 import net.oneblog.article.service.ArticleService;
-import net.oneblog.sharedexceptions.ApiRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.CollectionModel;
@@ -43,16 +41,12 @@ public class ArticleController {
     @PostMapping("/article")
     public ResponseEntity<EntityModel<ArticleModel>> createArticle(
         @RequestBody @Validated ArticleCreateModel articleDto) {
-        try {
-            ArticleModel savedArticleEntity = articleService.save(articleDto);
-            List<Link> links = List.of(
-                articleLink.findArticleByArticleId(savedArticleEntity.getArticleId())
-                    .withSelfRel());
-            return ResponseEntity.status(HttpStatus.CREATED)
-                .body(EntityModel.of(savedArticleEntity, links));
-        } catch (ApiRequestException e) {
-            throw new ApiRequestException(e.getMessage());
-        }
+        ArticleModel savedArticleEntity = articleService.save(articleDto);
+        List<Link> links = List.of(
+            articleLink.findArticleByArticleId(savedArticleEntity.getArticleId())
+                .withSelfRel());
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(EntityModel.of(savedArticleEntity, links));
     }
 
     /**
@@ -64,14 +58,10 @@ public class ArticleController {
     @GetMapping("/article/{articleId}")
     public ResponseEntity<EntityModel<ArticleModel>> findArticleByArticleId(
         @PathVariable @Validated Long articleId) {
-        try {
-            ArticleModel foundArticleEntity = articleService.findByArticleId(articleId);
-            List<Link> links = List.of(articleLink.findArticleByArticleId(articleId).withSelfRel());
-            return ResponseEntity.status(HttpStatus.OK)
-                .body(EntityModel.of(foundArticleEntity, links));
-        } catch (ArticleNotFoundException e) {
-            throw new ArticleNotFoundException(e.getMessage());
-        }
+        ArticleModel foundArticleEntity = articleService.findByArticleId(articleId);
+        List<Link> links = List.of(articleLink.findArticleByArticleId(articleId).withSelfRel());
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(EntityModel.of(foundArticleEntity, links));
     }
 
     /**
@@ -85,14 +75,10 @@ public class ArticleController {
     public ResponseEntity<PagedModel<EntityModel<ArticleModel>>> findAllArticles(
         @RequestParam Integer page,
         @RequestParam(required = false, defaultValue = "10") Integer size) {
-        try {
-            Page<ArticleModel> articlesPage =
-                articleService.findAll(page, size);
-            return ResponseEntity.status(HttpStatus.OK)
-                .body(pagedResourcesAssembler.toModel(articlesPage, articleModelAssembler));
-        } catch (ApiRequestException e) {
-            throw new ApiRequestException(e.getMessage());
-        }
+        Page<ArticleModel> articlesPage =
+            articleService.findAll(page, size);
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(pagedResourcesAssembler.toModel(articlesPage, articleModelAssembler));
     }
 
     /**
@@ -104,19 +90,15 @@ public class ArticleController {
     @GetMapping("/article/user/{userId}")
     public ResponseEntity<CollectionModel<EntityModel<ArticleModel>>> findArticleByUserId(
         @PathVariable @Validated Long userId) {
-        try {
-            List<ArticleModel> foundArticleEntities = articleService.findByUserId(userId);
-            List<Link> links = List.of(articleLink.findArticleByUserId(userId).withSelfRel());
-            List<EntityModel<ArticleModel>> rawArticles = foundArticleEntities.stream().map(
-                    article -> EntityModel.of(article,
-                        articleLink.findArticleByArticleId(article.getArticleId()).withSelfRel()))
-                .toList();
-            CollectionModel<EntityModel<ArticleModel>> articles =
-                CollectionModel.of(rawArticles, links);
-            return ResponseEntity.status(HttpStatus.OK).body(articles);
-        } catch (ArticleNotFoundException e) {
-            throw new ArticleNotFoundException(e.getMessage());
-        }
+        List<ArticleModel> foundArticleEntities = articleService.findByUserId(userId);
+        List<Link> links = List.of(articleLink.findArticleByUserId(userId).withSelfRel());
+        List<EntityModel<ArticleModel>> rawArticles = foundArticleEntities.stream().map(
+                article -> EntityModel.of(article,
+                    articleLink.findArticleByArticleId(article.getArticleId()).withSelfRel()))
+            .toList();
+        CollectionModel<EntityModel<ArticleModel>> articles =
+            CollectionModel.of(rawArticles, links);
+        return ResponseEntity.status(HttpStatus.OK).body(articles);
     }
 
     /**
@@ -127,12 +109,8 @@ public class ArticleController {
      */
     @DeleteMapping("/article/{articleId}")
     public ResponseEntity<Void> deleteArticle(@PathVariable @Validated Long articleId) {
-        try {
-            articleService.deleteByArticleId(articleId);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        } catch (ArticleNotFoundException e) {
-            throw new ArticleNotFoundException(e.getMessage());
-        }
+        articleService.deleteByArticleId(articleId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
 }

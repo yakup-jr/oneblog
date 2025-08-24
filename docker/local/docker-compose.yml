@@ -19,7 +19,7 @@ services:
       - ../../config/local/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
 
   db:
-    image: postgres:15
+    image: postgres:16
     container_name: db
     hostname: db
     env_file:

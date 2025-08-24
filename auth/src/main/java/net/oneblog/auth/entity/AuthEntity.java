@@ -35,10 +35,11 @@ public class AuthEntity {
         inverseJoinColumns = @JoinColumn(name = "role_id"))
     private List<RoleEntity> roleEntities;
 
-    @OneToMany(mappedBy = "authEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "authEntity", cascade = CascadeType.ALL)
     private List<TokenEntity> tokens;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH},
+        fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private UserEntity userEntity;
 }

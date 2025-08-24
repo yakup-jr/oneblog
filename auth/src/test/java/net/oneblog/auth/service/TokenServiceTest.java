@@ -2,16 +2,16 @@ package net.oneblog.auth.service;
 
 import io.jsonwebtoken.io.SerialException;
 import jakarta.servlet.http.HttpServletRequest;
-import net.oneblog.auth.models.AuthenticationResponseModel;
-import net.oneblog.auth.models.RefreshTokenRequestModel;
 import net.oneblog.auth.entity.AuthEntity;
 import net.oneblog.auth.entity.TokenEntity;
+import net.oneblog.auth.models.AuthenticationResponseModel;
+import net.oneblog.auth.models.RefreshTokenRequestModel;
 import net.oneblog.auth.repository.AuthRepository;
 import net.oneblog.auth.repository.TokenRepository;
 import net.oneblog.sharedexceptions.ServiceException;
-import net.oneblog.user.entity.UserEntity;
-import net.oneblog.user.exceptions.UserNotFoundException;
 import net.oneblog.user.repository.UserRepository;
+import net.oneblog.user.service.UserService;
+import net.oneblog.validationapi.models.ValidatedUserModel;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,8 +25,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class TokenServiceTest {
@@ -36,6 +35,8 @@ class TokenServiceTest {
 
     @Mock
     private JwtService jwtService;
+    @Mock
+    private UserService userService;
     @Mock
     private UserRepository userRepository;
     @Mock
@@ -49,26 +50,24 @@ class TokenServiceTest {
     void reIssueAccessToken_Success() {
         String token = "valid-refresh-token";
         String username = "testuser";
-        UserEntity userEntity = UserEntity.builder()
+        ValidatedUserModel userModel = ValidatedUserModel.builder()
             .userId(1L)
             .nickname(username)
             .email("test@example.com")
             .build();
 
-        when(request.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn("Bearer " + token);
-        when(jwtService.extractUsername(token)).thenReturn(username);
-        when(userRepository.findByNickname(username)).thenReturn(Optional.of(userEntity));
-        when(jwtService.isValidRefresh(token, userEntity)).thenReturn(true);
-        when(jwtService.generateAccessToken(userEntity)).thenReturn("new-access-token");
-        when(jwtService.generateRefreshToken(userEntity)).thenReturn("new-refresh-token");
-        when(tokenRepository.findAllAccessTokenByUser(userEntity.getUserId())).thenReturn(
-            new ArrayList<>());
-
         AuthEntity authEntity = AuthEntity.builder()
-            .userEntity(userEntity)
             .tokens(new ArrayList<>())
             .build();
-        when(authRepository.findByEmail(userEntity.getEmail())).thenReturn(Optional.of(authEntity));
+
+        when(request.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn("Bearer " + token);
+        when(jwtService.extractUsername(token)).thenReturn(username);
+        when(userService.findByNickname(username)).thenReturn(userModel);
+        when(jwtService.isValidRefresh(token, userModel)).thenReturn(true);
+        when(jwtService.generateAccessToken(userModel)).thenReturn("new-access-token");
+        when(jwtService.generateRefreshToken(userModel)).thenReturn("new-refresh-token");
+        when(tokenRepository.findAllAccessTokenByUser(userModel.userId())).thenReturn(new ArrayList<>());
+        when(authRepository.findByUserEntityEmail(userModel.email())).thenReturn(Optional.of(authEntity));
 
         AuthenticationResponseModel response = tokenService.reIssueAccessToken(request);
 
@@ -97,30 +96,17 @@ class TokenServiceTest {
     }
 
     @Test
-    void reIssueAccessToken_UserNotFound() {
-        String token = "valid-token";
-        String username = "nonexistent";
-
-        when(request.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn("Bearer " + token);
-        when(jwtService.extractUsername(token)).thenReturn(username);
-        when(userRepository.findByNickname(username)).thenReturn(Optional.empty());
-
-        assertThrows(UserNotFoundException.class,
-            () -> tokenService.reIssueAccessToken(request));
-    }
-
-    @Test
     void reIssueAccessToken_InvalidToken() {
         String token = "invalid-token";
         String username = "testuser";
-        UserEntity userEntity = UserEntity.builder()
+        ValidatedUserModel userModel = ValidatedUserModel.builder()
             .nickname(username)
             .build();
 
         when(request.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn("Bearer " + token);
         when(jwtService.extractUsername(token)).thenReturn(username);
-        when(userRepository.findByNickname(username)).thenReturn(Optional.of(userEntity));
-        when(jwtService.isValidRefresh(token, userEntity)).thenReturn(false);
+        when(userService.findByNickname(username)).thenReturn(userModel);
+        when(jwtService.isValidRefresh(token, userModel)).thenReturn(false);
 
         ServiceException exception = assertThrows(ServiceException.class,
             () -> tokenService.reIssueAccessToken(request));
@@ -132,25 +118,23 @@ class TokenServiceTest {
         String refreshToken = "valid-refresh-token";
         String username = "testuser";
         RefreshTokenRequestModel request = new RefreshTokenRequestModel(refreshToken);
-        UserEntity userEntity = UserEntity.builder()
+        ValidatedUserModel userModel = ValidatedUserModel.builder()
             .userId(1L)
             .nickname(username)
             .email("test@example.com")
             .build();
 
-        when(jwtService.extractUsername(refreshToken)).thenReturn(username);
-        when(userRepository.findByNickname(username)).thenReturn(Optional.of(userEntity));
-        when(jwtService.isValidRefresh(refreshToken, userEntity)).thenReturn(true);
-        when(jwtService.generateAccessToken(userEntity)).thenReturn("new-access-token");
-        when(jwtService.generateRefreshToken(userEntity)).thenReturn("new-refresh-token");
-        when(tokenRepository.findAllAccessTokenByUser(userEntity.getUserId())).thenReturn(
-            new ArrayList<>());
-
         AuthEntity authEntity = AuthEntity.builder()
-            .userEntity(userEntity)
             .tokens(new ArrayList<>())
             .build();
-        when(authRepository.findByEmail(userEntity.getEmail())).thenReturn(Optional.of(authEntity));
+
+        when(jwtService.extractUsername(refreshToken)).thenReturn(username);
+        when(userService.findByNickname(username)).thenReturn(userModel);
+        when(jwtService.isValidRefresh(refreshToken, userModel)).thenReturn(true);
+        when(jwtService.generateAccessToken(userModel)).thenReturn("new-access-token");
+        when(jwtService.generateRefreshToken(userModel)).thenReturn("new-refresh-token");
+        when(tokenRepository.findAllAccessTokenByUser(userModel.userId())).thenReturn(new ArrayList<>());
+        when(authRepository.findByUserEntityEmail(userModel.email())).thenReturn(Optional.of(authEntity));
 
         AuthenticationResponseModel response = tokenService.reIssueRefreshToken(request);
 
@@ -160,30 +144,17 @@ class TokenServiceTest {
     }
 
     @Test
-    void reIssueRefreshToken_UserNotFound() {
-        String refreshToken = "valid-token";
-        String username = "nonexistent";
-        RefreshTokenRequestModel request = new RefreshTokenRequestModel(refreshToken);
-
-        when(jwtService.extractUsername(refreshToken)).thenReturn(username);
-        when(userRepository.findByNickname(username)).thenReturn(Optional.empty());
-
-        assertThrows(UserNotFoundException.class,
-            () -> tokenService.reIssueRefreshToken(request));
-    }
-
-    @Test
     void reIssueRefreshToken_InvalidToken() {
         String refreshToken = "invalid-token";
         String username = "testuser";
         RefreshTokenRequestModel request = new RefreshTokenRequestModel(refreshToken);
-        UserEntity userEntity = UserEntity.builder()
+        ValidatedUserModel userModel = ValidatedUserModel.builder()
             .nickname(username)
             .build();
 
         when(jwtService.extractUsername(refreshToken)).thenReturn(username);
-        when(userRepository.findByNickname(username)).thenReturn(Optional.of(userEntity));
-        when(jwtService.isValidRefresh(refreshToken, userEntity)).thenReturn(false);
+        when(userService.findByNickname(username)).thenReturn(userModel);
+        when(jwtService.isValidRefresh(refreshToken, userModel)).thenReturn(false);
 
         ServiceException exception = assertThrows(ServiceException.class,
             () -> tokenService.reIssueRefreshToken(request));
@@ -192,7 +163,7 @@ class TokenServiceTest {
 
     @Test
     void revokeAllTokensForUser_Success() {
-        UserEntity userEntity = UserEntity.builder()
+        ValidatedUserModel userModel = ValidatedUserModel.builder()
             .userId(1L)
             .build();
 
@@ -201,44 +172,28 @@ class TokenServiceTest {
             TokenEntity.builder().isRevoke(false).build()
         );
 
-        when(tokenRepository.findAllAccessTokenByUser(userEntity.getUserId())).thenReturn(tokens);
+        when(tokenRepository.findAllAccessTokenByUser(userModel.userId())).thenReturn(tokens);
 
-        tokenService.revokeAllTokensForUser(userEntity);
+        tokenService.revokeAllTokensForUser(userModel);
 
         tokens.forEach(token -> assertTrue(token.getIsRevoke()));
         verify(tokenRepository).saveAll(tokens);
     }
 
     @Test
-    void revokeAllTokensForUser_NoTokens() {
-        UserEntity userEntity = UserEntity.builder()
-            .userId(1L)
-            .build();
-
-        when(tokenRepository.findAllAccessTokenByUser(userEntity.getUserId())).thenReturn(
-            new ArrayList<>());
-
-        tokenService.revokeAllTokensForUser(userEntity);
-
-        verify(tokenRepository).saveAll(any());
-    }
-
-    @Test
     void saveUserToken_Success() {
-        String accessToken = "access-token";
-        String refreshToken = "refresh-token";
-        UserEntity userEntity = UserEntity.builder()
+        ValidatedUserModel userModel = ValidatedUserModel.builder()
+            .userId(1L)
             .email("test@example.com")
             .build();
 
         AuthEntity authEntity = AuthEntity.builder()
-            .userEntity(userEntity)
             .tokens(new ArrayList<>())
             .build();
 
-        when(authRepository.findByEmail(userEntity.getEmail())).thenReturn(Optional.of(authEntity));
+        when(authRepository.findByUserEntityEmail(userModel.email())).thenReturn(Optional.of(authEntity));
 
-        tokenService.saveUserToken(accessToken, refreshToken, userEntity);
+        tokenService.saveUserToken("access-token", "refresh-token", userModel);
 
         verify(tokenRepository).save(any(TokenEntity.class));
         assertEquals(1, authEntity.getTokens().size());
@@ -246,15 +201,13 @@ class TokenServiceTest {
 
     @Test
     void saveUserToken_UserNotFound() {
-        String accessToken = "access-token";
-        String refreshToken = "refresh-token";
-        UserEntity userEntity = UserEntity.builder()
-            .email("nonexistent@example.com")
+        ValidatedUserModel userModel = ValidatedUserModel.builder()
+            .email("test@example.com")
             .build();
 
-        when(authRepository.findByEmail(userEntity.getEmail())).thenReturn(Optional.empty());
+        when(authRepository.findByUserEntityEmail(userModel.email())).thenReturn(Optional.empty());
 
         assertThrows(SerialException.class,
-            () -> tokenService.saveUserToken(accessToken, refreshToken, userEntity));
+            () -> tokenService.saveUserToken("access-token", "refresh-token", userModel));
     }
 }

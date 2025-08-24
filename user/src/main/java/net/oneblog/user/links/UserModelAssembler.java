@@ -1,6 +1,6 @@
-package net.oneblog.user;
+package net.oneblog.user.links;
 
-import net.oneblog.user.dto.UserDto;
+import net.oneblog.api.dto.UserDto;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.lang.NonNull;
