@@ -13,24 +13,23 @@ import java.util.Optional;
 @Repository
 public interface EmailVerificationRepository extends JpaRepository<EmailEntity, Long> {
 
-	/**
-	 * Exists by email and code not expired boolean.
-	 *
-	 * @param email the email
-	 * @return the boolean
-	 */
-	@Query("select count(emailVerification) > 0 from EmailEntity emailVerification where " +
-        "emailVerification.userEntity" +
-        ".email = :email and emailVerification.expiresAt > CURRENT_TIMESTAMP")
+    /**
+     * Exists by email and code not expired boolean.
+     *
+     * @param email the email
+     * @return the boolean
+     */
+    @Query("select count(emailVerification) > 0 from EmailEntity emailVerification where " +
+        "emailVerification.email = :email and emailVerification.expiresAt > CURRENT_TIMESTAMP")
     boolean existsByEmailAndCodeNotExpired(String email);
 
-	/**
-	 * Find by email optional.
-	 *
-	 * @param email the email
-	 * @return the optional
-	 */
-	@Query("select e from EmailEntity e where e.userEntity.email = :email")
+    /**
+     * Find by email optional.
+     *
+     * @param email the email
+     * @return the optional
+     */
+    @Query("select e from EmailEntity e where e.email = :email")
     Optional<EmailEntity> findByEmail(String email);
 
 }

@@ -31,8 +31,6 @@ public class EmailEntity {
     @Column(name = "expires_at")
     private LocalDateTime expiresAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "fk_email_verification_user"),
-        nullable = false)
-    private UserEntity userEntity;
+    @Column(name = "email")
+    private String email;
 }

@@ -67,7 +67,7 @@ class TokenServiceTest {
         when(jwtService.generateAccessToken(userModel)).thenReturn("new-access-token");
         when(jwtService.generateRefreshToken(userModel)).thenReturn("new-refresh-token");
         when(tokenRepository.findAllAccessTokenByUser(userModel.userId())).thenReturn(new ArrayList<>());
-        when(authRepository.findByUserEntityEmail(userModel.email())).thenReturn(Optional.of(authEntity));
+        when(authRepository.findByEmail(userModel.email())).thenReturn(Optional.of(authEntity));
 
         AuthenticationResponseModel response = tokenService.reIssueAccessToken(request);
 
@@ -134,7 +134,7 @@ class TokenServiceTest {
         when(jwtService.generateAccessToken(userModel)).thenReturn("new-access-token");
         when(jwtService.generateRefreshToken(userModel)).thenReturn("new-refresh-token");
         when(tokenRepository.findAllAccessTokenByUser(userModel.userId())).thenReturn(new ArrayList<>());
-        when(authRepository.findByUserEntityEmail(userModel.email())).thenReturn(Optional.of(authEntity));
+        when(authRepository.findByEmail(userModel.email())).thenReturn(Optional.of(authEntity));
 
         AuthenticationResponseModel response = tokenService.reIssueRefreshToken(request);
 
@@ -191,7 +191,7 @@ class TokenServiceTest {
             .tokens(new ArrayList<>())
             .build();
 
-        when(authRepository.findByUserEntityEmail(userModel.email())).thenReturn(Optional.of(authEntity));
+        when(authRepository.findByEmail(userModel.email())).thenReturn(Optional.of(authEntity));
 
         tokenService.saveUserToken("access-token", "refresh-token", userModel);
 
@@ -205,7 +205,7 @@ class TokenServiceTest {
             .email("test@example.com")
             .build();
 
-        when(authRepository.findByUserEntityEmail(userModel.email())).thenReturn(Optional.empty());
+        when(authRepository.findByEmail(userModel.email())).thenReturn(Optional.empty());
 
         assertThrows(SerialException.class,
             () -> tokenService.saveUserToken("access-token", "refresh-token", userModel));

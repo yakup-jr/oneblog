@@ -48,24 +48,24 @@ class AuthServiceImplTest {
 
     @Test
     void findByEmail_ShouldReturnAuthModel_WhenEmailExists() {
-        when(authRepository.findByUserEntityEmail(testEmail)).thenReturn(Optional.of(authEntity));
+        when(authRepository.findByEmail(testEmail)).thenReturn(Optional.of(authEntity));
         when(authMapper.map(authEntity)).thenReturn(authModel);
 
         AuthModel result = authService.findByEmail(testEmail);
 
         assertNotNull(result);
-        verify(authRepository).findByUserEntityEmail(testEmail);
+        verify(authRepository).findByEmail(testEmail);
     }
 
     @Test
     void findByEmail_ShouldThrowServiceException_WhenEmailNotFound() {
-        when(authRepository.findByUserEntityEmail(testEmail)).thenReturn(Optional.empty());
+        when(authRepository.findByEmail(testEmail)).thenReturn(Optional.empty());
 
         ServiceException exception = assertThrows(ServiceException.class,
             () -> authService.findByEmail(testEmail));
 
         assertTrue(exception.getMessage().contains("not found"));
-        verify(authRepository).findByUserEntityEmail(testEmail);
+        verify(authRepository).findByEmail(testEmail);
     }
 
     @Test

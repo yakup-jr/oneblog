@@ -1,5 +1,6 @@
 package net.oneblog.email.service;
 
+import lombok.AllArgsConstructor;
 import net.oneblog.email.entity.EmailEntity;
 import net.oneblog.email.models.RegistrationEmailVerificationModel;
 import net.oneblog.email.repository.EmailVerificationRepository;
@@ -15,29 +16,11 @@ import java.time.LocalDateTime;
  * The type Email verification service.
  */
 @Service
+@AllArgsConstructor
 public class EmailVerificationServiceImpl implements EmailVerificationService {
 
     private final EmailVerificationRepository emailVerificationRepository;
     private final VerificationMailMessage mailMessage;
-    private final UserService userService;
-    private final UserMapper userMapper;
-
-    /**
-     * Instantiates a new Email verification service.
-     *
-     * @param emailVerificationRepository the email verification repository
-     * @param mailMessage                 the mail message
-     * @param userService                 the user service
-     * @param userMapper                  the user mapper
-     */
-    public EmailVerificationServiceImpl(EmailVerificationRepository emailVerificationRepository,
-                                        VerificationMailMessage mailMessage,
-                                        UserService userService, UserMapper userMapper) {
-        this.emailVerificationRepository = emailVerificationRepository;
-        this.mailMessage = mailMessage;
-        this.userService = userService;
-        this.userMapper = userMapper;
-    }
 
     @Override
     public void sendVerificationCode(String email) {
@@ -45,15 +28,13 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
             throw new ServiceException("Verification code already send");
         }
         String code = mailMessage.sendVerificationCode(email);
-        System.out.println("Code is " + code);
-        ValidatedUserModel userDto = userService.findByEmail(email);
-        EmailEntity emailEntity =
-            EmailEntity.builder()
+        EmailEntity emailEntity = EmailEntity.builder()
                 .code(code)
-                .userEntity(userMapper.map(userDto))
+                .email(email)
                 .expiresAt(LocalDateTime.now().plusMinutes(10))
                 .build();
         emailVerificationRepository.save(emailEntity);
+        System.out.println("Saved email entity: " + emailEntity.getEmailId());
     }
 
     @Override

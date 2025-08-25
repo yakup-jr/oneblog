@@ -91,7 +91,7 @@ public class TokenServiceImpl implements TokenService {
     @Override
     public void saveUserToken(String accessToken, String refreshToken, ValidatedUserModel user) {
         AuthEntity authEntity =
-            authRepository.findByUserEntityEmail(user.email()).orElseThrow(() -> new SerialException(
+            authRepository.findByEmail(user.email()).orElseThrow(() -> new SerialException(
                 "user not found"));
 
         TokenEntity tokenEntity = new TokenEntity();

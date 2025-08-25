@@ -74,7 +74,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ValidatedUserModel findByEmail(String email) throws UserNotFoundException {
+    public ValidatedUserModel findByEmail(String email) {
         return userRepository.findByEmail(email).map(userMapper::map)
             .orElseThrow(
                 () -> new UserNotFoundException("User with email " + email + " not found"));

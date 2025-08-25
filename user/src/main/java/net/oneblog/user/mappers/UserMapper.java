@@ -37,4 +37,6 @@ public interface UserMapper {
      * @return the user dto
      */
     ValidatedUserModel map(UserEntity userEntity);
+
+    ValidatedUserModel map(UserDto userDto);
 }

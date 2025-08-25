@@ -46,7 +46,6 @@ public class BasicAuthServiceImpl implements BasicAuthService {
             throw new InvalidVerificationCodeException("Code is invalid");
         }
         AuthModel model = authService.findByEmail(request.email());
-        System.out.println(model.getUserDto());
         model.setVerificated(true);
         authService.update(model);
     }

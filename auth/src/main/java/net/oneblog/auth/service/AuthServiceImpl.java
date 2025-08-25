@@ -9,8 +9,10 @@ import net.oneblog.auth.models.BasicRegistrationRequestModel;
 import net.oneblog.auth.models.GoogleRegistrationRequestModel;
 import net.oneblog.auth.repository.AuthRepository;
 import net.oneblog.sharedexceptions.ServiceException;
-import net.oneblog.user.entity.UserEntity;
+import net.oneblog.user.mappers.UserMapper;
+import net.oneblog.user.models.UserCreateRequest;
 import net.oneblog.user.service.UserService;
+import net.oneblog.validationapi.models.ValidatedUserModel;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +27,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserService userService;
     private final RoleService roleService;
     private final PasswordEncoder passwordEncoder;
+    private final UserMapper userMapper;
 
     @Override
     public AuthModel save(GoogleRegistrationRequestModel googleRegistrationModel) {
@@ -42,11 +45,13 @@ public class AuthServiceImpl implements AuthService {
                 "User with" + basicRegistrationModel.username() + "already exists");
         }
 
+        UserCreateRequest userRequest = new UserCreateRequest(
+            basicRegistrationModel.email(),
+            basicRegistrationModel.name(),
+            basicRegistrationModel.username()
+        );
         AuthEntity authEntity = new AuthEntity();
-        UserEntity user = UserEntity.builder().email(basicRegistrationModel.email())
-            .name(basicRegistrationModel.name())
-            .nickname(basicRegistrationModel.username()).build();
-        authEntity.setUserEntity(user);
+        authEntity.setUserEntity(userMapper.map(userRequest));
         authEntity.setPassword(passwordEncoder.encode(basicRegistrationModel.password()));
         authEntity.setRoleEntities(
             List.of(roleService.findByName(RoleNameDomain.ROLE_USER.toString())));
@@ -58,7 +63,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public AuthModel findByEmail(String email) {
         return authMapper.map(
-            authRepository.findByUserEntityEmail(email).orElseThrow(
+            authRepository.findByEmail(email).orElseThrow(
                 () -> new ServiceException("user with email " + email + " not found")));
     }
 

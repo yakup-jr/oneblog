@@ -10,5 +10,7 @@ databaseChangeLog:
   - include:
       file: db/changelog/db.changelog-5.yml
   - include:
+      file: db/changelog/db.changelog-6.yml
+  - include:
       file: db/changelog/db.changelog-dev.yaml
       context: dev

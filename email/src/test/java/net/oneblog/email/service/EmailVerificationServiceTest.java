@@ -44,14 +44,9 @@ class EmailVerificationServiceTest {
     void sendVerificationCode_Success() {
         String email = "somemail@mail.com";
         String code = "152734";
-        UserDto userDto =
-            validatedUserModelMapper.map(ValidatedUserModel.builder().email(email).build());
-        ValidatedUserModel userEntity = new UserEntity();
 
         when(emailVerificationRepository.existsByEmailAndCodeNotExpired(email)).thenReturn(false);
         when(verificationMailMessage.sendVerificationCode(email)).thenReturn(code);
-        when(userService.findByEmail(email)).thenReturn(userDto);
-        when(userMapper.map(userDto)).thenReturn(userEntity);
 
         emailVerificationService.sendVerificationCode(email);
 

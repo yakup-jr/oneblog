@@ -32,5 +32,5 @@ public interface EmailDomain {
      *
      * @return the user
      */
-    UserDomain getUser();
+    String getEmail();
 }
