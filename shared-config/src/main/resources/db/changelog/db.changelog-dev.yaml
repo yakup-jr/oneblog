@@ -1,0 +1,541 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1-data-labels
+      author: Dmitry
+      changes:
+        - insert:
+            tableName: t_label
+            columns:
+              - column:
+                  name: name
+                  value: 'Assembler'
+        - insert:
+            tableName: t_label
+            columns:
+              - column:
+                  name: name
+                  value: 'Programming_languages'
+        - insert:
+            tableName: t_label
+            columns:
+              - column:
+                  name: name
+                  value: 'Java'
+        - insert:
+            tableName: t_label
+            columns:
+              - column:
+                  name: name
+                  value: 'Python'
+        - insert:
+            tableName: t_label
+            columns:
+              - column:
+                  name: name
+                  value: 'CPlusPlus'
+        - insert:
+            tableName: t_label
+            columns:
+              - column:
+                  name: name
+                  value: 'CHash'
+        - insert:
+            tableName: t_label
+            columns:
+              - column:
+                  name: name
+                  value: 'C'
+        - insert:
+            tableName: t_label
+            columns:
+              - column:
+                  name: name
+                  value: 'Go'
+        - insert:
+            tableName: t_label
+            columns:
+              - column:
+                  name: name
+                  value: 'Kotlin'
+
+  - changeSet:
+      id: 2-data-users
+      author: Dmitry
+      changes:
+        # Insert into t_user (user details)
+        - insert:
+            tableName: t_user
+            columns:
+              - column:
+                  name: nickname
+                  value: 'yakup_jr'
+              - column:
+                  name: name
+                  value: 'Dmitry'
+              - column:
+                  name: email
+                  value: 'dimaakupovz@gmail.com'
+        - insert:
+            tableName: t_user
+            columns:
+              - column:
+                  name: nickname
+                  value: 'shadow'
+              - column:
+                  name: name
+                  value: 'Emily'
+              - column:
+                  name: email
+                  value: 'shadow@mail.com'
+        - insert:
+            tableName: t_user
+            columns:
+              - column:
+                  name: nickname
+                  value: 'falcon'
+              - column:
+                  name: name
+                  value: 'John'
+              - column:
+                  name: email
+                  value: 'falcon@mail.com'
+        - insert:
+            tableName: t_user
+            columns:
+              - column:
+                  name: nickname
+                  value: 'sparrow'
+              - column:
+                  name: name
+                  value: 'Robert'
+              - column:
+                  name: email
+                  value: 'sparrow@mail.com'
+        - insert:
+            tableName: t_user
+            columns:
+              - column:
+                  name: nickname
+                  value: 'finch'
+              - column:
+                  name: name
+                  value: 'Sarah'
+              - column:
+                  name: email
+                  value: 'finch@mail.com'
+
+  - changeSet:
+      id: 2.1-data-auth
+      author: Dmitry
+      changes:
+        # Insert into t_auth (authentication details, linked to t_user)
+        - insert:
+            tableName: t_auth
+            columns:
+              - column:
+                  name: password
+                  value: 'defaultPasswordForYakupJr' # Assuming a default password, as original had none
+              - column:
+                  name: verificated
+                  value: 'true'
+              - column:
+                  name: user_id
+                  valueComputed: "(SELECT user_id FROM t_user WHERE nickname = 'yakup_jr')"
+        - insert:
+            tableName: t_auth
+            columns:
+              - column:
+                  name: password
+                  value: 'strongPass2'
+              - column:
+                  name: verificated
+                  value: 'true'
+              - column:
+                  name: user_id
+                  valueComputed: "(SELECT user_id FROM t_user WHERE nickname = 'shadow')"
+        - insert:
+            tableName: t_auth
+            columns:
+              - column:
+                  name: password
+                  value: 'strongPass3'
+              - column:
+                  name: verificated
+                  value: 'true'
+              - column:
+                  name: user_id
+                  valueComputed: "(SELECT user_id FROM t_user WHERE nickname = 'falcon')"
+        - insert:
+            tableName: t_auth
+            columns:
+              - column:
+                  name: password
+                  value: 'strongPass4'
+              - column:
+                  name: verificated
+                  value: 'true'
+              - column:
+                  name: user_id
+                  valueComputed: "(SELECT user_id FROM t_user WHERE nickname = 'sparrow')"
+        - insert:
+            tableName: t_auth
+            columns:
+              - column:
+                  name: password
+                  value: 'strongPass5'
+              - column:
+                  name: verificated
+                  value: 'true'
+              - column:
+                  name: user_id
+                  valueComputed: "(SELECT user_id FROM t_user WHERE nickname = 'finch')"
+
+  - changeSet:
+      id: 3-data-roles
+      author: Dmitry
+      changes:
+        - insert:
+            tableName: t_role
+            columns:
+              - column:
+                  name: name
+                  value: 'ROLE_ADMIN'
+        - insert:
+            tableName: t_role
+            columns:
+              - column:
+                  name: name
+                  value: 'ROLE_USER'
+
+  - changeSet:
+      id: 4-data-user-roles
+      author: Dmitry
+      context: dev
+      changes:
+        # Link auth_id to role_id in t_user_role
+        - insert:
+            tableName: t_user_role
+            columns:
+              - column:
+                  name: auth_id
+                  valueComputed: "(SELECT auth_id FROM t_auth WHERE user_id = (SELECT user_id FROM t_user WHERE nickname = 'yakup_jr'))"
+              - column:
+                  name: role_id
+                  valueComputed: "(SELECT role_id FROM t_role WHERE name = 'ROLE_USER')"
+        - insert:
+            tableName: t_user_role
+            columns:
+              - column:
+                  name: auth_id
+                  valueComputed: "(SELECT auth_id FROM t_auth WHERE user_id = (SELECT user_id FROM t_user WHERE nickname = 'yakup_jr'))"
+              - column:
+                  name: role_id
+                  valueComputed: "(SELECT role_id FROM t_role WHERE name = 'ROLE_ADMIN')"
+        - insert:
+            tableName: t_user_role
+            columns:
+              - column:
+                  name: auth_id
+                  valueComputed: "(SELECT auth_id FROM t_auth WHERE user_id = (SELECT user_id FROM t_user WHERE nickname = 'shadow'))"
+              - column:
+                  name: role_id
+                  valueComputed: "(SELECT role_id FROM t_role WHERE name = 'ROLE_USER')"
+        - insert:
+            tableName: t_user_role
+            columns:
+              - column:
+                  name: auth_id
+                  valueComputed: "(SELECT auth_id FROM t_auth WHERE user_id = (SELECT user_id FROM t_user WHERE nickname = 'shadow'))"
+              - column:
+                  name: role_id
+                  valueComputed: "(SELECT role_id FROM t_role WHERE name = 'ROLE_ADMIN')"
+        - insert:
+            tableName: t_user_role
+            columns:
+              - column:
+                  name: auth_id
+                  valueComputed: "(SELECT auth_id FROM t_auth WHERE user_id = (SELECT user_id FROM t_user WHERE nickname = 'falcon'))"
+              - column:
+                  name: role_id
+                  valueComputed: "(SELECT role_id FROM t_role WHERE name = 'ROLE_USER')"
+        - insert:
+            tableName: t_user_role
+            columns:
+              - column:
+                  name: auth_id
+                  valueComputed: "(SELECT auth_id FROM t_auth WHERE user_id = (SELECT user_id FROM t_user WHERE nickname = 'falcon'))"
+              - column:
+                  name: role_id
+                  valueComputed: "(SELECT role_id FROM t_role WHERE name = 'ROLE_ADMIN')"
+        - insert:
+            tableName: t_user_role
+            columns:
+              - column:
+                  name: auth_id
+                  valueComputed: "(SELECT auth_id FROM t_auth WHERE user_id = (SELECT user_id FROM t_user WHERE nickname = 'sparrow'))"
+              - column:
+                  name: role_id
+                  valueComputed: "(SELECT role_id FROM t_role WHERE name = 'ROLE_USER')"
+        - insert:
+            tableName: t_user_role
+            columns:
+              - column:
+                  name: auth_id
+                  valueComputed: "(SELECT auth_id FROM t_auth WHERE user_id = (SELECT user_id FROM t_user WHERE nickname = 'finch'))"
+              - column:
+                  name: role_id
+                  valueComputed: "(SELECT role_id FROM t_role WHERE name = 'ROLE_USER')"
+
+  - changeSet:
+      id: 5-data-articles
+      author: Dmitry
+      context: dev
+      changes:
+        - insert:
+            tableName: t_article
+            columns:
+              - column:
+                  name: article_id
+                  value: "1"
+              - column:
+                  name: title
+                  value: 'Title 1'
+              - column:
+                  name: body
+                  value: 'body 1 ...'
+              - column:
+                  name: created_at
+                  value: '2014-05-03'
+              - column:
+                  name: user_id
+                  value: "1"
+        - insert:
+            tableName: t_article
+            columns:
+              - column:
+                  name: article_id
+                  value: "2"
+              - column:
+                  name: title
+                  value: 'Title 2'
+              - column:
+                  name: body
+                  value: 'body 2 ...'
+              - column:
+                  name: created_at
+                  value: '2019-02-01'
+              - column:
+                  name: user_id
+                  value: "2"
+        - insert:
+            tableName: t_article
+            columns:
+              - column:
+                  name: article_id
+                  value: "3"
+              - column:
+                  name: title
+                  value: 'Title 3'
+              - column:
+                  name: body
+                  value: 'body 3 ...'
+              - column:
+                  name: created_at
+                  value: '2024-05-09 12:00:00'
+              - column:
+                  name: user_id
+                  value: "3"
+        - insert:
+            tableName: t_article
+            columns:
+              - column:
+                  name: article_id
+                  value: "4"
+              - column:
+                  name: title
+                  value: 'Title 4'
+              - column:
+                  name: body
+                  value: 'body 4 ...'
+              - column:
+                  name: created_at
+                  value: '2022-06-23 13:00:00'
+              - column:
+                  name: user_id
+                  value: "5"
+        - insert:
+            tableName: t_article
+            columns:
+              - column:
+                  name: article_id
+                  value: "5"
+              - column:
+                  name: title
+                  value: 'Title 5'
+              - column:
+                  name: body
+                  value: 'body 5 ...'
+              - column:
+                  name: created_at
+                  value: '2024-09-02 10:34:25'
+              - column:
+                  name: user_id
+                  value: "4"
+
+  - changeSet:
+      id: 6-data-article-previews
+      author: Dmitry
+      changes:
+        - insert:
+            tableName: t_article_preview
+            columns:
+              - column:
+                  name: article_preview_id
+                  value: "1"
+              - column:
+                  name: body
+                  value: 'body 1'
+        - insert:
+            tableName: t_article_preview
+            columns:
+              - column:
+                  name: article_preview_id
+                  value: "2"
+              - column:
+                  name: body
+                  value: 'body 3'
+        - insert:
+            tableName: t_article_preview
+            columns:
+              - column:
+                  name: article_preview_id
+                  value: "3"
+              - column:
+                  name: body
+                  value: 'body 2'
+        - insert:
+            tableName: t_article_preview
+            columns:
+              - column:
+                  name: article_preview_id
+                  value: "4"
+              - column:
+                  name: body
+                  value: 'body 4'
+        - insert:
+            tableName: t_article_preview
+            columns:
+              - column:
+                  name: article_preview_id
+                  value: "5"
+              - column:
+                  name: body
+                  value: 'body 5'
+
+  - changeSet:
+      id: 7-data-update-article-preview-fk
+      author: Dmitry
+      changes:
+        - update:
+            tableName: t_article
+            columns:
+              - column:
+                  name: article_preview_id
+                  value: "1"
+            where: article_id = 1
+        - update:
+            tableName: t_article
+            columns:
+              - column:
+                  name: article_preview_id
+                  value: "2"
+            where: article_id = 2
+        - update:
+            tableName: t_article
+            columns:
+              - column:
+                  name: article_preview_id
+                  value: "3"
+            where: article_id = 3
+        - update:
+            tableName: t_article
+            columns:
+              - column:
+                  name: article_preview_id
+                  value: "4"
+            where: article_id = 4
+        - update:
+            tableName: t_article
+            columns:
+              - column:
+                  name: article_preview_id
+                  value: "5"
+            where: article_id = 5
+
+  - changeSet:
+      id: 8-data-article-labels
+      author: Dmitry
+      changes:
+        - insert:
+            tableName: t_article_label
+            columns:
+              - column:
+                  name: article_id
+                  value: "1"
+              - column:
+                  name: label_id
+                  value: "1"
+        - insert:
+            tableName: t_article_label
+            columns:
+              - column:
+                  name: article_id
+                  value: "2"
+              - column:
+                  name: label_id
+                  value: "2"
+        - insert:
+            tableName: t_article_label
+            columns:
+              - column:
+                  name: article_id
+                  value: "2"
+              - column:
+                  name: label_id
+                  value: "3"
+        - insert:
+            tableName: t_article_label
+            columns:
+              - column:
+                  name: article_id
+                  value: "3"
+              - column:
+                  name: label_id
+                  value: "4"
+        - insert:
+            tableName: t_article_label
+            columns:
+              - column:
+                  name: article_id
+                  value: "4"
+              - column:
+                  name: label_id
+                  value: "5"
+        - insert:
+            tableName: t_article_label
+            columns:
+              - column:
+                  name: article_id
+                  value: "5"
+              - column:
+                  name: label_id
+                  value: "6"
+        - insert:
+            tableName: t_article_label
+            columns:
+              - column:
+                  name: article_id
+                  value: "5"
+              - column:
+                  name: label_id
+                  value: "7"

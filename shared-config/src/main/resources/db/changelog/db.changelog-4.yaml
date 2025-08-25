@@ -1,0 +1,51 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-table-t_email_verification
+      author: yakup_jr
+      changes:
+        - createSequence:
+            sequenceName: t_email_verification_seq
+            startValue: 10
+            minValue: 1
+            maxValue: 10000
+            incrementBy: 10
+        - createTable:
+            tableName: t_email_verification
+            columns:
+              - column:
+                  name: email_id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_email_verification
+              - column:
+                  name: code
+                  type: varchar(6)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: expires_at
+                  type: datetime
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    unique: false
+                    foreignKeyName: fk_email_verification_user
+                    references: t_user(user_id)
+                    deleteCascade: true
+  - changeSet:
+      id: add-verification-flag
+      author: yakup_jr
+      changes:
+        - addColumn:
+            tableName: t_user
+            columns:
+              - column:
+                  name: verificated
+                  type: boolean
+                  defaultOnNull: false
