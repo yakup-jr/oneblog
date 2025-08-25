@@ -1,7 +1,7 @@
 package net.oneblog.auth.mapper;
 
-import net.oneblog.auth.models.RoleModel;
 import net.oneblog.auth.entity.RoleEntity;
+import net.oneblog.auth.models.RoleModel;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.NullValuePropertyMappingStrategy;

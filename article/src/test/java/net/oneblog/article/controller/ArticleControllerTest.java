@@ -2,8 +2,8 @@ package net.oneblog.article.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.oneblog.api.interfaces.LabelName;
-import net.oneblog.article.models.LabelModel;
 import net.oneblog.article.models.ArticleCreateModel;
+import net.oneblog.article.models.LabelModel;
 import net.oneblog.article.models.PreviewCreateModel;
 import net.oneblog.sharedconfig.test.IntegrationTest;
 import net.oneblog.validationapi.models.ValidatedUserModel;

@@ -1,8 +1,8 @@
 package net.oneblog.article.mapper;
 
+import net.oneblog.article.entity.LabelEntity;
 import net.oneblog.article.models.LabelCreateModel;
 import net.oneblog.article.models.LabelModel;
-import net.oneblog.article.entity.LabelEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.NullValuePropertyMappingStrategy;

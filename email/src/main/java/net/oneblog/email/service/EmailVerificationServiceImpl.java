@@ -5,9 +5,6 @@ import net.oneblog.email.entity.EmailEntity;
 import net.oneblog.email.models.RegistrationEmailVerificationModel;
 import net.oneblog.email.repository.EmailVerificationRepository;
 import net.oneblog.sharedexceptions.ServiceException;
-import net.oneblog.user.mappers.UserMapper;
-import net.oneblog.user.service.UserService;
-import net.oneblog.validationapi.models.ValidatedUserModel;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;

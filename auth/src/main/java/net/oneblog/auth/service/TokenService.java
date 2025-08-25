@@ -3,7 +3,6 @@ package net.oneblog.auth.service;
 import jakarta.servlet.http.HttpServletRequest;
 import net.oneblog.auth.models.AuthenticationResponseModel;
 import net.oneblog.auth.models.RefreshTokenRequestModel;
-import net.oneblog.user.entity.UserEntity;
 import net.oneblog.validationapi.models.ValidatedUserModel;
 
 /**

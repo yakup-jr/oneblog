@@ -1,7 +1,6 @@
 package net.oneblog.auth.service;
 
 import io.jsonwebtoken.Claims;
-import net.oneblog.user.entity.UserEntity;
 import net.oneblog.validationapi.models.ValidatedUserModel;
 import org.springframework.security.core.userdetails.UserDetails;
 

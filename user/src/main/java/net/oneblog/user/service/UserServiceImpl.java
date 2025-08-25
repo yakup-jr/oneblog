@@ -1,6 +1,5 @@
 package net.oneblog.user.service;
 
-import net.oneblog.api.dto.UserDto;
 import net.oneblog.sharedexceptions.PageNotFoundException;
 import net.oneblog.sharedexceptions.ServiceException;
 import net.oneblog.user.exceptions.UserNotFoundException;
@@ -54,7 +53,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public Page<ValidatedUserModel> findAll(Integer page, Integer size) {
         Pageable pageRequest = PageRequest.of(page, size);
-        Page<ValidatedUserModel> userPage = userRepository.findAll(pageRequest).map(userMapper::map);
+        Page<ValidatedUserModel> userPage =
+            userRepository.findAll(pageRequest).map(userMapper::map);
         if (userPage.isEmpty()) {
             throw new PageNotFoundException("Page " + page + " with size " + size + " not found");
         }

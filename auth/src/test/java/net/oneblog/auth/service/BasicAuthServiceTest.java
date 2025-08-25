@@ -1,7 +1,5 @@
 package net.oneblog.auth.service;
 
-import net.oneblog.api.interfaces.RoleNameDomain;
-import net.oneblog.auth.entity.RoleEntity;
 import net.oneblog.auth.models.AuthModel;
 import net.oneblog.auth.models.AuthenticationResponseModel;
 import net.oneblog.auth.models.BasicRegistrationRequestModel;
@@ -19,7 +17,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;

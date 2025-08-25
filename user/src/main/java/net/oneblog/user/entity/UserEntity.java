@@ -2,9 +2,6 @@ package net.oneblog.user.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.proxy.HibernateProxy;
-
-import java.util.Objects;
 
 /**
  * The type User.

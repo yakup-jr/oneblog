@@ -2,7 +2,6 @@ package net.oneblog.email.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import net.oneblog.user.entity.UserEntity;
 
 import java.time.LocalDateTime;
 

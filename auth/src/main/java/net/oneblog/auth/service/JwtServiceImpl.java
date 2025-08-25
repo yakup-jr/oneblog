@@ -4,7 +4,6 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import net.oneblog.auth.repository.TokenRepository;
-import net.oneblog.user.entity.UserEntity;
 import net.oneblog.validationapi.models.ValidatedUserModel;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;

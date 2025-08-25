@@ -1,8 +1,8 @@
 package net.oneblog.article.mapper;
 
+import net.oneblog.article.entity.ArticleEntity;
 import net.oneblog.article.models.ArticleCreateModel;
 import net.oneblog.article.models.ArticleModel;
-import net.oneblog.article.entity.ArticleEntity;
 import org.mapstruct.*;
 
 /**

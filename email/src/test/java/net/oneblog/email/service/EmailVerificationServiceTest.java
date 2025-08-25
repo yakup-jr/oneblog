@@ -1,15 +1,12 @@
 package net.oneblog.email.service;
 
-import net.oneblog.api.dto.UserDto;
 import net.oneblog.email.entity.EmailEntity;
 import net.oneblog.email.models.RegistrationEmailVerificationModel;
 import net.oneblog.email.repository.EmailVerificationRepository;
 import net.oneblog.sharedexceptions.ServiceException;
-import net.oneblog.user.entity.UserEntity;
 import net.oneblog.user.mappers.UserMapper;
 import net.oneblog.user.service.UserService;
 import net.oneblog.validationapi.mappers.ValidatedUserModelMapper;
-import net.oneblog.validationapi.models.ValidatedUserModel;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
