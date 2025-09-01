@@ -1,5 +1,13 @@
 rootProject.name = "oneblog"
 
-include(":app", ":api", ":article", ":auth", ":email", ":shared-config", ":shared-exceptions", ":user")
-
-include("validation-api")
+include(
+    ":app",
+    ":api",
+    ":article",
+    ":auth",
+    ":email",
+    ":shared-config",
+    ":shared-exceptions",
+    ":user",
+    "validation-api"
+)

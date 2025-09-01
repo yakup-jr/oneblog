@@ -73,8 +73,6 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(
         HttpSecurity http) throws Exception {
 
-        System.out.println("I'm here bitch");
-
         http
             .csrf(AbstractHttpConfigurer::disable)
             .headers(headers ->
@@ -100,20 +98,23 @@ public class SecurityConfig {
                 log.logoutSuccessHandler(
                     (request, response, authentication) -> SecurityContextHolder.getContext());
             }).authorizeHttpRequests(
-                authorizeHttpRequests -> authorizeHttpRequests.requestMatchers(HttpMethod.POST,
-                        "/api/v1/user",
-                        "/api/v1/article/", "/api/v1/articles/label")
-                    .hasRole("ADMIN")
-                    .requestMatchers(HttpMethod.GET, "/api/v1/users")
-                    .hasRole("ADMIN")
-                    .requestMatchers(HttpMethod.DELETE, "/api/v1/user/{userId}",
-                        "/api/v1/article/{articleId}",
-                        "/api/v1/articles/label/{labelId}")
-                    .hasRole("ADMIN")
-                    .requestMatchers(HttpMethod.GET, "/api/v1/user/",
-                        "/api/v1/articles", "/api/v1/article/",
-                        "/api/v1/articles/labels").hasRole("USER")
-                    .anyRequest().permitAll());
+                authorizeHttpRequests -> {
+                    String admin = "ADMIN";
+                    authorizeHttpRequests.requestMatchers(HttpMethod.POST,
+                            "/api/v1/user",
+                            "/api/v1/article/", "/api/v1/articles/label")
+                        .hasRole(admin)
+                        .requestMatchers(HttpMethod.GET, "/api/v1/users")
+                        .hasRole(admin)
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/user/{userId}",
+                            "/api/v1/article/{articleId}",
+                            "/api/v1/articles/label/{labelId}")
+                        .hasRole(admin)
+                        .requestMatchers(HttpMethod.GET, "/api/v1/user/",
+                            "/api/v1/articles", "/api/v1/article/",
+                            "/api/v1/articles/labels").hasRole("USER")
+                        .anyRequest().permitAll();
+                });
 
         return http.build();
     }

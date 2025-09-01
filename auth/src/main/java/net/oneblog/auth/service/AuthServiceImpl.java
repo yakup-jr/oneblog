@@ -35,11 +35,13 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthModel save(BasicRegistrationRequestModel basicRegistrationModel) {
-        if (userService.existsByEmail(basicRegistrationModel.email())) {
+        if (basicRegistrationModel.email().isEmpty() ||
+            userService.existsByEmail(basicRegistrationModel.email())) {
             throw new ServiceException(
                 "User with" + basicRegistrationModel.email() + "already exists");
         }
-        if (userService.existsByNickname(basicRegistrationModel.username())) {
+        if (basicRegistrationModel.username().isEmpty() ||
+            userService.existsByNickname(basicRegistrationModel.username())) {
             throw new ServiceException(
                 "User with" + basicRegistrationModel.username() + "already exists");
         }
@@ -74,6 +76,6 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void update(AuthModel authModel) {
-        authRepository.save(authMapper.map(authModel));
+        authRepository.updateVerificationStatus(authModel.getAuthId(), authModel.isVerificated());
     }
 }
