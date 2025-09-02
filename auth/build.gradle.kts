@@ -52,6 +52,7 @@ dependencies {
     testImplementation(libs.hikari)
     testImplementation(libs.liquibase.core)
     testImplementation(libs.postgresql)
+    testImplementation(libs.apache.lang3)
     testRuntimeOnly(libs.junit.platform.launcher)
     testRuntimeOnly(libs.jjwt.impl)
     testRuntimeOnly(libs.jjwt.jackson)

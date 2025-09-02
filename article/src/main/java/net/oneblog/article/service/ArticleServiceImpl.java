@@ -17,7 +17,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * The type Article service.
@@ -72,7 +71,7 @@ public class ArticleServiceImpl implements ArticleService {
         if (articleEntities.isEmpty()) {
             throw new ArticleNotFoundException("Article with user id: " + userId + " not found");
         }
-        return articleEntities.stream().map(articleMapper::map).collect(Collectors.toList());
+        return articleEntities.stream().map(articleMapper::map).toList();
     }
 
     @Override

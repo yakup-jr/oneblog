@@ -80,9 +80,7 @@ public class TokenServiceImpl implements TokenService {
         List<TokenEntity> validToken = tokenRepository.findAllAccessTokenByUser(user.userId());
 
         if (!validToken.isEmpty()) {
-            validToken.forEach(token -> {
-                token.setIsRevoke(true);
-            });
+            validToken.forEach(token -> token.setIsRevoke(true));
         }
 
         tokenRepository.saveAll(validToken);

@@ -8,12 +8,18 @@ import net.oneblog.sharedconfig.test.IntegrationTest;
 import net.oneblog.sharedexceptions.ServiceException;
 import net.oneblog.user.exceptions.UserNotFoundException;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultMatcher;
+
+import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -50,69 +56,33 @@ class TokenControllerTest {
             .andExpect(jsonPath("$.refreshToken").value("new-refresh-token"));
     }
 
-    @Test
-    void refreshToken_InvalidToken() throws Exception {
-        RefreshTokenRequestModel request = new RefreshTokenRequestModel("invalid-refresh-token");
+    @ParameterizedTest
+    @MethodSource("tokenErrorScenarios")
+    void refreshToken_ErrorScenarios(String token, Exception exception,
+                                     ResultMatcher expectedStatus) throws Exception {
+        RefreshTokenRequestModel request = new RefreshTokenRequestModel(token);
 
         when(tokenService.reIssueRefreshToken(any(RefreshTokenRequestModel.class)))
-            .thenThrow(new ServiceException("Invalid token"));
+            .thenThrow(exception);
 
         mockMvc.perform(post("/refresh-token")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
-            .andExpect(status().isBadRequest());
+            .andExpect(expectedStatus);
     }
 
-    @Test
-    void refreshToken_UserNotFound() throws Exception {
-        RefreshTokenRequestModel request =
-            new RefreshTokenRequestModel("valid-token-but-user-not-found");
-
-        when(tokenService.reIssueRefreshToken(any(RefreshTokenRequestModel.class)))
-            .thenThrow(new UserNotFoundException("User not found"));
-
-        mockMvc.perform(post("/refresh-token")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
-            .andExpect(status().isNotFound());
-    }
-
-    @Test
-    void refreshToken_ExpiredToken() throws Exception {
-        RefreshTokenRequestModel request = new RefreshTokenRequestModel("expired-refresh-token");
-
-        when(tokenService.reIssueRefreshToken(any(RefreshTokenRequestModel.class)))
-            .thenThrow(new ServiceException("Token expired"));
-
-        mockMvc.perform(post("/refresh-token")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
-            .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void refreshToken_EmptyToken() throws Exception {
-        RefreshTokenRequestModel request = new RefreshTokenRequestModel("");
-
-        when(tokenService.reIssueRefreshToken(any(RefreshTokenRequestModel.class)))
-            .thenThrow(new ServiceException("Token cannot be empty"));
-
-        mockMvc.perform(post("/refresh-token")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
-            .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void refreshToken_NullToken() throws Exception {
-        RefreshTokenRequestModel request = new RefreshTokenRequestModel(null);
-
-        when(tokenService.reIssueRefreshToken(any(RefreshTokenRequestModel.class)))
-            .thenThrow(new ServiceException("Token cannot be null"));
-
-        mockMvc.perform(post("/refresh-token")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
-            .andExpect(status().isBadRequest());
+    private static Stream<Arguments> tokenErrorScenarios() {
+        return Stream.of(
+            Arguments.of("invalid-refresh-token", new ServiceException("Invalid token"),
+                status().isBadRequest()),
+            Arguments.of("expired-refresh-token", new ServiceException("Token expired"),
+                status().isBadRequest()),
+            Arguments.of("", new ServiceException("Token cannot be empty"),
+                status().isBadRequest()),
+            Arguments.of(null, new ServiceException("Token cannot be null"),
+                status().isBadRequest()),
+            Arguments.of("valid-token-but-user-not-found",
+                new UserNotFoundException("User not found"), status().isNotFound())
+        );
     }
 }

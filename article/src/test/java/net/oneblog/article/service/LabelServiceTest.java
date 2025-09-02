@@ -19,7 +19,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class LabelServiceTest {
+class LabelServiceTest {
 
     @Mock
     private LabelRepository labelRepository;
@@ -28,8 +28,8 @@ public class LabelServiceTest {
     private LabelServiceImpl labelService;
 
     @Test
-    public void saveLabel_ReturnLabel() {
-        LabelEntity inputLabelEntity = LabelEntity.builder().name(LabelName.Assembler).build();
+    void saveLabel_ReturnLabel() {
+        LabelEntity inputLabelEntity = LabelEntity.builder().name(LabelName.ASSEMBLER).build();
         LabelEntity
             outputLabelEntity =
             LabelEntity.builder().name(inputLabelEntity.getName()).labelId(1L).build();
@@ -44,8 +44,8 @@ public class LabelServiceTest {
     }
 
     @Test
-    public void saveLabel_ThrowServiceException() {
-        LabelEntity inputLabelEntity = LabelEntity.builder().name(LabelName.Assembler).build();
+    void saveLabel_ThrowServiceException() {
+        LabelEntity inputLabelEntity = LabelEntity.builder().name(LabelName.ASSEMBLER).build();
         LabelEntity
             outputLabelEntity =
             LabelEntity.builder().name(inputLabelEntity.getName()).labelId(0L).build();
@@ -58,9 +58,9 @@ public class LabelServiceTest {
     }
 
     @Test
-    public void findById_ReturnOptionalLabel() {
+    void findById_ReturnOptionalLabel() {
         Optional<LabelEntity> repositoryResponse = Optional.of(
-            LabelEntity.builder().labelId(0L).name(LabelName.Assembler).build());
+            LabelEntity.builder().labelId(0L).name(LabelName.ASSEMBLER).build());
 
         when(labelRepository.findById(0L)).thenReturn(repositoryResponse);
 
@@ -70,7 +70,7 @@ public class LabelServiceTest {
     }
 
     @Test
-    public void findById_ThrowLabelNotFoundException() {
+    void findById_ThrowLabelNotFoundException() {
         when(labelRepository.findById(999L)).thenReturn(Optional.empty());
 
         assertThatExceptionOfType(LabelNotFoundException.class).isThrownBy(
@@ -79,9 +79,9 @@ public class LabelServiceTest {
 
     @Test
     void findByName_ReturnLabel() {
-        LabelEntity inputLabelEntity = LabelEntity.builder().name(LabelName.Assembler).build();
+        LabelEntity inputLabelEntity = LabelEntity.builder().name(LabelName.ASSEMBLER).build();
 
-        when(labelRepository.findByName(LabelName.Assembler)).thenReturn(Optional.of(
+        when(labelRepository.findByName(LabelName.ASSEMBLER)).thenReturn(Optional.of(
             inputLabelEntity));
 
         LabelEntity labelEntity = labelService.findByName("Assembler");
@@ -93,16 +93,16 @@ public class LabelServiceTest {
     @Test
     void findByName_ThrowLabelNotFoundException() {
 
-        when(labelRepository.findByName(LabelName.Assembler)).thenReturn(Optional.empty());
+        when(labelRepository.findByName(LabelName.ASSEMBLER)).thenReturn(Optional.empty());
 
         assertThatExceptionOfType(LabelNotFoundException.class).isThrownBy(
             () -> labelService.findByName("Assembler"));
     }
 
     @Test
-    public void deleteById_ReturnLabel() {
+    void deleteById_ReturnLabel() {
         Optional<LabelEntity> repositoryResponse = Optional.of(
-            LabelEntity.builder().labelId(0L).name(LabelName.Assembler).build());
+            LabelEntity.builder().labelId(0L).name(LabelName.ASSEMBLER).build());
 
         when(labelRepository.findById(0L)).thenReturn(repositoryResponse);
 
@@ -113,7 +113,7 @@ public class LabelServiceTest {
     }
 
     @Test
-    public void deleteById_ThrowExceptionLabelNotFound() {
+    void deleteById_ThrowExceptionLabelNotFound() {
         when(labelRepository.findById(0L)).thenReturn(Optional.empty());
 
         assertThatExceptionOfType(LabelNotFoundException.class).isThrownBy(

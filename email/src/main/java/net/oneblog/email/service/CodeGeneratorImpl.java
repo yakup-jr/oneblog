@@ -15,9 +15,6 @@ public class CodeGeneratorImpl implements CodeGenerator {
     @Override
     public String generateSixDigits() {
         int randomNumber = random.nextInt(999999);
-        String result = String.format("%06d", randomNumber);
-        System.out.println("Generated random number: " + randomNumber);
-        System.out.println("Formatted result: " + result);
-        return result;
+        return String.format("%06d", randomNumber);
     }
 }

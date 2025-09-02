@@ -36,14 +36,14 @@ public class TestConfig {
     private String mailPassword;
 
     /**
-     * Postgres container postgre sql container.
+     * Postgres container postgresql container.
      *
      * @param dynamicPropertyRegistry the dynamic property registry
      * @return the postgre sql container
      */
     @Bean
     @Primary
-    public PostgreSQLContainer<?> postgresContainer(
+    public PostgreSQLContainer<? extends GenericContainer> postgresContainer(
         DynamicPropertyRegistry dynamicPropertyRegistry) {
         var container = new PostgreSQLContainer<>(DockerImageName.parse("postgres:16.3-alpine"));
         container.withExposedPorts(5432);
@@ -58,7 +58,7 @@ public class TestConfig {
      * @return the generic container
      */
     @Bean
-    public GenericContainer greenMailContainer(DynamicPropertyRegistry dynamicPropertyRegistry) {
+    public GenericContainer<? extends GenericContainer> greenMailContainer(DynamicPropertyRegistry dynamicPropertyRegistry) {
         GenericContainer<?> container =
             new GenericContainer<>(DockerImageName.parse("greenmail/standalone:1.6.1"));
         container.waitingFor(Wait.forLogMessage(".*Starting GreenMail standalone.*", 1))
@@ -79,15 +79,13 @@ public class TestConfig {
      * @return the spring liquibase
      */
     @Bean
-    public SpringLiquibase springLiquibase(DataSource dataSource) {
+    public SpringLiquibase springLiquibase(DataSource dataSource) throws SQLException {
 
         int attemptCount = 0;
         int maxAttempts = 20;
-        Connection connection = null;
 
         while (attemptCount < maxAttempts) {
-            try {
-                connection = dataSource.getConnection();
+            try (Connection connection = dataSource.getConnection()) {
                 if (connection != null) {
                     break;
                 }
@@ -109,7 +107,7 @@ public class TestConfig {
      * @return the postgre sql container
      */
     @Bean
-    public PostgreSQLContainer<?> postgreSQLContainer() {
+    public PostgreSQLContainer<? extends GenericContainer> postgreSQLContainer() {
         return new PostgreSQLContainer<>(DockerImageName.parse("postgres:16.3-alpine"));
     }
 

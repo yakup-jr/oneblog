@@ -57,6 +57,7 @@ public class JwtFilter extends OncePerRequestFilter {
         try {
             username = jwtService.extractUsername(token);
         } catch (SignatureException | ExpiredJwtException ignored) {
+            //ignore for working filter chain oauth2
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {

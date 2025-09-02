@@ -7,15 +7,15 @@ public enum LabelName {
     /**
      * The Programming languages.
      */
-    Programming_languages("Programming Languages"),
+    PROGRAMMING_LANGUAGES("Programming Languages"),
     /**
      * Java label name.
      */
-    Java("Java"),
+    JAVA("Java"),
     /**
      * C hash label name.
      */
-    CHash("C#"),
+    C_HASH("C#"),
     /**
      * C label name.
      */
@@ -23,55 +23,55 @@ public enum LabelName {
     /**
      * C plus plus label name.
      */
-    CPlusPlus("C++"),
+    C_PLUS_PLUS("C++"),
     /**
      * Python label name.
      */
-    Python("Python"),
+    PYTHON("Python"),
     /**
      * Java script label name.
      */
-    JavaScript("JavaScript"),
+    JAVA_SCRIPT("JavaScript"),
     /**
      * Type script label name.
      */
-    TypeScript("TypeScript"),
+    TYPE_SCRIPT("TypeScript"),
     /**
      * Sql label name.
      */
-    Sql("SQL"),
+    SQL("SQL"),
     /**
      * Go label name.
      */
-    Go("GO"),
+    GO("GO"),
     /**
      * Kotlin label name.
      */
-    Kotlin("Kotlin"),
+    KOTLIN("Kotlin"),
     /**
      * Rust label name.
      */
-    Rust("Rust"),
+    RUST("Rust"),
     /**
      * Php label name.
      */
-    Php("PHP"),
+    PHP("PHP"),
     /**
      * Pascal label name.
      */
-    Pascal("Pascal"),
+    PASCAL("Pascal"),
     /**
      * Ruby label name.
      */
-    Ruby("Ruby"),
+    RUBY("Ruby"),
     /**
      * Basic label name.
      */
-    Basic("Basic"),
+    BASIC("Basic"),
     /**
      * Assembler label name.
      */
-    Assembler("Assembler");
+    ASSEMBLER("Assembler");
 
     private final String value;
 
@@ -79,6 +79,7 @@ public enum LabelName {
         this.value = value;
     }
 
+    @Override
     public String toString() {
         return this.value;
     }

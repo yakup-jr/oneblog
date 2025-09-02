@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class UserServiceTest {
+class UserServiceTest {
 
     @Mock
     private UserRepository userRepository;
@@ -58,8 +58,8 @@ public class UserServiceTest {
 
         ValidatedUserModel savedUser = userService.save(DEFAULT_USER_CREATE_REQUEST);
 
-        assertThat(savedUser).isNotNull().isInstanceOf(ValidatedUserModel.class);
-        assertThat(savedUser).isEqualTo(userModel);
+        assertThat(savedUser).isNotNull().isInstanceOf(ValidatedUserModel.class)
+            .isEqualTo(userModel);
         assertThat(savedUser.userId()).isEqualTo(defaultUserDto.userId());
     }
 
@@ -137,8 +137,9 @@ public class UserServiceTest {
     void findByNickname_ThrowUserNotFoundException() {
         when(userRepository.findByNickname(defaultUser.getNickname())).thenReturn(Optional.empty());
 
+        String nickname = defaultUser.getNickname();
         assertThatThrownBy(
-            () -> userService.findByNickname(defaultUser.getNickname())).isInstanceOf(
+            () -> userService.findByNickname(nickname)).isInstanceOf(
             UserNotFoundException.class);
     }
 
@@ -159,7 +160,8 @@ public class UserServiceTest {
     void findByEmail_ThrowUserNotFoundException() {
         when(userRepository.findByEmail(defaultUser.getEmail())).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> userService.findByEmail(defaultUser.getEmail())).isInstanceOf(
-            UserNotFoundException.class);
+        String email = defaultUser.getEmail();
+        assertThatThrownBy(() -> userService.findByEmail(email))
+            .isInstanceOf(UserNotFoundException.class);
     }
 }

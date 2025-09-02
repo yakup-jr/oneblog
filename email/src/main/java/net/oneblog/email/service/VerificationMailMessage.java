@@ -33,7 +33,6 @@ public class VerificationMailMessage {
      */
     public String sendVerificationCode(String email) {
         String code = codeGenerator.generateSixDigits();
-        System.out.println("Code: " + code);
 
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("oneblog.space@resend.dev");

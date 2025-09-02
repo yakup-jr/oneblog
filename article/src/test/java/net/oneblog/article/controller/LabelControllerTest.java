@@ -1,6 +1,5 @@
 package net.oneblog.article.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import net.oneblog.api.interfaces.LabelName;
 import net.oneblog.sharedconfig.test.IntegrationTest;
 import org.junit.jupiter.api.Test;
@@ -18,26 +17,32 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @IntegrationTest
 @EnableAutoConfiguration(exclude = {SecurityAutoConfiguration.class})
-public class LabelControllerTest {
+class LabelControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
-
     @Test
-    public void saveLabel_ReturnLabel() throws Exception {
+    void saveLabel_ReturnLabel() throws Exception {
         mockMvc.perform(post("/api/v1/articles/label").contentType(MediaType.APPLICATION_JSON)
-                .content("   {\n" + "       \"name\": \"Rust\"\n" + "   }\n"))
+                .content("""
+                       {
+                           "name": "Rust"
+                       }
+                    """))
             .andExpect(status().isCreated())
-            .andExpect(jsonPath("$.name", is(LabelName.Rust.toString())))
+            .andExpect(jsonPath("$.name", is(LabelName.RUST.toString())))
             .andExpect(jsonPath("$._links.label.href", containsString("api/v1/articles/label/1")));
     }
 
     @Test
-    public void saveLabel_ThrowException() throws Exception {
+    void saveLabel_ThrowException() throws Exception {
         mockMvc.perform(post("/api/v1/articles/label").contentType(MediaType.APPLICATION_JSON)
-                .content("   {\n" + "       \"name\": \"Python\"\n" + "   }\n"))
+                .content("""
+                       {
+                           "name": "Python"
+                       }
+                    """))
             .andExpect(status().isBadRequest()).andExpect(jsonPath("$.message", notNullValue()));
     }
 
@@ -65,39 +70,39 @@ public class LabelControllerTest {
     }
 
     @Test
-    public void findByLabelId_ReturnLabel() throws Exception {
+    void findByLabelId_ReturnLabel() throws Exception {
         mockMvc.perform(get("/api/v1/articles/label/1").contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.name", is(LabelName.Assembler.toString())))
+            .andExpect(jsonPath("$.name", is(LabelName.ASSEMBLER.toString())))
             .andExpect(jsonPath("$._links.self.href", containsString("api/v1/articles/label/1")))
             .andExpect(jsonPath("$._links.labels.href", containsString("labels")));
     }
 
     @Test
-    public void findByLabelId_ThrowException() throws Exception {
+    void findByLabelId_ThrowException() throws Exception {
         mockMvc.perform(get("/api/v1/articles/label/999").contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isNotFound());
     }
 
     @Test
-    public void findByLabelName_ReturnLabel() throws Exception {
+    void findByLabelName_ReturnLabel() throws Exception {
         mockMvc.perform(
                 get("/api/v1/articles/label/name/Java").contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk()).andExpect(jsonPath("$.name", is(LabelName.Java.toString())))
+            .andExpect(status().isOk()).andExpect(jsonPath("$.name", is(LabelName.JAVA.toString())))
             .andExpect(
                 jsonPath("$._links.self.href", containsString("api/v1/articles/label/name/Java")))
             .andExpect(jsonPath("$._links.labels.href", containsString("labels")));
     }
 
     @Test
-    public void findByLabelName_ThrowException() throws Exception {
+    void findByLabelName_ThrowException() throws Exception {
         mockMvc.perform(
                 get("/api/v1/articles/label/name/Wrong").contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isNotFound());
     }
 
     @Test
-    public void findAll_ReturnsLabels() throws Exception {
+    void findAll_ReturnsLabels() throws Exception {
         mockMvc.perform(
                 get("/api/v1/articles/labels?page=0&size=5").contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk()).andExpect(jsonPath("$._embedded.labels", hasSize(5)))
