@@ -1,14 +1,14 @@
 -- Data for t_label
 INSERT INTO t_label (name)
-VALUES ('Assembler'),
-       ('Programming_languages'),
-       ('Java'),
-       ('Python'),
-       ('CPlusPlus'),
-       ('CHash'),
+VALUES ('ASSEMBLER'),
+       ('PROGRAMMING_LANGUAGES'),
+       ('JAVA'),
+       ('PYTHON'),
+       ('C_PLUS_PLUS'),
+       ('C_SHARP'),
        ('C'),
-       ('Go'),
-       ('Kotlin');
+       ('GO'),
+       ('KOTLIN');
 
 -- Data for t_user
 INSERT INTO t_user (nickname, name, email)

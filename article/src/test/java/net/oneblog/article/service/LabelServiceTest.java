@@ -84,7 +84,7 @@ class LabelServiceTest {
         when(labelRepository.findByName(LabelName.ASSEMBLER)).thenReturn(Optional.of(
             inputLabelEntity));
 
-        LabelEntity labelEntity = labelService.findByName("Assembler");
+        LabelEntity labelEntity = labelService.findByName("ASSEMBLER");
 
         assertThat(labelEntity).isInstanceOf(LabelEntity.class);
         assertThat(labelEntity.getName()).isEqualTo(inputLabelEntity.getName());
@@ -96,7 +96,7 @@ class LabelServiceTest {
         when(labelRepository.findByName(LabelName.ASSEMBLER)).thenReturn(Optional.empty());
 
         assertThatExceptionOfType(LabelNotFoundException.class).isThrownBy(
-            () -> labelService.findByName("Assembler"));
+            () -> labelService.findByName("ASSEMBLER"));
     }
 
     @Test

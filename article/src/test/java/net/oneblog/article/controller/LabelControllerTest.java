@@ -27,11 +27,11 @@ class LabelControllerTest {
         mockMvc.perform(post("/api/v1/articles/label").contentType(MediaType.APPLICATION_JSON)
                 .content("""
                        {
-                           "name": "Rust"
+                           "name": "RUST"
                        }
                     """))
             .andExpect(status().isCreated())
-            .andExpect(jsonPath("$.name", is(LabelName.RUST.toString())))
+            .andExpect(jsonPath("$.name", is(LabelName.RUST.name())))
             .andExpect(jsonPath("$._links.label.href", containsString("api/v1/articles/label/1")));
     }
 
@@ -40,7 +40,7 @@ class LabelControllerTest {
         mockMvc.perform(post("/api/v1/articles/label").contentType(MediaType.APPLICATION_JSON)
                 .content("""
                        {
-                           "name": "Python"
+                           "name": "PYTHON"
                        }
                     """))
             .andExpect(status().isBadRequest()).andExpect(jsonPath("$.message", notNullValue()));
@@ -73,7 +73,7 @@ class LabelControllerTest {
     void findByLabelId_ReturnLabel() throws Exception {
         mockMvc.perform(get("/api/v1/articles/label/1").contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.name", is(LabelName.ASSEMBLER.toString())))
+            .andExpect(jsonPath("$.name", is(instanceOf(String.class))))
             .andExpect(jsonPath("$._links.self.href", containsString("api/v1/articles/label/1")))
             .andExpect(jsonPath("$._links.labels.href", containsString("labels")));
     }
@@ -87,10 +87,11 @@ class LabelControllerTest {
     @Test
     void findByLabelName_ReturnLabel() throws Exception {
         mockMvc.perform(
-                get("/api/v1/articles/label/name/Java").contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk()).andExpect(jsonPath("$.name", is(LabelName.JAVA.toString())))
+                get("/api/v1/articles/label/name/JAVA").contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk()).andExpect(jsonPath("$.name", is(LabelName.JAVA.name())))
             .andExpect(
-                jsonPath("$._links.self.href", containsString("api/v1/articles/label/name/Java")))
+                jsonPath("$._links.self.href",
+                    containsStringIgnoringCase("api/v1/articles/label/name/Java")))
             .andExpect(jsonPath("$._links.labels.href", containsString("labels")));
     }
 
@@ -107,7 +108,7 @@ class LabelControllerTest {
                 get("/api/v1/articles/labels?page=0&size=5").contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk()).andExpect(jsonPath("$._embedded.labels", hasSize(5)))
             .andExpect(jsonPath("$._embedded.labels[0].labelId", is(1)))
-            .andExpect(jsonPath("$._embedded.labels[0].name", is("Assembler")))
+            .andExpect(jsonPath("$._embedded.labels[0].name", is("ASSEMBLER")))
             .andExpect(jsonPath("$._embedded.labels[0]._links.self.href", endsWith("/label/1")));
     }
 

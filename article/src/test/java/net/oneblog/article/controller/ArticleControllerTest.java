@@ -37,7 +37,8 @@ class ArticleControllerTest {
             .preview(new PreviewCreateModel("Something interesting preview"))
             .labels(List.of(
                 LabelModel.builder().labelId(1L).name(LabelName.ASSEMBLER).build(),
-                LabelModel.builder().labelId(2L).name(LabelName.C).build()))
+                LabelModel.builder().labelId(2L).name(LabelName.C).build()
+            ))
             .user(ValidatedUserModel.builder().userId(2L).name("Emily").nickname("shadow")
                 .email("shadow@mail.com").build())
             .build();

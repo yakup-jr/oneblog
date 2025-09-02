@@ -15,7 +15,7 @@ public enum LabelName {
     /**
      * C hash label name.
      */
-    C_HASH("C#"),
+    C_SHARP("C#"),
     /**
      * C label name.
      */
