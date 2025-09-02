@@ -3,9 +3,9 @@ import org.springframework.boot.gradle.tasks.run.BootRun
 
 plugins {
     java
-    id("org.springframework.boot") version "3.3.1"
-    id("io.spring.dependency-management") version "1.1.5"
     application
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
 }
 
 group = "net.oneblog"
@@ -23,6 +23,10 @@ repositories {
 
 application {
     mainClass = "net.oneblog.app.AppApplication"
+}
+
+tasks.named<Test>("test") {
+    dependsOn(":app:test")
 }
 
 tasks.named<BootRun>("bootRun") {

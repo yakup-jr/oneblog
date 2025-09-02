@@ -13,7 +13,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @Component
 public class LabelLink {
 
-    private final Class<LabelController> controllerClass = LabelController.class;
+    private static final Class<LabelController> controllerClass = LabelController.class;
 
     /**
      * Find label by label id web mvc link builder.

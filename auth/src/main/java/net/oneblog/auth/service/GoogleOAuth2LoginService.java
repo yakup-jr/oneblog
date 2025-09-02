@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * The type Google o auth 2 login service.
@@ -43,7 +43,7 @@ public class GoogleOAuth2LoginService {
     public AuthenticationResponseModel signUp(GoogleIdToken.Payload payload) {
         String nickname = String.valueOf(payload.get("given_name"));
         if (userService.existsByNickname(nickname)) {
-            nickname = nickname.concat(String.valueOf(new Random().nextInt(10000)));
+            nickname = nickname.concat(String.valueOf(ThreadLocalRandom.current().nextInt(10000)));
         }
 
         ValidatedUserModel user =

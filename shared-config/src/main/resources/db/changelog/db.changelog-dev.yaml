@@ -8,55 +8,55 @@ databaseChangeLog:
             columns:
               - column:
                   name: name
-                  value: 'Assembler'
+                  value: ASSEMBLER
         - insert:
             tableName: t_label
             columns:
               - column:
                   name: name
-                  value: 'Programming_languages'
+                  value: PROGRAMMING_LANGUAGES
         - insert:
             tableName: t_label
             columns:
               - column:
                   name: name
-                  value: 'Java'
+                  value: JAVA
         - insert:
             tableName: t_label
             columns:
               - column:
                   name: name
-                  value: 'Python'
+                  value: PYTHON
         - insert:
             tableName: t_label
             columns:
               - column:
                   name: name
-                  value: 'CPlusPlus'
+                  value: C_PLUS_PLUS
         - insert:
             tableName: t_label
             columns:
               - column:
                   name: name
-                  value: 'CHash'
+                  value: C_SHARP
         - insert:
             tableName: t_label
             columns:
               - column:
                   name: name
-                  value: 'C'
+                  value: C
         - insert:
             tableName: t_label
             columns:
               - column:
                   name: name
-                  value: 'Go'
+                  value: GO
         - insert:
             tableName: t_label
             columns:
               - column:
                   name: name
-                  value: 'Kotlin'
+                  value: KOTLIN
 
   - changeSet:
       id: 2-data-users

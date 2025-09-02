@@ -26,12 +26,11 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
         }
         String code = mailMessage.sendVerificationCode(email);
         EmailEntity emailEntity = EmailEntity.builder()
-                .code(code)
-                .email(email)
-                .expiresAt(LocalDateTime.now().plusMinutes(10))
-                .build();
+            .code(code)
+            .email(email)
+            .expiresAt(LocalDateTime.now().plusMinutes(10))
+            .build();
         emailVerificationRepository.save(emailEntity);
-        System.out.println("Saved email entity: " + emailEntity.getEmailId());
     }
 
     @Override

@@ -13,7 +13,6 @@ import net.oneblog.validationapi.models.ValidatedUserModel;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * The type Auth service.
@@ -31,7 +30,6 @@ public class BasicAuthServiceImpl implements BasicAuthService {
 
 
     @Override
-    @Transactional
     public void register(BasicRegistrationRequestModel request) {
         authService.save(request);
         emailVerificationService.sendVerificationCode(request.email());

@@ -76,7 +76,8 @@ class BasicAuthControllerTest {
     }
 
     @Test
-    @Disabled
+    @Disabled("need to figure out why request to db, using hibernate return null fields, but " +
+        "hibernateInterceptor have full object info")
     void verifyEmail_Success() throws Exception {
         String generatedCode = "123456";
         when(codeGenerator.generateSixDigits()).thenReturn(generatedCode);
@@ -114,7 +115,8 @@ class BasicAuthControllerTest {
     }
 
     @Test
-    @Disabled
+    @Disabled("need to figure out why request to db, using hibernate return null fields, but " +
+        "hibernateInterceptor have full object info")
     void login_Success() throws Exception {
         LoginRequestModel request = new LoginRequestModel("shadow", "strongPass2");
 

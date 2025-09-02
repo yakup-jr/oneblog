@@ -2,8 +2,8 @@ import org.springframework.boot.gradle.tasks.bundling.BootJar
 
 plugins {
     java
-    id("org.springframework.boot") version "3.3.1"
-    id("io.spring.dependency-management") version "1.1.5"
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
 }
 
 group = "net.oneblog"
@@ -19,6 +19,8 @@ repositories {
     mavenCentral()
 }
 
+val googleApiClientVersion = "2.7.2"
+
 dependencies {
     implementation(project(":shared-exceptions"))
     implementation(project(":shared-config"))
@@ -27,35 +29,36 @@ dependencies {
     implementation(project(":user"))
     implementation(project(":email"))
 
-    implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-security")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.springframework.boot:spring-boot-starter-validation")
-    implementation("org.springframework.boot:spring-boot-starter-hateoas")
-    implementation("org.springframework.boot:spring-boot-starter-mail")
-    implementation("com.google.api-client:google-api-client:2.7.2")
-    implementation("io.jsonwebtoken:jjwt-api:0.12.6")
-    implementation("org.mapstruct:mapstruct:1.6.3")
-    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.6")
-    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.6")
+    implementation(libs.spring.boot.starter.web)
+    implementation(libs.spring.boot.starter.security)
+    implementation(libs.spring.boot.starter.data.jpa)
+    implementation(libs.spring.boot.starter.validation)
+    implementation(libs.spring.hateoas)
+    implementation(libs.spring.boot.starter.mail)
+    implementation("com.google.api-client:google-api-client:$googleApiClientVersion")
+    implementation(libs.jjwt.api)
+    implementation(libs.mapstruct)
+    runtimeOnly(libs.jjwt.impl)
+    runtimeOnly(libs.jjwt.jackson)
 
-    compileOnly("org.projectlombok:lombok")
-    annotationProcessor("org.projectlombok:lombok")
-    annotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
+    compileOnly(libs.lombok)
+    annotationProcessor(libs.lombok)
+    annotationProcessor(libs.mapstruct.processor)
 
-    testImplementation("io.jsonwebtoken:jjwt-api:0.12.6")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.springframework.boot:spring-boot-testcontainers")
-    testImplementation("org.testcontainers:postgresql")
-    testImplementation("com.zaxxer:HikariCP")
-    testImplementation("org.liquibase:liquibase-core")
-    testImplementation("org.postgresql:postgresql")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    testRuntimeOnly("io.jsonwebtoken:jjwt-impl:0.12.6")
-    testRuntimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.6")
+    testImplementation(libs.jjwt.api)
+    testImplementation(libs.spring.boot.starter.test)
+    testImplementation(libs.spring.boot.testcontainers)
+    testImplementation(libs.testcontainers.postgresql)
+    testImplementation(libs.hikari)
+    testImplementation(libs.liquibase.core)
+    testImplementation(libs.postgresql)
+    testImplementation(libs.apache.lang3)
+    testRuntimeOnly(libs.junit.platform.launcher)
+    testRuntimeOnly(libs.jjwt.impl)
+    testRuntimeOnly(libs.jjwt.jackson)
 }
 
-tasks.withType<Test> {
+tasks.named<Test>("test") {
     useJUnitPlatform()
 }
 

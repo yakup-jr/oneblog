@@ -9,8 +9,6 @@ import org.springframework.test.context.jdbc.Sql;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-//todo: fix migration bug with populate db on profile "test"
-
 /**
  * The interface Integration test.
  */

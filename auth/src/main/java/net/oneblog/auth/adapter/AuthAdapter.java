@@ -11,7 +11,7 @@ import java.util.Collection;
  * The type Auth adapter.
  */
 public class AuthAdapter implements UserDetails {
-    private final AuthEntity entity;
+    private final transient AuthEntity entity;
 
     /**
      * Instantiates a new Auth adapter.

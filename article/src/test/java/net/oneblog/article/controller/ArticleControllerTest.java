@@ -23,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @IntegrationTest
 @EnableAutoConfiguration(exclude = {SecurityAutoConfiguration.class})
-public class ArticleControllerTest {
+class ArticleControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -36,8 +36,9 @@ public class ArticleControllerTest {
             .body("more and more text...")
             .preview(new PreviewCreateModel("Something interesting preview"))
             .labels(List.of(
-                LabelModel.builder().labelId(1L).name(LabelName.Assembler).build(),
-                LabelModel.builder().labelId(2L).name(LabelName.C).build()))
+                LabelModel.builder().labelId(1L).name(LabelName.ASSEMBLER).build(),
+                LabelModel.builder().labelId(2L).name(LabelName.C).build()
+            ))
             .user(ValidatedUserModel.builder().userId(2L).name("Emily").nickname("shadow")
                 .email("shadow@mail.com").build())
             .build();

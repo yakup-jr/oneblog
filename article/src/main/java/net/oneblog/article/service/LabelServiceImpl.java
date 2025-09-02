@@ -25,12 +25,12 @@ public class LabelServiceImpl implements LabelService {
 
     private final LabelRepository labelRepository;
 
-	/**
-	 * Instantiates a new Label service.
-	 *
-	 * @param labelRepository the label repository
-	 */
-	public LabelServiceImpl(LabelRepository labelRepository) {
+    /**
+     * Instantiates a new Label service.
+     *
+     * @param labelRepository the label repository
+     */
+    public LabelServiceImpl(LabelRepository labelRepository) {
         this.labelRepository = labelRepository;
     }
 
@@ -40,10 +40,13 @@ public class LabelServiceImpl implements LabelService {
         if (existingLabel.isPresent()) {
             throw new ServiceException("Label already exists");
         }
-        LabelName newLabelName =
+        Optional<LabelName> newLabelName =
             Arrays.stream(LabelName.values())
-                .filter(labelName -> labelName.equals(labelEntity.getName())).findFirst().get();
-        return labelRepository.save(LabelEntity.builder().name(newLabelName).build());
+                .filter(labelName -> labelName.equals(labelEntity.getName())).findFirst();
+        if (newLabelName.isEmpty()) {
+            throw new LabelNotFoundException("Label cant be save");
+        }
+        return labelRepository.save(LabelEntity.builder().name(newLabelName.get()).build());
     }
 
     @Override

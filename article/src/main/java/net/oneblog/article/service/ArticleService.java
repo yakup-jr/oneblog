@@ -20,8 +20,7 @@ public interface ArticleService {
      * @throws ApiRequestException    the api request exception
      * @throws LabelNotFoundException the label not found exception
      */
-    ArticleModel save(ArticleCreateModel articleDomain)
-        throws ApiRequestException, LabelNotFoundException;
+    ArticleModel save(ArticleCreateModel articleDomain);
 
     /**
      * Find by article id article.

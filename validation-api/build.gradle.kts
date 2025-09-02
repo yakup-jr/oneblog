@@ -2,8 +2,8 @@ import org.springframework.boot.gradle.tasks.bundling.BootJar
 
 plugins {
     java
-    id("org.springframework.boot") version "3.3.1"
-    id("io.spring.dependency-management") version "1.1.5"
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
 }
 
 group = "net.oneblog"
@@ -22,20 +22,20 @@ repositories {
 dependencies {
     implementation(project(":api"))
 
-    implementation("org.springframework.boot:spring-boot-starter")
-    implementation("jakarta.validation:jakarta.validation-api")
-    implementation("org.springframework.boot:spring-boot-starter-hateoas")
-    implementation("org.mapstruct:mapstruct:1.6.3")
+    implementation(libs.spring.boot.starter)
+    implementation(libs.jakarta.validation.api)
+    implementation(libs.spring.hateoas)
+    implementation(libs.mapstruct)
 
-    compileOnly("org.projectlombok:lombok")
-    annotationProcessor("org.projectlombok:lombok")
-    annotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
+    compileOnly(libs.lombok)
+    annotationProcessor(libs.lombok)
+    annotationProcessor(libs.mapstruct.processor)
 
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testImplementation(libs.spring.boot.starter.test)
+    testRuntimeOnly(libs.junit.platform.launcher)
 }
 
-tasks.withType<Test> {
+tasks.named<Test>("test") {
     useJUnitPlatform()
 }
 

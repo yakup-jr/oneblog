@@ -56,7 +56,7 @@ public class UserServiceImpl implements UserService {
         Page<ValidatedUserModel> userPage =
             userRepository.findAll(pageRequest).map(userMapper::map);
         if (userPage.isEmpty()) {
-            throw new PageNotFoundException("Page " + page + " with size " + size + " not found");
+            throw new PageNotFoundException("Page %d with size %d not found".formatted(page, size));
         }
         return userPage;
     }
@@ -64,20 +64,20 @@ public class UserServiceImpl implements UserService {
     @Override
     public ValidatedUserModel findById(Long id) {
         return userRepository.findById(id).map(userMapper::map)
-            .orElseThrow(() -> new UserNotFoundException("User with id " + id + " not found"));
+            .orElseThrow(() -> new UserNotFoundException("User with id %d not found".formatted(id)));
     }
 
     @Override
     public ValidatedUserModel findByNickname(String nickname) {
         return userRepository.findByNickname(nickname).map(userMapper::map).orElseThrow(
-            () -> new UserNotFoundException("User with nickname " + nickname + " not found"));
+            () -> new UserNotFoundException("User with nickname %s not found".formatted(nickname)));
     }
 
     @Override
     public ValidatedUserModel findByEmail(String email) {
         return userRepository.findByEmail(email).map(userMapper::map)
             .orElseThrow(
-                () -> new UserNotFoundException("User with email " + email + " not found"));
+                () -> new UserNotFoundException("User with email %s not found".formatted(email)));
     }
 
     @Override
