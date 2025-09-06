@@ -1,10 +1,12 @@
 package net.oneblog.article.service;
 
 import net.oneblog.article.entity.ArticleEntity;
+import net.oneblog.article.entity.LabelEntity;
 import net.oneblog.article.exception.ArticleNotFoundException;
 import net.oneblog.article.mapper.ArticleMapper;
 import net.oneblog.article.models.ArticleCreateModel;
 import net.oneblog.article.models.ArticleModel;
+import net.oneblog.article.models.LabelModel;
 import net.oneblog.article.repository.ArticleRepository;
 import net.oneblog.sharedexceptions.ApiRequestException;
 import net.oneblog.user.entity.UserEntity;
@@ -52,24 +54,42 @@ class ArticleServiceTest {
     @Test
     void save_Success() {
         ValidatedUserModel userModel = ValidatedUserModel.builder().userId(1L).build();
-        ArticleEntity notSaved =
-            ArticleEntity.builder().userEntity(UserEntity.builder().userId(1L).build()).build();
+        LabelModel labelModel = LabelModel.builder().labelId(2L).build();
+        List<LabelModel> labelModels = List.of(labelModel);
+
         ArticleCreateModel createDto =
-            ArticleCreateModel.builder().user(userModel).labels(List.of()).build();
-        ArticleEntity saved =
-            ArticleEntity.builder().articleId(1L).userEntity(UserEntity.builder().userId(1L).build()).build();
+            ArticleCreateModel.builder().user(userModel).labels(labelModels).build();
         ArticleModel savedDto = ArticleModel.builder().articleId(1L).user(userModel).build();
 
-        when(articleMapper.map(createDto)).thenReturn(notSaved);
-        when(labelService.findLabels(any())).thenReturn(List.of());
-        when(userService.findById(1L)).thenReturn(userModel);
-        when(articleRepository.save(notSaved)).thenReturn(saved);
-        when(articleMapper.map(saved)).thenReturn(savedDto);
+        UserEntity fetchedUser = UserEntity.builder().userId(1L).build();
+        LabelEntity fetchedLabel = LabelEntity.builder().labelId(2L).build();
+
+        ArticleEntity articleFromMapper = ArticleEntity.builder()
+            .labelEntities(List.of(LabelEntity.builder().labelId(2L).build())) // Pass a list with a mock entity
+            .userEntity(UserEntity.builder().userId(1L).build())
+            .build();
+
+        ArticleEntity savedArticle = ArticleEntity.builder().articleId(1L).build();
+
+        when(articleMapper.map(createDto)).thenReturn(articleFromMapper);
+
+        when(userService.findById(userModel.userId())).thenReturn(userModel);
+        when(userMapper.map(userModel)).thenReturn(fetchedUser);
+
+        when(labelService.findById(labelModel.getLabelId())).thenReturn(fetchedLabel); // Use the variable with the ID
+        when(articleRepository.save(any(ArticleEntity.class))).thenReturn(savedArticle);
+
+        when(articleMapper.map(savedArticle)).thenReturn(savedDto);
 
         ArticleModel result = articleService.save(createDto);
 
         assertNotNull(result);
-        verify(articleRepository).save(notSaved);
+        assertEquals(savedDto.getArticleId(), result.getArticleId());
+
+        verify(userService).findById(userModel.userId());
+        verify(userMapper).map(userModel);
+        verify(labelService).findById(labelModel.getLabelId());
+        verify(articleRepository).save(any(ArticleEntity.class));
     }
 
 

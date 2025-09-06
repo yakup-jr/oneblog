@@ -40,7 +40,7 @@ class BasicAuthServiceTest {
     @Mock
     private AuthService authService;
     @Mock
-    private TokenService tokenService;
+    private TokenManagerService tokenManagerService;
 
     @Test
     void register_Success() {
@@ -131,8 +131,8 @@ class BasicAuthServiceTest {
 
         verify(authenticationManager).authenticate(
             new UsernamePasswordAuthenticationToken(request.username(), request.password()));
-        verify(tokenService).revokeAllTokensForUser(userModel);
-        verify(tokenService).saveUserToken("access-token", "refresh-token", userModel);
+        verify(tokenManagerService).revokeAllTokensForUser(userModel);
+        verify(tokenManagerService).saveUserToken("access-token", "refresh-token", userModel);
     }
 
     @Test
@@ -146,7 +146,7 @@ class BasicAuthServiceTest {
 
         verify(authenticationManager).authenticate(
             new UsernamePasswordAuthenticationToken(request.username(), request.password()));
-        verify(tokenService, never()).revokeAllTokensForUser(any());
-        verify(tokenService, never()).saveUserToken(anyString(), anyString(), any());
+        verify(tokenManagerService, never()).revokeAllTokensForUser(any());
+        verify(tokenManagerService, never()).saveUserToken(anyString(), anyString(), any());
     }
 }

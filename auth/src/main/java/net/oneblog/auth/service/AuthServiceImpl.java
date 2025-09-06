@@ -15,6 +15,7 @@ import net.oneblog.user.service.UserService;
 import net.oneblog.user.service.UserValidationService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -31,11 +32,13 @@ public class AuthServiceImpl implements AuthService {
     private final UserMapper userMapper;
 
     @Override
+    @Transactional
     public AuthModel save(GoogleRegistrationRequestModel googleRegistrationModel) {
         return authMapper.map(authRepository.save(authMapper.map(googleRegistrationModel)));
     }
 
     @Override
+    @Transactional
     public AuthModel save(BasicRegistrationRequestModel basicRegistrationModel) {
         if (basicRegistrationModel.email().isEmpty() ||
             userValidationService.existsByEmail(basicRegistrationModel.email())) {
@@ -64,6 +67,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public AuthModel findByEmail(String email) {
         return authMapper.map(
             authRepository.findByEmail(email).orElseThrow(
@@ -71,18 +75,21 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public AuthModel findByGoogleUserId(String googleUserId) {
         return authMapper.map(authRepository.findByGoogleUserId(googleUserId)
             .orElseThrow(() -> new ServiceException("user with google account not found")));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public AuthModel findByNickname(String nickname) {
         return authMapper.map(authRepository.findByNickname(nickname).orElseThrow(
             () -> new ServiceException("User with nickname %s not found".formatted(nickname))));
     }
 
     @Override
+    @Transactional
     public void update(AuthModel authModel) {
         authRepository.updateVerificationStatus(authModel.getAuthId(), authModel.isVerificated());
     }

@@ -2,12 +2,14 @@ package net.oneblog.article.service;
 
 import lombok.AllArgsConstructor;
 import net.oneblog.article.entity.ArticleEntity;
+import net.oneblog.article.entity.LabelEntity;
 import net.oneblog.article.exception.ArticleNotFoundException;
 import net.oneblog.article.mapper.ArticleMapper;
 import net.oneblog.article.models.ArticleCreateModel;
 import net.oneblog.article.models.ArticleModel;
 import net.oneblog.article.repository.ArticleRepository;
 import net.oneblog.sharedexceptions.ApiRequestException;
+import net.oneblog.user.entity.UserEntity;
 import net.oneblog.user.exceptions.UserNotFoundException;
 import net.oneblog.user.mappers.UserMapper;
 import net.oneblog.user.service.UserService;
@@ -17,6 +19,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -28,28 +31,35 @@ import java.util.List;
 public class ArticleServiceImpl implements ArticleService {
 
     private final ArticleRepository articleRepository;
-    private final UserService userService;
     private final UserValidationService userValidationService;
-    private final LabelService labelService;
     private final ArticleMapper articleMapper;
+    private final LabelService labelService;
     private final UserMapper userMapper;
+    private final UserService userService;
 
     @Override
+    @Transactional
     public ArticleModel save(ArticleCreateModel article) {
         ArticleEntity articleEntity = articleMapper.map(article);
-        articleEntity.setLabelEntities(labelService.findLabels(articleEntity.getLabelEntities()));
-        articleEntity.setUserEntity(
-            userMapper.map(userService.findById(articleEntity.getUserEntity().getUserId())));
+        List<LabelEntity> labelEntities = articleEntity.getLabelEntities().stream()
+            .map(labelEntity -> labelService.findById(labelEntity.getLabelId())).toList();
+        UserEntity userEntity =
+            userMapper.map(userService.findById(articleEntity.getUserEntity().getUserId()));
+
+        articleEntity.setLabelEntities(labelEntities);
+        articleEntity.setUserEntity(userEntity);
         return articleMapper.map(articleRepository.save(articleEntity));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ArticleModel findByArticleId(Long id) {
         return articleMapper.map(articleRepository.findById(id).orElseThrow(
             () -> new ArticleNotFoundException("Article with id: " + id + " not found")));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ArticleModel> findByUserId(Long userId)
         throws ArticleNotFoundException {
         List<ArticleEntity> articleEntities = articleRepository.findByUserId(userId);
@@ -60,6 +70,7 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<ArticleModel> findAll(Integer page, Integer size) {
         try {
             Pageable pageRequest = PageRequest.of(page, size, Sort.by("createdAt").descending());
@@ -76,6 +87,7 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
+    @Transactional
     public void deleteByArticleId(Long id) {
         if (!articleRepository.existsById(id)) {
             throw new ArticleNotFoundException("Article with id: " + id + " not found");
@@ -84,6 +96,7 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
+    @Transactional
     public void deleteByUserId(Long userId) {
         if (!userValidationService.existsById(userId)) {
             throw new UserNotFoundException("User with id: " + userId + " not found");

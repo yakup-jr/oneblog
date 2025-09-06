@@ -6,8 +6,6 @@ import net.oneblog.sharedexceptions.ApiRequestException;
 import net.oneblog.sharedexceptions.PageNotFoundException;
 import org.springframework.data.domain.Page;
 
-import java.util.List;
-
 /**
  * The interface Label service.
  */
@@ -49,15 +47,6 @@ public interface LabelService {
      * @throws LabelNotFoundException the label not found exception
      */
     LabelEntity findByName(String name) throws LabelNotFoundException;
-
-    /**
-     * Find labels list.
-     *
-     * @param labelEntities the labels
-     * @return the list
-     * @throws LabelNotFoundException the label not found exception
-     */
-    List<LabelEntity> findLabels(List<LabelEntity> labelEntities) throws LabelNotFoundException;
 
     /**
      * Delete by id label.

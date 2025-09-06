@@ -8,6 +8,7 @@ import net.oneblog.validationapi.models.ValidatedUserModel;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.crypto.SecretKey;
 import java.time.LocalDate;
@@ -44,6 +45,7 @@ public class JwtServiceImpl implements JwtService {
     }
 
 
+    @Transactional(readOnly = true)
     public boolean isValidAccess(String token, UserDetails user) {
         try {
             String username = extractUsername(token);
@@ -59,6 +61,7 @@ public class JwtServiceImpl implements JwtService {
     }
 
 
+    @Transactional(readOnly = true)
     public boolean isValidRefresh(String token, ValidatedUserModel userEntity) {
         try {
             String username = extractUsername(token);

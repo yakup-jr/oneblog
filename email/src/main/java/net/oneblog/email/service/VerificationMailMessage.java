@@ -1,29 +1,20 @@
 package net.oneblog.email.service;
 
+import lombok.AllArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * The type Verification mail message.
  */
 @Component
+@AllArgsConstructor
 public class VerificationMailMessage {
 
     private final CodeGenerator codeGenerator;
-
     private final JavaMailSender mailSender;
-
-    /**
-     * Instantiates a new Verification mail message.
-     *
-     * @param codeGenerator the code generator
-     * @param mailSender    the mail sender
-     */
-    public VerificationMailMessage(CodeGenerator codeGenerator, JavaMailSender mailSender) {
-        this.codeGenerator = codeGenerator;
-        this.mailSender = mailSender;
-    }
 
     /**
      * Send verification code string.
@@ -31,6 +22,7 @@ public class VerificationMailMessage {
      * @param email the email
      * @return the string
      */
+    @Transactional
     public String sendVerificationCode(String email) {
         String code = codeGenerator.generateSixDigits();
 

@@ -7,10 +7,10 @@ import net.oneblog.auth.models.AuthModel;
 import net.oneblog.auth.models.AuthenticationResponseModel;
 import net.oneblog.auth.models.GoogleRegistrationRequestModel;
 import net.oneblog.sharedexceptions.ServiceException;
-import net.oneblog.user.service.UserService;
 import net.oneblog.user.service.UserValidationService;
 import net.oneblog.validationapi.models.ValidatedUserModel;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -23,12 +23,12 @@ import java.util.concurrent.ThreadLocalRandom;
 @AllArgsConstructor
 public class GoogleOAuth2LoginService {
 
-    private final UserService userService;
     private final UserValidationService userValidationService;
     private final AuthService authService;
     private final JwtService jwtService;
-    private final TokenService tokenService;
+    private final TokenManagerService tokenManagerService;
     private final GoogleIdTokenVerifier verifier;
+    private final GoogleVerificationService googleVerificationService;
 
     /**
      * Sign up authentication response dto.
@@ -36,6 +36,7 @@ public class GoogleOAuth2LoginService {
      * @param payload the payload
      * @return the authentication response dto
      */
+    @Transactional
     public AuthenticationResponseModel signUp(GoogleIdToken.Payload payload) {
         String nickname = String.valueOf(payload.get("given_name"));
         if (userValidationService.existsByNickname(nickname)) {
@@ -48,13 +49,7 @@ public class GoogleOAuth2LoginService {
         AuthModel savedAuthEntity = authService.save(
             new GoogleRegistrationRequestModel(String.valueOf(payload.getSubject()), user));
 
-        String accessToken = jwtService.generateAccessToken(savedAuthEntity.getUserDto());
-        String refreshToken = jwtService.generateRefreshToken(savedAuthEntity.getUserDto());
-
-        tokenService.revokeAllTokensForUser(savedAuthEntity.getUserDto());
-        tokenService.saveUserToken(accessToken, refreshToken, savedAuthEntity.getUserDto());
-
-        return new AuthenticationResponseModel(accessToken, refreshToken);
+        return generateAndSaveTokens(savedAuthEntity.getUserDto());
     }
 
     /**
@@ -63,58 +58,27 @@ public class GoogleOAuth2LoginService {
      * @param token the token
      * @return the authentication response dto
      */
+    @Transactional
     public AuthenticationResponseModel login(String token) {
-        GoogleIdToken.Payload payload = verifyByGoogle(token);
-        String googleUserId = String.valueOf(payload.getSubject());
+        try {
+            GoogleIdToken.Payload payload = googleVerificationService.verify(token);
+            String googleUserId = String.valueOf(payload.getSubject());
 
-        AuthModel authModel = authService.findByGoogleUserId(googleUserId);
+            AuthModel authModel = authService.findByGoogleUserId(googleUserId);
 
-        ValidatedUserModel userEntity = authModel.getUserDto();
+            return generateAndSaveTokens(authModel.getUserDto());
+        } catch (GeneralSecurityException | IOException e) {
+            throw new ServiceException("Failed to verify Google token");
+        }
+    }
 
-        String accessToken = jwtService.generateAccessToken(userEntity);
-        String refreshToken = jwtService.generateRefreshToken(userEntity);
+    private AuthenticationResponseModel generateAndSaveTokens(ValidatedUserModel user) {
+        String accessToken = jwtService.generateAccessToken(user);
+        String refreshToken = jwtService.generateRefreshToken(user);
 
-        tokenService.revokeAllTokensForUser(userEntity);
-        tokenService.saveUserToken(accessToken, refreshToken, userEntity);
+        tokenManagerService.revokeAllTokensForUser(user);
+        tokenManagerService.saveUserToken(accessToken, refreshToken, user);
 
         return new AuthenticationResponseModel(accessToken, refreshToken);
-
-    }
-
-    private GoogleIdToken.Payload verifyByGoogle(String token) {
-        try {
-            return verify(token);
-        } catch (GeneralSecurityException | IOException e) {
-            throw new ServiceException(e.getMessage());
-        }
-    }
-
-    /**
-     * Verify google id token . payload.
-     *
-     * @param token the token
-     * @return the google id token . payload
-     * @throws GeneralSecurityException the general security exception
-     * @throws IOException              the io exception
-     */
-    public GoogleIdToken.Payload verify(String token) throws GeneralSecurityException,
-        IOException {
-        GoogleIdToken idToken = verifier.verify(getTokenToVerify(token));
-        if (idToken == null) {
-            throw new GeneralSecurityException("token verification failed");
-        }
-        if (idToken.getPayload() == null || !idToken.getPayload().getEmailVerified()) {
-            throw new GeneralSecurityException("email verification failed");
-        }
-        return idToken.getPayload();
-    }
-
-
-    private String getTokenToVerify(String token) throws GeneralSecurityException {
-        try {
-            return token.split("\"")[3];
-        } catch (ArrayIndexOutOfBoundsException e) {
-            throw new GeneralSecurityException("token not valid");
-        }
     }
 }
