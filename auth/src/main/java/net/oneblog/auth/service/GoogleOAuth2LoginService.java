@@ -6,11 +6,9 @@ import lombok.AllArgsConstructor;
 import net.oneblog.auth.models.AuthModel;
 import net.oneblog.auth.models.AuthenticationResponseModel;
 import net.oneblog.auth.models.GoogleRegistrationRequestModel;
-import net.oneblog.auth.repository.AuthRepository;
 import net.oneblog.sharedexceptions.ServiceException;
-import net.oneblog.user.repository.UserRepository;
 import net.oneblog.user.service.UserService;
-import net.oneblog.validationapi.mappers.ValidatedUserModelMapper;
+import net.oneblog.user.service.UserValidationService;
 import net.oneblog.validationapi.models.ValidatedUserModel;
 import org.springframework.stereotype.Service;
 
@@ -25,14 +23,12 @@ import java.util.concurrent.ThreadLocalRandom;
 @AllArgsConstructor
 public class GoogleOAuth2LoginService {
 
-    private final UserRepository userRepository;
     private final UserService userService;
+    private final UserValidationService userValidationService;
     private final AuthService authService;
-    private final AuthRepository authRepository;
     private final JwtService jwtService;
     private final TokenService tokenService;
     private final GoogleIdTokenVerifier verifier;
-    private final ValidatedUserModelMapper userMapper;
 
     /**
      * Sign up authentication response dto.
@@ -42,7 +38,7 @@ public class GoogleOAuth2LoginService {
      */
     public AuthenticationResponseModel signUp(GoogleIdToken.Payload payload) {
         String nickname = String.valueOf(payload.get("given_name"));
-        if (userService.existsByNickname(nickname)) {
+        if (userValidationService.existsByNickname(nickname)) {
             nickname = nickname.concat(String.valueOf(ThreadLocalRandom.current().nextInt(10000)));
         }
 

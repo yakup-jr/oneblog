@@ -11,7 +11,7 @@ import net.oneblog.user.entity.UserEntity;
 import net.oneblog.user.exceptions.UserNotFoundException;
 import net.oneblog.user.mappers.UserMapper;
 import net.oneblog.user.service.UserService;
-import net.oneblog.validationapi.mappers.ValidatedUserModelMapperImpl;
+import net.oneblog.user.service.UserValidationService;
 import net.oneblog.validationapi.models.ValidatedUserModel;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,13 +38,13 @@ class ArticleServiceTest {
     @Mock
     private UserService userService;
     @Mock
+    private UserValidationService userValidationService;
+    @Mock
     private LabelService labelService;
     @Mock
     private ArticleMapper articleMapper;
     @Mock
-    private UserMapper userMapper;
-    @Mock
-    private ValidatedUserModelMapperImpl validatedUserModelMapper;
+    private UserMapper userMapper; // ide doesn't see the dependence
 
     @InjectMocks
     private ArticleServiceImpl articleService;
@@ -155,7 +155,7 @@ class ArticleServiceTest {
 
     @Test
     void deleteByUserId_Success() {
-        when(userService.existsById(1L)).thenReturn(true);
+        when(userValidationService.existsById(1L)).thenReturn(true);
         when(articleRepository.existsByUserId(1L)).thenReturn(true);
 
         articleService.deleteByUserId(1L);
@@ -165,7 +165,7 @@ class ArticleServiceTest {
 
     @Test
     void deleteByUserId_UserNotFound() {
-        when(userService.existsById(1L)).thenReturn(false);
+        when(userValidationService.existsById(1L)).thenReturn(false);
 
         assertThrows(UserNotFoundException.class,
             () -> articleService.deleteByUserId(1L));
@@ -173,7 +173,7 @@ class ArticleServiceTest {
 
     @Test
     void deleteByUserId_ArticleNotFound() {
-        when(userService.existsById(1L)).thenReturn(true);
+        when(userValidationService.existsById(1L)).thenReturn(true);
         when(articleRepository.existsByUserId(1L)).thenReturn(false);
 
         assertThrows(ArticleNotFoundException.class,

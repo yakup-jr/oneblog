@@ -42,4 +42,17 @@ public class AuthEntity {
         fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private UserEntity userEntity;
+
+    @Override
+    public String toString() {
+        return "AuthEntity{" +
+            "authId=" + authId +
+            ", password='" + password + '\'' +
+            ", verificated=" + verificated +
+            ", googleUserId='" + googleUserId + '\'' +
+            ", roleEntities=" + roleEntities +
+            ", tokens=" + tokens +
+            ", userEntity=" + userEntity +
+            '}';
+    }
 }

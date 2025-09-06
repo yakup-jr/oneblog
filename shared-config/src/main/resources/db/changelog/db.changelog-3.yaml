@@ -26,6 +26,12 @@ databaseChangeLog:
       id: create-table-token
       author: yakup_jr
       changes:
+        - createSequence:
+              sequenceName: t_token_seq
+              startValue: 10
+              minValue: 1
+              maxValue: 10000
+              incrementBy: 10
         - createTable:
             tableName: t_token
             columns:

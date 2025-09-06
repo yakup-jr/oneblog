@@ -134,7 +134,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: password
-                  value: 'defaultPasswordForYakupJr' # Assuming a default password, as original had none
+                  value: '$2a$10$l9fXt6r62KPWhGe2ByJureER9JjdSYhiaKB0pkMb9FtjzYuyNH/pO' # test
               - column:
                   name: verificated
                   value: 'true'

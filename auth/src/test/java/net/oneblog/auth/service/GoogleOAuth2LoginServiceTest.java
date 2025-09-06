@@ -7,6 +7,7 @@ import net.oneblog.auth.models.AuthenticationResponseModel;
 import net.oneblog.auth.models.GoogleRegistrationRequestModel;
 import net.oneblog.sharedexceptions.ServiceException;
 import net.oneblog.user.service.UserService;
+import net.oneblog.user.service.UserValidationService;
 import net.oneblog.validationapi.models.ValidatedUserModel;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,6 +32,8 @@ class GoogleOAuth2LoginServiceTest {
 
     @Mock
     private UserService userService;
+    @Mock
+    private UserValidationService userValidationService;
     @Mock
     private AuthService authService;
     @Mock
@@ -60,7 +63,7 @@ class GoogleOAuth2LoginServiceTest {
         when(payload.get("email")).thenReturn("john@example.com");
         when(payload.get("name")).thenReturn("John Doe");
         when(payload.getSubject()).thenReturn("google123");
-        when(userService.existsByNickname("John")).thenReturn(false);
+        when(userValidationService.existsByNickname("John")).thenReturn(false);
         when(authService.save(any(GoogleRegistrationRequestModel.class))).thenReturn(authModel);
         when(jwtService.generateAccessToken(userDto)).thenReturn("access-token");
         when(jwtService.generateRefreshToken(userDto)).thenReturn("refresh-token");
@@ -90,7 +93,7 @@ class GoogleOAuth2LoginServiceTest {
         when(payload.get("email")).thenReturn("john@example.com");
         when(payload.get("name")).thenReturn("John Doe");
         when(payload.getSubject()).thenReturn("google123");
-        when(userService.existsByNickname("John")).thenReturn(true);
+        when(userValidationService.existsByNickname("John")).thenReturn(true);
         when(authService.save(any(GoogleRegistrationRequestModel.class))).thenReturn(authModel);
         when(jwtService.generateAccessToken(userDto)).thenReturn("access-token");
         when(jwtService.generateRefreshToken(userDto)).thenReturn("refresh-token");

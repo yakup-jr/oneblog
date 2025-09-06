@@ -10,9 +10,10 @@ import net.oneblog.auth.models.RefreshTokenRequestModel;
 import net.oneblog.auth.repository.AuthRepository;
 import net.oneblog.auth.repository.TokenRepository;
 import net.oneblog.sharedexceptions.ServiceException;
-import net.oneblog.user.repository.UserRepository;
 import net.oneblog.user.service.UserService;
 import net.oneblog.validationapi.models.ValidatedUserModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 
@@ -25,8 +26,8 @@ import java.util.List;
 @AllArgsConstructor
 public class TokenServiceImpl implements TokenService {
 
+    private static final Logger log = LoggerFactory.getLogger(TokenServiceImpl.class);
     private final JwtService jwtService;
-    private final UserRepository userRepository;
     private final UserService userService;
     private final TokenRepository tokenRepository;
     private final AuthRepository authRepository;
@@ -83,6 +84,7 @@ public class TokenServiceImpl implements TokenService {
             validToken.forEach(token -> token.setIsRevoke(true));
         }
 
+
         tokenRepository.saveAll(validToken);
     }
 
@@ -92,10 +94,12 @@ public class TokenServiceImpl implements TokenService {
             authRepository.findByEmail(user.email()).orElseThrow(() -> new SerialException(
                 "user not found"));
 
-        TokenEntity tokenEntity = new TokenEntity();
-        tokenEntity.setAccessToken(accessToken);
-        tokenEntity.setRefreshToken(refreshToken);
-        authEntity.getTokens().add(tokenEntity);
+        TokenEntity tokenEntity =
+            TokenEntity.builder().authEntity(authEntity).accessToken(accessToken).refreshToken(refreshToken)
+                .isRevoke(false).expireAt(jwtService.extractExpiration(accessToken).atStartOfDay())
+                .build();
+        List<TokenEntity> tokens = authEntity.getTokens();
+        tokens.add(tokenEntity);
 
         tokenRepository.save(tokenEntity);
     }

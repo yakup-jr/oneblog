@@ -69,6 +69,7 @@ logging:
           core:
             JdbcTemplate: DEBUG
             StatementCreatorUtils: TRACE
+        transaction: DEBUG
 
 springdoc:
   api-docs:

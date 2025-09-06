@@ -19,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpHeaders;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -62,6 +63,7 @@ class TokenServiceTest {
             .build();
 
         when(request.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn("Bearer " + token);
+        when(jwtService.extractExpiration("new-access-token")).thenReturn(LocalDate.now().plusDays(1));
         when(jwtService.extractUsername(token)).thenReturn(username);
         when(userService.findByNickname(username)).thenReturn(userModel);
         when(jwtService.isValidRefresh(token, userModel)).thenReturn(true);
@@ -118,7 +120,7 @@ class TokenServiceTest {
     void reIssueRefreshToken_Success() {
         String refreshToken = "valid-refresh-token";
         String username = "testuser";
-        RefreshTokenRequestModel request = new RefreshTokenRequestModel(refreshToken);
+        RefreshTokenRequestModel refreshTokenRequest = new RefreshTokenRequestModel(refreshToken);
         ValidatedUserModel userModel = ValidatedUserModel.builder()
             .userId(1L)
             .nickname(username)
@@ -129,6 +131,7 @@ class TokenServiceTest {
             .tokens(new ArrayList<>())
             .build();
 
+        when(jwtService.extractExpiration("new-access-token")).thenReturn(LocalDate.now().plusDays(1));
         when(jwtService.extractUsername(refreshToken)).thenReturn(username);
         when(userService.findByNickname(username)).thenReturn(userModel);
         when(jwtService.isValidRefresh(refreshToken, userModel)).thenReturn(true);
@@ -137,7 +140,7 @@ class TokenServiceTest {
         when(tokenRepository.findAllAccessTokenByUser(userModel.userId())).thenReturn(new ArrayList<>());
         when(authRepository.findByEmail(userModel.email())).thenReturn(Optional.of(authEntity));
 
-        AuthenticationResponseModel response = tokenService.reIssueRefreshToken(request);
+        AuthenticationResponseModel response = tokenService.reIssueRefreshToken(refreshTokenRequest);
 
         assertNotNull(response);
         assertEquals("new-access-token", response.accessToken());
@@ -148,7 +151,7 @@ class TokenServiceTest {
     void reIssueRefreshToken_InvalidToken() {
         String refreshToken = "invalid-token";
         String username = "testuser";
-        RefreshTokenRequestModel request = new RefreshTokenRequestModel(refreshToken);
+        RefreshTokenRequestModel refreshTokenRequest = new RefreshTokenRequestModel(refreshToken);
         ValidatedUserModel userModel = ValidatedUserModel.builder()
             .nickname(username)
             .build();
@@ -158,7 +161,7 @@ class TokenServiceTest {
         when(jwtService.isValidRefresh(refreshToken, userModel)).thenReturn(false);
 
         ServiceException exception = assertThrows(ServiceException.class,
-            () -> tokenService.reIssueRefreshToken(request));
+            () -> tokenService.reIssueRefreshToken(refreshTokenRequest));
         assertEquals("Invalid token", exception.getMessage());
     }
 
@@ -192,6 +195,7 @@ class TokenServiceTest {
             .tokens(new ArrayList<>())
             .build();
 
+        when(jwtService.extractExpiration("access-token")).thenReturn(LocalDate.now().plusDays(1));
         when(authRepository.findByEmail(userModel.email())).thenReturn(Optional.of(authEntity));
 
         tokenService.saveUserToken("access-token", "refresh-token", userModel);

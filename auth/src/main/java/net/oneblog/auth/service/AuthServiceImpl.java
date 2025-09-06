@@ -12,6 +12,7 @@ import net.oneblog.sharedexceptions.ServiceException;
 import net.oneblog.user.mappers.UserMapper;
 import net.oneblog.user.models.UserCreateRequest;
 import net.oneblog.user.service.UserService;
+import net.oneblog.user.service.UserValidationService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +25,7 @@ public class AuthServiceImpl implements AuthService {
     private final AuthRepository authRepository;
     private final AuthMapper authMapper;
     private final UserService userService;
+    private final UserValidationService userValidationService;
     private final RoleService roleService;
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
@@ -36,20 +38,20 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public AuthModel save(BasicRegistrationRequestModel basicRegistrationModel) {
         if (basicRegistrationModel.email().isEmpty() ||
-            userService.existsByEmail(basicRegistrationModel.email())) {
+            userValidationService.existsByEmail(basicRegistrationModel.email())) {
             throw new ServiceException(
                 "User with" + basicRegistrationModel.email() + "already exists");
         }
         if (basicRegistrationModel.username().isEmpty() ||
-            userService.existsByNickname(basicRegistrationModel.username())) {
+            userValidationService.existsByNickname(basicRegistrationModel.username())) {
             throw new ServiceException(
                 "User with" + basicRegistrationModel.username() + "already exists");
         }
 
         UserCreateRequest userRequest = new UserCreateRequest(
-            basicRegistrationModel.email(),
             basicRegistrationModel.name(),
-            basicRegistrationModel.username()
+            basicRegistrationModel.username(),
+            basicRegistrationModel.email()
         );
         AuthEntity authEntity = new AuthEntity();
         authEntity.setUserEntity(userMapper.map(userRequest));
@@ -72,6 +74,12 @@ public class AuthServiceImpl implements AuthService {
     public AuthModel findByGoogleUserId(String googleUserId) {
         return authMapper.map(authRepository.findByGoogleUserId(googleUserId)
             .orElseThrow(() -> new ServiceException("user with google account not found")));
+    }
+
+    @Override
+    public AuthModel findByNickname(String nickname) {
+        return authMapper.map(authRepository.findByNickname(nickname).orElseThrow(
+            () -> new ServiceException("User with nickname %s not found".formatted(nickname))));
     }
 
     @Override

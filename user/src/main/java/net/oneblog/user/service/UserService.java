@@ -27,14 +27,6 @@ public interface UserService {
     Page<ValidatedUserModel> findAll(Integer page, Integer size);
 
     /**
-     * Exists by id boolean.
-     *
-     * @param userId the user id
-     * @return the boolean
-     */
-    boolean existsById(Long userId);
-
-    /**
      * Find by id user.
      *
      * @param id the id
@@ -57,21 +49,5 @@ public interface UserService {
      * @return the user
      */
     ValidatedUserModel findByEmail(String email);
-
-    /**
-     * Exists by nickname boolean.
-     *
-     * @param nickname the nickname
-     * @return the boolean
-     */
-    boolean existsByNickname(String nickname);
-
-    /**
-     * Exists by email boolean.
-     *
-     * @param email the email
-     * @return the boolean
-     */
-    boolean existsByEmail(String email);
 
 }

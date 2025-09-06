@@ -10,9 +10,12 @@ import net.oneblog.email.models.RegistrationEmailVerificationModel;
 import net.oneblog.email.service.EmailVerificationService;
 import net.oneblog.user.service.UserService;
 import net.oneblog.validationapi.models.ValidatedUserModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * The type Auth service.
@@ -21,6 +24,7 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class BasicAuthServiceImpl implements BasicAuthService {
 
+    private static final Logger log = LoggerFactory.getLogger(BasicAuthServiceImpl.class);
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final UserService userService;
@@ -36,6 +40,7 @@ public class BasicAuthServiceImpl implements BasicAuthService {
     }
 
     @Override
+    @Transactional
     public void verifyEmail(RegistrationEmailVerificationModel request) {
         boolean verified = emailVerificationService.verifyCode(request);
         if (!verified) {
@@ -49,15 +54,18 @@ public class BasicAuthServiceImpl implements BasicAuthService {
 
     @Override
     public AuthenticationResponseModel authenticate(LoginRequestModel request) {
-        authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(request.username(), request.password()));
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+            new UsernamePasswordAuthenticationToken(request.username(), request.password());
+        authenticationManager.authenticate(usernamePasswordAuthenticationToken);
 
         ValidatedUserModel userModel = userService.findByNickname(request.username());
+
 
         String accessToken = jwtService.generateAccessToken(userModel);
         String refreshToken = jwtService.generateRefreshToken(userModel);
 
         tokenService.revokeAllTokensForUser(userModel);
+
         tokenService.saveUserToken(accessToken, refreshToken, userModel);
 
         return new AuthenticationResponseModel(accessToken, refreshToken);

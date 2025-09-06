@@ -1,5 +1,6 @@
 package net.oneblog.article.service;
 
+import lombok.AllArgsConstructor;
 import net.oneblog.article.entity.ArticleEntity;
 import net.oneblog.article.exception.ArticleNotFoundException;
 import net.oneblog.article.mapper.ArticleMapper;
@@ -10,6 +11,7 @@ import net.oneblog.sharedexceptions.ApiRequestException;
 import net.oneblog.user.exceptions.UserNotFoundException;
 import net.oneblog.user.mappers.UserMapper;
 import net.oneblog.user.service.UserService;
+import net.oneblog.user.service.UserValidationService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,32 +24,15 @@ import java.util.List;
  * The type Article service.
  */
 @Service
+@AllArgsConstructor
 public class ArticleServiceImpl implements ArticleService {
 
     private final ArticleRepository articleRepository;
     private final UserService userService;
+    private final UserValidationService userValidationService;
     private final LabelService labelService;
     private final ArticleMapper articleMapper;
     private final UserMapper userMapper;
-
-    /**
-     * Instantiates a new Article service.
-     *
-     * @param articleRepository the article repository
-     * @param userService       the user service
-     * @param labelService      the label service
-     * @param articleMapper     the article mapper
-     * @param userMapper        the user mapper
-     */
-    public ArticleServiceImpl(ArticleRepository articleRepository, UserService userService,
-                              LabelService labelService, ArticleMapper articleMapper,
-                              UserMapper userMapper) {
-        this.articleRepository = articleRepository;
-        this.userService = userService;
-        this.labelService = labelService;
-        this.articleMapper = articleMapper;
-        this.userMapper = userMapper;
-    }
 
     @Override
     public ArticleModel save(ArticleCreateModel article) {
@@ -100,7 +85,7 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public void deleteByUserId(Long userId) {
-        if (!userService.existsById(userId)) {
+        if (!userValidationService.existsById(userId)) {
             throw new UserNotFoundException("User with id: " + userId + " not found");
         }
         if (!articleRepository.existsByUserId(userId)) {
