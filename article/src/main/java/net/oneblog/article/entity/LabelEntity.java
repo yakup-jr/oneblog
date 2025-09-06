@@ -18,7 +18,9 @@ import java.util.List;
 @Entity
 public class LabelEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "label_seq")
+    @SequenceGenerator(name = "label_seq", sequenceName = "t_label_seq", allocationSize = 10,
+        initialValue = 10)
     @Column(name = "LABEL_ID", nullable = false, updatable = false, unique = true)
     private Long labelId;
 

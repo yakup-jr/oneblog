@@ -8,6 +8,7 @@ import net.oneblog.user.mappers.UserMapper;
 import net.oneblog.user.models.UserCreateRequest;
 import net.oneblog.user.repository.UserRepository;
 import net.oneblog.user.service.UserServiceImpl;
+import net.oneblog.user.service.UserValidationService;
 import net.oneblog.validationapi.models.ValidatedUserModel;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,6 +27,8 @@ class UserServiceTest {
 
     @Mock
     private UserRepository userRepository;
+    @Mock
+    private UserValidationService userValidationService;
     @Mock
     private UserMapper userMapper;
 
@@ -49,9 +52,6 @@ class UserServiceTest {
 
     @Test
     void save_ReturnUser() {
-        when(userRepository.existsByNickname(DEFAULT_USER_CREATE_REQUEST.nickname())).thenReturn(
-            false);
-        when(userRepository.existsByEmail(DEFAULT_USER_CREATE_REQUEST.email())).thenReturn(false);
         when(userMapper.map(DEFAULT_USER_CREATE_REQUEST)).thenReturn(defaultUser);
         when(userRepository.save(defaultUser)).thenReturn(defaultUser);
         when(userMapper.map(defaultUser)).thenReturn(userModel);
@@ -65,7 +65,7 @@ class UserServiceTest {
 
     @Test
     void save_ThrowApiRequestException_NicknameExists() {
-        when(userRepository.existsByNickname(DEFAULT_USER_CREATE_REQUEST.nickname())).thenReturn(
+        when(userValidationService.existsByNickname(DEFAULT_USER_CREATE_REQUEST.nickname())).thenReturn(
             true);
 
         assertThatThrownBy(() -> userService.save(DEFAULT_USER_CREATE_REQUEST)).isInstanceOf(
@@ -74,30 +74,11 @@ class UserServiceTest {
 
     @Test
     void save_ThrowApiRequestException_EmailExists() {
-        when(userRepository.existsByNickname(DEFAULT_USER_CREATE_REQUEST.nickname())).thenReturn(
-            false);
-        when(userRepository.existsByEmail(DEFAULT_USER_CREATE_REQUEST.email())).thenReturn(true);
+        when(userValidationService.existsByEmail(DEFAULT_USER_CREATE_REQUEST.email())).thenReturn(
+            true);
 
         assertThatThrownBy(() -> userService.save(DEFAULT_USER_CREATE_REQUEST)).isInstanceOf(
             ServiceException.class);
-    }
-
-    @Test
-    void existsById_ReturnTrue() {
-        when(userRepository.existsById(1L)).thenReturn(true);
-
-        boolean userExists = userService.existsById(1L);
-
-        assertThat(userExists).isTrue();
-    }
-
-    @Test
-    void existsById_ReturnFalse() {
-        when(userRepository.existsById(999L)).thenReturn(false);
-
-        boolean userExists = userService.existsById(999L);
-
-        assertThat(userExists).isFalse();
     }
 
     @Test

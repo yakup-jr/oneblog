@@ -1,18 +1,18 @@
 package net.oneblog.auth.service;
 
 import net.oneblog.auth.adapter.AuthAdapter;
+import net.oneblog.auth.entity.AuthEntity;
+import net.oneblog.auth.repository.AuthRepository;
+import net.oneblog.sharedexceptions.ServiceException;
 import net.oneblog.user.entity.UserEntity;
-import net.oneblog.user.exceptions.UserNotFoundException;
-import net.oneblog.user.mappers.UserMapper;
-import net.oneblog.user.service.UserService;
-import net.oneblog.validationapi.mappers.ValidatedUserModelMapper;
-import net.oneblog.validationapi.models.ValidatedUserModel;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
@@ -23,24 +23,18 @@ class UserDetailsServiceTest {
     @InjectMocks
     private UserDetailsServiceImpl userDetailsService;
     @Mock
-    private UserService userService;
-    @Mock
-    private UserMapper userMapper;
-    @Mock
-    private ValidatedUserModelMapper validatedUserModelMapper;
+    private AuthRepository authRepository;
 
     @Test
     void loadUserByUsername_Success() {
         String username = "testuser";
 
-        ValidatedUserModel userModel = ValidatedUserModel.builder()
-            .userId(1L)
-            .nickname(username)
-            .email("test@example.com")
+        AuthEntity authEntity = AuthEntity.builder()
+            .authId(1L)
+            .userEntity(new UserEntity(1L, "name", username, "test@example.com"))
             .build();
 
-        when(userService.findByNickname(username)).thenReturn(userModel);
-        when(userMapper.map(userModel)).thenReturn(new UserEntity(1L, "testname", username, "test@example.com"));
+        when(authRepository.findByNickname(username)).thenReturn(Optional.ofNullable(authEntity));
 
         UserDetails result = userDetailsService.loadUserByUsername(username);
 
@@ -53,10 +47,10 @@ class UserDetailsServiceTest {
     void loadUserByUsername_UserNotFound() {
         String username = "nonexistent";
 
-        when(userService.findByNickname(username)).thenThrow(
-            new UserNotFoundException("User with nickname " + username + " not found"));
+        when(authRepository.findByNickname(username)).thenThrow(
+            new ServiceException("User with nickname " + username + " not found"));
 
-        assertThrows(UserNotFoundException.class,
+        assertThrows(ServiceException.class,
             () -> userDetailsService.loadUserByUsername(username));
     }
 
@@ -64,10 +58,10 @@ class UserDetailsServiceTest {
     void loadUserByUsername_NullUsername() {
         String username = null;
 
-        when(userService.findByNickname(username)).thenThrow(
-            new UserNotFoundException("User with nickname null not found"));
+        when(authRepository.findByNickname(username)).thenThrow(
+            new ServiceException("User with nickname null not found"));
 
-        assertThrows(UserNotFoundException.class,
+        assertThrows(ServiceException.class,
             () -> userDetailsService.loadUserByUsername(username));
     }
 
@@ -75,10 +69,10 @@ class UserDetailsServiceTest {
     void loadUserByUsername_EmptyUsername() {
         String username = "";
 
-        when(userService.findByNickname(username)).thenThrow(
-            new UserNotFoundException("User with nickname  not found"));
+        when(authRepository.findByNickname(username)).thenThrow(
+            new ServiceException("User with nickname  not found"));
 
-        assertThrows(UserNotFoundException.class,
+        assertThrows(ServiceException.class,
             () -> userDetailsService.loadUserByUsername(username));
     }
 }

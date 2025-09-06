@@ -23,6 +23,12 @@ databaseChangeLog:
       id: create-table-label
       author: yakup_jr
       changes:
+        - createSequence:
+            sequenceName: t_label_seq
+            startValue: 10
+            minValue: 10 #for test need 10, cause auto insert 9 element
+            maxValue: 10000
+            incrementBy: 10
         - createTable:
             tableName: t_label
             columns:

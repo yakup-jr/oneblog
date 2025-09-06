@@ -15,6 +15,8 @@ public interface AuthService {
 
     AuthModel findByGoogleUserId(String googleUserId);
 
+    AuthModel findByNickname(String nickname);
+
     void update(AuthModel authModel);
 
 }

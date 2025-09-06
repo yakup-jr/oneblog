@@ -30,6 +30,7 @@ public interface TokenRepository extends JpaRepository<TokenEntity, Long> {
      */
     Optional<TokenEntity> findByRefreshToken(String refreshToken);
 
+
     /**
      * Find all access tokenEntity by user list.
      *
@@ -37,8 +38,9 @@ public interface TokenRepository extends JpaRepository<TokenEntity, Long> {
      * @return the list
      */
     @Query("""
-        select t from TokenEntity t where t.tokenId = :userId
+        select t from TokenEntity t where t.authEntity.authId = :userId
         """)
-    List<TokenEntity> findAllAccessTokenByUser(Long userId);
+    List<TokenEntity> findAllAccessTokenByUser(Long userId); //warning: authEntity and userEntity
+    // id have to be always equal
 
 }

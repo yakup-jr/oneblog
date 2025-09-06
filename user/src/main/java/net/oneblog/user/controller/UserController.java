@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import net.oneblog.user.links.UserLink;
 import net.oneblog.user.models.UserCreateRequest;
 import net.oneblog.user.service.UserService;
-import net.oneblog.validationapi.mappers.ValidatedUserModelMapper;
 import net.oneblog.validationapi.models.ValidatedUserModel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.web.PagedResourcesAssembler;
@@ -31,7 +30,6 @@ public class UserController {
     private final UserService userService;
     private final UserLink userLink;
     private final PagedResourcesAssembler<ValidatedUserModel> pagedResourcesAssembler;
-    private final ValidatedUserModelMapper modelMapper;
 
     /**
      * Save user response entity.

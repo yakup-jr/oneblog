@@ -24,6 +24,9 @@ public interface AuthRepository extends JpaRepository<AuthEntity, Long> {
     @Query("select a from AuthEntity a where a.userEntity.email = :email")
     Optional<AuthEntity> findByEmail(String email);
 
+    @Query("select a from AuthEntity a where a.userEntity.nickname = :nickname")
+    Optional<AuthEntity> findByNickname(String nickname);
+
     /**
      * Find by google user id optional.
      *
@@ -33,6 +36,6 @@ public interface AuthRepository extends JpaRepository<AuthEntity, Long> {
     Optional<AuthEntity> findByGoogleUserId(String googleUserId);
 
     @Modifying
-    @Query("UPDATE AuthEntity a SET a.verificated = :verificated WHERE a.authId = :authId")
+    @Query("update AuthEntity a set a.verificated = :verificated where a.authId = :authId")
     void updateVerificationStatus(@Param("authId") Long authId, @Param("verificated") boolean verificated);
 }

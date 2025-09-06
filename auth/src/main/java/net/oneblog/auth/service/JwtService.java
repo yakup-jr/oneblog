@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import net.oneblog.validationapi.models.ValidatedUserModel;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDate;
 import java.util.function.Function;
 
 /**
@@ -46,6 +47,8 @@ public interface JwtService {
      * @return the t
      */
     <T> T extractClaim(String token, Function<Claims, T> resolver);
+
+    LocalDate extractExpiration(String token);
 
     /**
      * Generate access token string.

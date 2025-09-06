@@ -7,6 +7,7 @@ import net.oneblog.auth.models.AuthenticationResponseModel;
 import net.oneblog.auth.models.GoogleRegistrationRequestModel;
 import net.oneblog.sharedexceptions.ServiceException;
 import net.oneblog.user.service.UserService;
+import net.oneblog.user.service.UserValidationService;
 import net.oneblog.validationapi.models.ValidatedUserModel;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,7 +20,6 @@ import java.security.GeneralSecurityException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -32,11 +32,15 @@ class GoogleOAuth2LoginServiceTest {
     @Mock
     private UserService userService;
     @Mock
+    private UserValidationService userValidationService;
+    @Mock
     private AuthService authService;
     @Mock
     private JwtService jwtService;
     @Mock
-    private TokenService tokenService;
+    private TokenManagerService tokenManagerService;
+    @Mock
+    private GoogleVerificationService googleVerificationService;
     @Mock
     private GoogleIdTokenVerifier verifier;
     @Mock
@@ -60,7 +64,7 @@ class GoogleOAuth2LoginServiceTest {
         when(payload.get("email")).thenReturn("john@example.com");
         when(payload.get("name")).thenReturn("John Doe");
         when(payload.getSubject()).thenReturn("google123");
-        when(userService.existsByNickname("John")).thenReturn(false);
+        when(userValidationService.existsByNickname("John")).thenReturn(false);
         when(authService.save(any(GoogleRegistrationRequestModel.class))).thenReturn(authModel);
         when(jwtService.generateAccessToken(userDto)).thenReturn("access-token");
         when(jwtService.generateRefreshToken(userDto)).thenReturn("refresh-token");
@@ -71,8 +75,8 @@ class GoogleOAuth2LoginServiceTest {
         assertEquals("access-token", response.accessToken());
         assertEquals("refresh-token", response.refreshToken());
         verify(authService).save(any(GoogleRegistrationRequestModel.class));
-        verify(tokenService).revokeAllTokensForUser(userDto);
-        verify(tokenService).saveUserToken("access-token", "refresh-token", userDto);
+        verify(tokenManagerService).revokeAllTokensForUser(userDto);
+        verify(tokenManagerService).saveUserToken("access-token", "refresh-token", userDto);
     }
 
     @Test
@@ -90,7 +94,7 @@ class GoogleOAuth2LoginServiceTest {
         when(payload.get("email")).thenReturn("john@example.com");
         when(payload.get("name")).thenReturn("John Doe");
         when(payload.getSubject()).thenReturn("google123");
-        when(userService.existsByNickname("John")).thenReturn(true);
+        when(userValidationService.existsByNickname("John")).thenReturn(true);
         when(authService.save(any(GoogleRegistrationRequestModel.class))).thenReturn(authModel);
         when(jwtService.generateAccessToken(userDto)).thenReturn("access-token");
         when(jwtService.generateRefreshToken(userDto)).thenReturn("refresh-token");
@@ -112,9 +116,7 @@ class GoogleOAuth2LoginServiceTest {
             .userDto(userDto)
             .build();
 
-        when(verifier.verify(anyString())).thenReturn(googleIdToken);
-        when(googleIdToken.getPayload()).thenReturn(payload);
-        when(payload.getEmailVerified()).thenReturn(true);
+        when(googleVerificationService.verify(token)).thenReturn(payload);
         when(payload.getSubject()).thenReturn("google123");
         when(authService.findByGoogleUserId("google123")).thenReturn(authModel);
         when(jwtService.generateAccessToken(userDto)).thenReturn("access-token");
@@ -125,53 +127,26 @@ class GoogleOAuth2LoginServiceTest {
         assertNotNull(response);
         assertEquals("access-token", response.accessToken());
         assertEquals("refresh-token", response.refreshToken());
-        verify(tokenService).revokeAllTokensForUser(userDto);
-        verify(tokenService).saveUserToken("access-token", "refresh-token", userDto);
+        verify(tokenManagerService).revokeAllTokensForUser(userDto);
+        verify(tokenManagerService).saveUserToken("access-token", "refresh-token", userDto);
     }
 
     @Test
-    void login_VerifyFailed() {
+    void login_VerifyFailed() throws GeneralSecurityException, IOException {
         String token = "invalid-token";
+
+        when(googleVerificationService.verify(token)).thenThrow(new GeneralSecurityException(
+            "token not valid"));
 
         assertThrows(ServiceException.class, () -> googleOAuth2LoginService.login(token));
     }
 
     @Test
-    void verify_Success() throws GeneralSecurityException, IOException {
-        String token = "\"Bearer\" \"token\" \"value\" \"valid-token\"";
-        when(verifier.verify(anyString())).thenReturn(googleIdToken);
-        when(googleIdToken.getPayload()).thenReturn(payload);
-        when(payload.getEmailVerified()).thenReturn(true);
-
-        GoogleIdToken.Payload result = googleOAuth2LoginService.verify(token);
-
-        assertNotNull(result);
-        assertEquals(payload, result);
-    }
-
-    @Test
-    void verify_GoogleTokenNotExists() throws GeneralSecurityException, IOException {
-        String token = "\"Bearer\" \"token\" \"value\" \"valid-token\"";
-        when(verifier.verify(anyString())).thenReturn(null);
-
-        assertThrows(GeneralSecurityException.class,
-            () -> googleOAuth2LoginService.verify(token));
-    }
-
-    @Test
-    void verify_EmailNotVerified() throws GeneralSecurityException, IOException {
-        String token = "\"Bearer\" \"token\" \"value\" \"valid-token\"";
-        when(verifier.verify(anyString())).thenReturn(googleIdToken);
-        when(googleIdToken.getPayload()).thenReturn(payload);
-        when(payload.getEmailVerified()).thenReturn(false);
-
-        assertThrows(GeneralSecurityException.class,
-            () -> googleOAuth2LoginService.verify(token));
-    }
-
-    @Test
-    void verify_InvalidTokenFormat() {
+    void verify_InvalidTokenFormat() throws GeneralSecurityException, IOException {
         String token = "invalid-format";
+
+        when(googleVerificationService.verify(token)).thenThrow(new GeneralSecurityException(
+            "token not valid"));
 
         assertThrows(ServiceException.class,
             () -> googleOAuth2LoginService.login(token));

@@ -6,6 +6,7 @@ import net.oneblog.email.models.RegistrationEmailVerificationModel;
 import net.oneblog.email.repository.EmailVerificationRepository;
 import net.oneblog.sharedexceptions.ServiceException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -20,6 +21,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
     private final VerificationMailMessage mailMessage;
 
     @Override
+    @Transactional
     public void sendVerificationCode(String email) {
         if (emailVerificationRepository.existsByEmailAndCodeNotExpired(email)) {
             throw new ServiceException("Verification code already send");
@@ -34,6 +36,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
     }
 
     @Override
+    @Transactional
     public boolean verifyCode(RegistrationEmailVerificationModel verificationPayload) {
         EmailEntity verification =
             emailVerificationRepository.findByEmail(verificationPayload.email()).orElseThrow(

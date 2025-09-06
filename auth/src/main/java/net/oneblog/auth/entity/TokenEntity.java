@@ -17,7 +17,9 @@ import java.time.LocalDateTime;
 @Entity
 public class TokenEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "label_seq")
+    @SequenceGenerator(name = "token_seq", sequenceName = "t_label_seq", allocationSize = 10,
+        initialValue = 10)
     @Column(name = "token_id", nullable = false)
     private Long tokenId;
 
@@ -37,4 +39,11 @@ public class TokenEntity {
     @JoinColumn(name = "auth_id", foreignKey = @ForeignKey(name = "fk_token_user"),
         nullable = false)
     private AuthEntity authEntity;
+
+    @Override
+    public String toString() {
+        return "TokenEntity{" +
+            "isRevoke=" + isRevoke +
+            '}';
+    }
 }

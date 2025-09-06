@@ -8,8 +8,13 @@ import net.oneblog.validationapi.models.ValidatedUserModel;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.crypto.SecretKey;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.function.Function;
 
@@ -17,8 +22,7 @@ import java.util.function.Function;
  * The type Jwt service.
  */
 @Service
-public class
-JwtServiceImpl implements JwtService {
+public class JwtServiceImpl implements JwtService {
 
     @Value("${security.jwt.secret_key}")
     private String secretKey;
@@ -41,21 +45,23 @@ JwtServiceImpl implements JwtService {
     }
 
 
+    @Transactional(readOnly = true)
     public boolean isValidAccess(String token, UserDetails user) {
         try {
             String username = extractUsername(token);
             boolean isValidToken = tokenRepository.findByAccessToken(token)
                 .map(t -> !t.getIsRevoke()).orElse(false);
 
-            return username.equals(user.getUsername())
+            return isValidToken
                 && isAccessTokenExpired(token)
-                && isValidToken;
+                && username.equals(user.getUsername());
         } catch (ExpiredJwtException e) {
             return false;
         }
     }
 
 
+    @Transactional(readOnly = true)
     public boolean isValidRefresh(String token, ValidatedUserModel userEntity) {
         try {
             String username = extractUsername(token);
@@ -64,7 +70,7 @@ JwtServiceImpl implements JwtService {
                 .map(t -> !t.getIsRevoke()).orElse(false);
 
             return username.equals(userEntity.nickname())
-                && isAccessTokenExpired(token)
+                && isRefreshTokenExpired(token)
                 && isValidRefreshToken;
         } catch (ExpiredJwtException e) {
             return false;
@@ -73,17 +79,17 @@ JwtServiceImpl implements JwtService {
 
 
     private boolean isAccessTokenExpired(String token) {
-        return !extractExpiration(token).before(new Date());
+        return !extractExpiration(token).isBefore(LocalDate.now());
     }
 
     private boolean isRefreshTokenExpired(String token) {
-        return !extractExpiration(token).before(new Date());
+        return !extractExpiration(token).isBefore(LocalDate.now());
     }
 
-    private Date extractExpiration(String token) {
-        return extractClaim(token, Claims::getExpiration);
+    public LocalDate extractExpiration(String token) {
+        return LocalDate.ofInstant(extractClaim(token, Claims::getExpiration).toInstant(),
+            ZoneId.systemDefault());
     }
-
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -119,10 +125,16 @@ JwtServiceImpl implements JwtService {
 
 
     private String generateToken(ValidatedUserModel userEntity, long expiryTime) {
+        LocalDateTime ldt = LocalDateTime.now();
+        ZonedDateTime zdt = ldt.atZone(ZoneId.systemDefault());
+
+        Date issued = Date.from(zdt.toInstant());
+        Date expiration = Date.from(zdt.plusSeconds(expiryTime).toInstant());
+
         JwtBuilder builder = Jwts.builder()
             .subject(userEntity.nickname())
-            .issuedAt(new Date(System.currentTimeMillis()))
-            .expiration(new Date(System.currentTimeMillis() + expiryTime))
+            .issuedAt(issued)
+            .expiration(expiration)
             .signWith(getSigningKey());
 
         return builder.compact();

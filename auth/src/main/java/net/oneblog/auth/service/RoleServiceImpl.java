@@ -5,6 +5,7 @@ import net.oneblog.auth.entity.RoleEntity;
 import net.oneblog.auth.exception.RoleNotFoundException;
 import net.oneblog.auth.repository.RoleRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * The type Role service.
@@ -24,6 +25,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public RoleEntity findByName(String name) {
         return roleRepository.findByName(RoleNameDomain.valueOf(name))
             .orElseThrow(() -> new RoleNotFoundException("Role with name " + name + " not found"));
