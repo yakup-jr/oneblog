@@ -1,0 +1,19 @@
+databaseChangeLog:
+  - changeSet:
+      id: update-table-t_email
+      author: yakup_jr
+      changes:
+        - dropForeignKeyConstraint:
+            baseTableName: t_email_verification
+            constraintName: fk_email_verification_auth
+        - dropColumn:
+            tableName: t_email_verification
+            columnName: user_id
+        - addColumn:
+            tableName: t_email_verification
+            columns:
+              - column:
+                  name: email
+                  type: varchar(255)
+                  constraints:
+                    nullable: false

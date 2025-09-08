@@ -37,7 +37,7 @@ out/
 .vscode/
 
 **/.env
-secret/local/*
-secret/prod/*
+secrets/local/*
+secrets/prod/*
 
-!secret/*/README.md
+!secrets/*/README.md

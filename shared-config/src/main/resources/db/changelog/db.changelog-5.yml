@@ -1,0 +1,137 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-table-auth
+      author: yakup_jr
+      changes:
+        - createTable:
+            tableName: t_auth
+            columns:
+              - column:
+                  name: auth_id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_auth
+              - column:
+                  name: password
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: verificated
+                  type: BOOLEAN
+                  defaultValue: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: google_user_id
+                  type: VARCHAR(64)
+                  constraints:
+                    nullable: true
+                    unique: true
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    unique: true
+                    foreignKeyName: fk_auth_user
+                    references: t_user(user_id)
+
+  - changeSet:
+      id: migrate-user-auth-data
+      author: yakup_jr
+      changes:
+        - sql:
+            sql: >
+              INSERT INTO t_auth (password, verificated, google_user_id, user_id)
+              SELECT password, verificated, google_user_id, user_id
+              FROM t_user
+              WHERE password IS NOT NULL OR google_user_id IS NOT NULL;
+
+  - changeSet:
+      id: drop-auth-columns-from-user
+      author: yakup_jr
+      changes:
+        - dropColumn:
+            tableName: t_user
+            columns:
+              - column:
+                  name: password
+              - column:
+                  name: verificated
+              - column:
+                  name: google_user_id
+
+  - changeSet:
+      id: update-token-table
+      author: yakup_jr
+      changes:
+        - dropColumn:
+            tableName: t_token
+            columns:
+              - column:
+                  name: logged_out
+        - addColumn:
+            tableName: t_token
+            columns:
+              - column:
+                  name: is_revoke
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: expire_at
+                  type: datetime
+                  constraints:
+                    nullable: false
+        - renameColumn:
+            tableName: t_token
+            oldColumnName: user_id
+            newColumnName: auth_id
+            columnDataType: bigint
+        - addForeignKeyConstraint:
+            baseTableName: t_token
+            baseColumnNames: auth_id
+            constraintName: fk_token_auth
+            referencedTableName: t_auth
+            referencedColumnNames: auth_id
+            onDelete: CASCADE
+
+  - changeSet:
+      id: update-user-role-table
+      author: yakup_jr
+      changes:
+        - dropForeignKeyConstraint:
+            baseTableName: t_user_role
+            constraintName: fk_user_role_user
+        - renameColumn:
+            tableName: t_user_role
+            oldColumnName: user_id
+            newColumnName: auth_id
+            columnDataType: bigint
+        - addForeignKeyConstraint:
+            baseTableName: t_user_role
+            baseColumnNames: auth_id
+            constraintName: fk_user_role_auth
+            referencedTableName: t_auth
+            referencedColumnNames: auth_id
+            onDelete: CASCADE
+
+  - changeSet:
+      id: update-email-verification-table
+      author: yakup_jr
+      changes:
+        - dropForeignKeyConstraint:
+            baseTableName: t_email_verification
+            constraintName: fk_email_verification_user
+        - addForeignKeyConstraint:
+            baseTableName: t_email_verification
+            baseColumnNames: user_id
+            constraintName: fk_email_verification_auth
+            referencedTableName: t_auth
+            referencedColumnNames: auth_id
+            onDelete: CASCADE
