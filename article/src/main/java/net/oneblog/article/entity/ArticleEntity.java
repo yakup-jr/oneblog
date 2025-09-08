@@ -30,18 +30,16 @@ public class ArticleEntity {
     @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(name = "body", nullable = false)
+    @Column(name = "preview_body", nullable = false)
+    private String previewBody;
+
+    @Basic(fetch = FetchType.LAZY)
+    @Column(name = "body", nullable = false, columnDefinition = "TEXT")
     private String body;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     @CreationTimestamp
     private LocalDateTime createdAt;
-
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "article_preview_id", referencedColumnName = "article_preview_id",
-        nullable = false,
-        unique = true)
-    private PreviewEntity previewEntity;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "t_article_label",
@@ -57,5 +55,4 @@ public class ArticleEntity {
     @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "fk_article_user"),
         nullable = false)
     private UserEntity userEntity;
-
 }

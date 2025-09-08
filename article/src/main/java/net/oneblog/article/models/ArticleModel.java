@@ -37,8 +37,8 @@ public class ArticleModel {
     @NotNull
     private LocalDateTime createdAt;
 
-    @NotNull
-    private PreviewModel preview;
+    private String previewBody;
+
 
     @NotNull
     private List<LabelModel> labels;

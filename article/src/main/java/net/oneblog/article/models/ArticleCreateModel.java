@@ -28,9 +28,8 @@ public class ArticleCreateModel {
     @Length(min = 10, max = 65000)
     private String body;
 
-    @NotNull
-    @Valid
-    private PreviewCreateModel preview;
+    @NotBlank
+    private String previewBody;
 
     @NotNull
     @Valid
