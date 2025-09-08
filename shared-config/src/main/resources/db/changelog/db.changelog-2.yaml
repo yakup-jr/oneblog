@@ -10,16 +10,6 @@ databaseChangeLog:
             maxValue: 10000
             incrementBy: 10
   - changeSet:
-      id: create-preview_sequence
-      author: yakup_jr
-      changes:
-        - createSequence:
-            sequenceName: preview_sequence
-            startValue: 10
-            minValue: 1
-            maxValue: 10000
-            incrementBy: 10
-  - changeSet:
       id: create-table-label
       author: yakup_jr
       changes:
@@ -81,50 +71,18 @@ databaseChangeLog:
                   constraints:
                     nullable: false
                     unique: false
-  - changeSet:
-      id: create-table-article_preview
-      author: yakup_jr
-      changes:
-        - createTable:
-            tableName: t_article_preview
-            columns:
               - column:
-                  name: article_preview_id
-                  type: BIGINT
-                  autoIncrement: true
+                  name: preview_body
+                  type: varchar(1024)
                   constraints:
                     nullable: false
-                    unique: true
-                    primaryKey: true
-                    primaryKeyName: pk_article_preview
-              - column:
-                  name: body
-                  type: varchar(65535)
-                  constraints:
-                    nullable: false
-                    unique: false
-                    primaryKey: false
-  - changeSet:
-      id: fk-t_article
-      author: yakup_jr
-      changes:
-        - addColumn:
-            tableName: t_article
-            columns:
-              - column:
-                  name: article_preview_id
-                  type: int
-                  constraints:
-                    foreignKeyName: fk_article_article_preview
-                    references: t_article_preview(article_preview_id)
-                    deleteCascade: true
               - column:
                   name: user_id
-                  type: int
+                  type: bigint
                   constraints:
+                    nullable: false
                     foreignKeyName: fk_article_user
                     references: t_user(user_id)
-                    deleteCascade: true
   - changeSet:
       id: create-table-t_article_label
       author: yakup_jr

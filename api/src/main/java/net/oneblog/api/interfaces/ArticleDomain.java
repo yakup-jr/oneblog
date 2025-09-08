@@ -35,12 +35,7 @@ public interface ArticleDomain {
      */
     LocalDateTime getCreatedAt();
 
-    /**
-     * Gets preview.
-     *
-     * @return the preview
-     */
-    PreviewDomain getPreview();
+    String getPreviewBody();
 
     /**
      * Gets labels.

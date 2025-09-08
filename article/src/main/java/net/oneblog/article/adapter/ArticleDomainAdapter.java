@@ -2,7 +2,6 @@ package net.oneblog.article.adapter;
 
 import net.oneblog.api.interfaces.ArticleDomain;
 import net.oneblog.api.interfaces.LabelDomain;
-import net.oneblog.api.interfaces.PreviewDomain;
 import net.oneblog.api.interfaces.UserDomain;
 import net.oneblog.article.entity.ArticleEntity;
 import net.oneblog.user.adapter.UserDomainAdapter;
@@ -48,8 +47,8 @@ public class ArticleDomainAdapter implements ArticleDomain {
     }
 
     @Override
-    public PreviewDomain getPreview() {
-        return new PreviewDomainAdapter(entity.getPreviewEntity());
+    public String getPreviewBody() {
+        return entity.getPreviewBody();
     }
 
     @Override

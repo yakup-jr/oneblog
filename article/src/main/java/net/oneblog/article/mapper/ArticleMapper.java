@@ -20,7 +20,6 @@ public interface ArticleMapper {
      * @return the article
      */
     @Mapping(source = "labels", target = "labelEntities")
-    @Mapping(source = "preview", target = "previewEntity")
     @Mapping(source = "user", target = "userEntity")
     ArticleEntity map(ArticleCreateModel articleCreateModel);
 
@@ -39,7 +38,6 @@ public interface ArticleMapper {
      * @return the article dto
      */
     @Mapping(source = "labelEntities", target = "labels")
-    @Mapping(source = "previewEntity", target = "preview")
     @Mapping(source = "userEntity", target = "user")
     ArticleModel map(ArticleEntity articleEntity);
 }

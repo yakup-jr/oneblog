@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import net.oneblog.api.interfaces.LabelName;
 import net.oneblog.article.models.ArticleCreateModel;
 import net.oneblog.article.models.LabelModel;
-import net.oneblog.article.models.PreviewCreateModel;
 import net.oneblog.sharedconfig.test.IntegrationTest;
 import net.oneblog.validationapi.models.ValidatedUserModel;
 import org.junit.jupiter.api.Test;
@@ -34,7 +33,7 @@ class ArticleControllerTest {
         return ArticleCreateModel.builder()
             .title("the best president")
             .body("more and more text...")
-            .preview(new PreviewCreateModel("Something interesting preview"))
+            .previewBody("Something interesting preview")
             .labels(List.of(
                 LabelModel.builder().labelId(1L).name(LabelName.ASSEMBLER).build(),
                 LabelModel.builder().labelId(2L).name(LabelName.C).build()
@@ -53,7 +52,7 @@ class ArticleControllerTest {
                 .content(objectMapper.writeValueAsString(articleCreateModel)))
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.articleId", notNullValue()))
-            .andExpect(jsonPath("$.preview.body", notNullValue()))
+            .andExpect(jsonPath("$.previewBody", notNullValue()))
             .andExpect(jsonPath("$.labels", hasSize(2)))
             .andExpect(jsonPath("$._links.self.href", notNullValue()));
     }
@@ -73,13 +72,13 @@ class ArticleControllerTest {
     @Test
     void createArticle_ThrowMethodArgumentNotValidException_PreviewBodyBlank() throws Exception {
         ArticleCreateModel articleCreateModel = createValidArticleCreateDto();
-        articleCreateModel.getPreview().setBody("");
+        articleCreateModel.setPreviewBody("");
 
         mockMvc.perform(post("/api/v1/article")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(articleCreateModel)))
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.message", containsString("body")));
+            .andExpect(jsonPath("$.message", containsString("previewBody")));
     }
 
     @Test
@@ -111,7 +110,7 @@ class ArticleControllerTest {
         mockMvc.perform(get("/api/v1/article/2"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.articleId", is(2)))
-            .andExpect(jsonPath("$.preview.body", notNullValue()))
+            .andExpect(jsonPath("$.previewBody", notNullValue()))
             .andExpect(jsonPath("$.labels", hasSize(greaterThan(0))))
             .andExpect(jsonPath("$._links.self.href", notNullValue()));
     }
