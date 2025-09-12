@@ -19,7 +19,6 @@ import java.util.List;
 @Table(name = "t_article")
 @Entity
 public class ArticleEntity {
-
     @Id
     @SequenceGenerator(name = "article_seq", sequenceName = "article_sequence", initialValue = 10,
         allocationSize = 10)
@@ -41,7 +40,7 @@ public class ArticleEntity {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "t_article_label",
         joinColumns = @JoinColumn(name = "article_id",
             foreignKey = @ForeignKey(name = "fk_article_label"),
@@ -51,7 +50,7 @@ public class ArticleEntity {
             referencedColumnName = "label_id"))
     private List<LabelEntity> labelEntities;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "fk_article_user"),
         nullable = false)
     private UserEntity userEntity;
