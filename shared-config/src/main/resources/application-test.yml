@@ -34,7 +34,8 @@ spring:
         format_sql: true
         show_sql: true
   liquibase:
-    contexts: dev
+    contexts: test
+    change-log: classpath:db/changelog/db.changelog-master.yaml
   application:
     name: oneblog
 

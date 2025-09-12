@@ -9,9 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
@@ -58,7 +56,8 @@ public class TestConfig {
      * @return the generic container
      */
     @Bean
-    public GenericContainer<? extends GenericContainer> greenMailContainer(DynamicPropertyRegistry dynamicPropertyRegistry) {
+    public GenericContainer<? extends GenericContainer> greenMailContainer(
+        DynamicPropertyRegistry dynamicPropertyRegistry) {
         GenericContainer<?> container =
             new GenericContainer<>(DockerImageName.parse("greenmail/standalone:1.6.1"));
         container.waitingFor(Wait.forLogMessage(".*Starting GreenMail standalone.*", 1))
@@ -125,15 +124,4 @@ public class TestConfig {
         hikariDataSource.setPassword(postgreSQLContainer.getPassword());
         return hikariDataSource;
     }
-
-    /**
-     * Transaction manager platform transaction manager.
-     *
-     * @return the platform transaction manager
-     */
-    @Bean
-    public PlatformTransactionManager transactionManager() {
-        return new DataSourceTransactionManager(dataSource(postgreSQLContainer()));
-    }
-
 }

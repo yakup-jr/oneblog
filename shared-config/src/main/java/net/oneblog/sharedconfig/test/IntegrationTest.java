@@ -17,7 +17,7 @@ import java.lang.annotation.RetentionPolicy;
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @Sql(value = "/testdb/data.sql", executionPhase =
-    Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @ExtendWith(DatabaseCleanerExtension.class)
 public @interface IntegrationTest {
 }

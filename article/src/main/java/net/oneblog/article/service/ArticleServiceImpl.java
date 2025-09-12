@@ -1,6 +1,7 @@
 package net.oneblog.article.service;
 
 import lombok.AllArgsConstructor;
+import net.oneblog.api.interfaces.VoteType;
 import net.oneblog.article.entity.ArticleEntity;
 import net.oneblog.article.entity.LabelEntity;
 import net.oneblog.article.exception.ArticleNotFoundException;
@@ -14,10 +15,7 @@ import net.oneblog.user.exceptions.UserNotFoundException;
 import net.oneblog.user.mappers.UserMapper;
 import net.oneblog.user.service.UserService;
 import net.oneblog.user.service.UserValidationService;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +34,7 @@ public class ArticleServiceImpl implements ArticleService {
     private final LabelService labelService;
     private final UserMapper userMapper;
     private final UserService userService;
+    private final VoteManagerService voteManagerService;
 
     @Override
     @Transactional
@@ -54,8 +53,21 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     @Transactional(readOnly = true)
     public ArticleModel findByArticleId(Long id) {
-        return articleMapper.map(articleRepository.findById(id).orElseThrow(
-            () -> new ArticleNotFoundException("Article with id: " + id + " not found")));
+        ArticleEntity articleEntity = articleRepository.findById(id).orElseThrow(
+            () -> new ArticleNotFoundException("Article with id: " + id + " not found"));
+        ArticleModel articleModel = articleMapper.map(articleEntity);
+
+        articleModel.setLikes(voteManagerService.countByArticleIdAndVoteType(id, VoteType.LIKE));
+        articleModel.setDislikes(
+            voteManagerService.countByArticleIdAndVoteType(id, VoteType.DISLIKE));
+
+        return articleModel;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ArticleModel getReferenceByArticleId(Long articleId) {
+        return articleMapper.map(articleRepository.getReferenceById(articleId));
     }
 
     @Override
@@ -64,9 +76,19 @@ public class ArticleServiceImpl implements ArticleService {
         throws ArticleNotFoundException {
         List<ArticleEntity> articleEntities = articleRepository.findByUserId(userId);
         if (articleEntities.isEmpty()) {
-            throw new ArticleNotFoundException("Article with user id: " + userId + " not found");
+            throw new ArticleNotFoundException("Articles with user id: " + userId + " not found");
         }
-        return articleEntities.stream().map(articleMapper::map).toList();
+
+        return articleEntities.stream().map(articleEntity -> {
+            ArticleModel articleModel = articleMapper.map(articleEntity);
+            articleModel.setLikes(
+                voteManagerService.countByArticleIdAndVoteType(articleModel.getArticleId(),
+                    VoteType.LIKE));
+            articleModel.setDislikes(
+                voteManagerService.countByArticleIdAndVoteType(articleModel.getArticleId(),
+                    VoteType.DISLIKE));
+            return articleModel;
+        }).toList();
     }
 
     @Override
@@ -74,13 +96,24 @@ public class ArticleServiceImpl implements ArticleService {
     public Page<ArticleModel> findAll(Integer page, Integer size) {
         try {
             Pageable pageRequest = PageRequest.of(page, size, Sort.by("createdAt").descending());
-            Page<ArticleModel> pageContent =
-                articleRepository.findAll(pageRequest).map(articleMapper::map);
+            Page<ArticleEntity> pageContent = articleRepository.findAll(pageRequest);
             if (pageContent.isEmpty()) {
                 throw new ApiRequestException(
                     "Page " + page + " of size " + size + " doesn't exist");
             }
-            return pageContent;
+
+            List<ArticleModel> articles = pageContent.stream().map(articleEntity -> {
+                ArticleModel articleModel = articleMapper.map(articleEntity);
+                articleModel.setLikes(
+                    voteManagerService.countByArticleIdAndVoteType(articleModel.getArticleId(),
+                        VoteType.LIKE));
+                articleModel.setDislikes(
+                    voteManagerService.countByArticleIdAndVoteType(articleModel.getArticleId(),
+                        VoteType.DISLIKE));
+                return articleModel;
+            }).toList();
+
+            return new PageImpl<>(articles);
         } catch (IllegalArgumentException e) {
             throw new ApiRequestException(e.getMessage());
         }

@@ -60,6 +60,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
+    public ValidatedUserModel getReferenceByUserId(Long userId) {
+        return userMapper.map(userRepository.getReferenceById(userId));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public ValidatedUserModel findByNickname(String nickname) {
         return userRepository.findByNickname(nickname).map(userMapper::map).orElseThrow(
             () -> new UserNotFoundException("User with nickname %s not found".formatted(nickname)));

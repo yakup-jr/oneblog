@@ -74,37 +74,26 @@ VALUES ((SELECT auth_id FROM t_auth WHERE user_id = (SELECT user_id FROM t_user 
         (SELECT role_id FROM t_role WHERE name = 'ROLE_USER'));
 
 -- Data for t_article
-INSERT INTO t_article (article_id, title, body, created_at, user_id)
-VALUES (1, 'Title 1', 'body 1 ...', '2014-05-03', 1),
-       (2, 'Title 2', 'body 2 ...', '2019-02-01', 2),
-       (3, 'Title 3', 'body 3 ...', '2024-05-09 12:00:00', 3),
-       (4, 'Title 4', 'body 4 ...', '2022-06-23 13:00:00', 5),
-       (5, 'Title 5', 'body 5 ...', '2024-09-02 10:34:25', 4);
-
--- Data for t_article_preview
-INSERT INTO t_article_preview (article_preview_id, body)
-VALUES (1, 'body 1'),
-       (2, 'body 3'),
-       (3, 'body 2'),
-       (4, 'body 4'),
-       (5, 'body 5');
-
--- Update t_article with article_preview_id
-UPDATE t_article
-SET article_preview_id = 1
-WHERE article_id = 1;
-UPDATE t_article
-SET article_preview_id = 2
-WHERE article_id = 2;
-UPDATE t_article
-SET article_preview_id = 3
-WHERE article_id = 3;
-UPDATE t_article
-SET article_preview_id = 4
-WHERE article_id = 4;
-UPDATE t_article
-SET article_preview_id = 5
-WHERE article_id = 5;
+INSERT INTO t_article (article_id, title, body, preview_body, created_at, user_id)
+VALUES (1, 'Title 1',
+        'Lorem ipsum dolor sit amet consectetur adipiscing elit quisque faucibus ex sapien vitae pellentesque sem placerat in id cursus mi pretium tellus duis convallis tempus leo eu aenean sed diam urna tempor pulvinar vivamus fringilla lacus nec metus bibendum egestas iaculis massa nisl malesuada lacinia integer nunc posuere ut hendrerit semper vel class aptent taciti sociosqu ad litora torquent per conubia nostra inceptos himenaeos orci varius natoque penatibus et magnis dis parturient montes nascetur ridiculus mus donec rhoncus eros lobortis nulla molestie mattis scelerisque maximus eget fermentum odio phasellus non purus est efficitur laoreet mauris pharetra vestibulum fusce dictum risus.',
+        'Lorem ipsum dolor sit amet consectetur adipiscing elit quisque faucibus ex sapien vitae pellentesque sem placerat in id cursus mi pretium tellus duis convallis tempus leo eu aenean sed diam',
+        '2014-05-03', 1),
+       (2, 'Title 2',
+        'Lorem ipsum dolor sit amet consectetur adipiscing elit quisque faucibus ex sapien vitae pellentesque sem placerat in id cursus mi pretium tellus duis convallis tempus leo eu aenean sed diam urna tempor pulvinar vivamus fringilla lacus nec metus bibendum egestas iaculis massa nisl malesuada lacinia integer nunc posuere ut hendrerit semper vel class aptent taciti sociosqu ad litora torquent per conubia nostra inceptos himenaeos orci varius natoque penatibus et magnis dis parturient montes nascetur ridiculus mus donec rhoncus eros lobortis.',
+        'Lorem ipsum dolor sit amet consectetur adipiscing elit quisque faucibus ex sapien vitae pellentesque sem placerat in id cursus mi pretium tellus duis.',
+        '2019-02-01', 2),
+       (3, 'Title 3',
+        'Lorem ipsum dolor sit amet consectetur adipiscing elit quisque faucibus ex sapien vitae pellentesque sem placerat in id cursus mi pretium tellus duis convallis tempus leo eu aenean sed diam urna tempor pulvinar vivamus fringilla lacus nec metus bibendum egestas iaculis massa nisl malesuada lacinia integer nunc posuere ut hendrerit semper vel class aptent taciti sociosqu ad litora torquent per conubia nostra inceptos himenaeos orci varius natoque penatibus et magnis dis parturient montes nascetur ridiculus mus donec rhoncus eros lobortis nulla molestie mattis scelerisque maximus eget fermentum odio phasellus non purus est efficitur laoreet mauris pharetra vestibulum fusce dictum risus blandit quis suspendisse aliquet nisi sodales consequat magna ante condimentum neque at luctus nibh finibus facilisis dapibus etiam interdum tortor ligula congue sollicitudin erat viverra ac tincidunt nam porta elementum a enim euismod quam justo lectus commodo augue arcu dignissim.',
+        'Lorem ipsum dolor sit amet consectetur adipiscing elit quisque faucibus ex sapien vitae pellentesque sem placerat in id cursus mi pretium tellus duis convallis tempus leo eu aenean sed diam urna tempor pulvinar vivamus fringilla lacus nec metus bibendum egestas.',
+        '2024-05-09 12:00:00', 3),
+       (4, 'Title 4',
+        'Lorem ipsum dolor sit amet consectetur adipiscing elit quisque faucibus ex sapien vitae pellentesque sem placerat in id cursus mi pretium tellus duis convallis tempus leo eu aenean sed diam urna tempor pulvinar vivamus fringilla lacus nec metus bibendum egestas iaculis massa nisl malesuada lacinia integer nunc posuere ut hendrerit semper vel class aptent taciti sociosqu ad litora torquent per conubia nostra inceptos himenaeos orci varius natoque penatibus et magnis dis parturient montes nascetur ridiculus mus donec rhoncus eros lobortis nulla molestie mattis scelerisque maximus eget fermentum odio phasellus non purus est efficitur laoreet mauris pharetra vestibulum fusce dictum risus blandit quis suspendisse aliquet nisi sodales consequat magna ante condimentum neque at luctus nibh finibus facilisis dapibus etiam interdum tortor ligula congue sollicitudin erat viverra ac tincidunt nam porta elementum a enim euismod quam justo lectus commodo augue arcu dignissim velit aliquam imperdiet mollis nullam volutpat porttitor ullamcorper rutrum gravida cras eleifend turpis fames primis vulputate ornare sagittis vehicula praesent dui felis venenatis ultrices proin libero feugiat tristique accumsan maecenas potenti ultricies habitant morbi senectus netus suscipit auctor curabitur facilisi cubilia curae hac habitasse platea dictumst lorem ipsum dolor sit amet consectetur adipiscing elit quisque faucibus ex sapien vitae pellentesque sem placerat in id cursus mi pretium tellus duis convallis tempus leo eu aenean sed diam urna tempor pulvinar vivamus fringilla lacus nec metus bibendum egestas iaculis massa nisl malesuada.',
+        'Lorem ipsum dolor sit amet consectetur adipiscing elit quisque faucibus ex sapien vitae.',
+        '2022-06-23 13:00:00', 5),
+       (5, 'Title 5',
+        'Lorem ipsum dolor sit amet consectetur adipiscing elit quisque faucibus ex sapien vitae pellentesque sem placerat in id cursus mi pretium tellus duis convallis tempus leo eu aenean sed diam urna tempor pulvinar vivamus fringilla lacus nec metus bibendum egestas iaculis massa nisl malesuada lacinia integer nunc posuere ut hendrerit semper vel class aptent taciti sociosqu ad litora torquent per conubia nostra inceptos himenaeos orci varius natoque penatibus et magnis.',
+        'Lorem ipsum dolor sit amet.', '2024-09-02 10:34:25', 4);
 
 -- Data for t_article_label
 INSERT INTO t_article_label (article_id, label_id)
@@ -115,3 +104,15 @@ VALUES (1, 1),
        (4, 5),
        (5, 6),
        (5, 7);
+
+-- Data for t_vote
+INSERT INTO t_vote (vote_id, user_id, article_id, vote_type)
+VALUES (1, 1, 1, 'LIKE'),
+       (2, 2, 1, 'LIKE'),
+       (3, 3, 1, 'DISLIKE'),
+       (4, 1, 2, 'LIKE'),
+       (5, 4, 2, 'LIKE'),
+       (6, 5, 3, 'DISLIKE'),
+       (7, 2, 4, 'LIKE'),
+       (8, 3, 5, 'LIKE');
+

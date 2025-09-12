@@ -1,5 +1,6 @@
 package net.oneblog.article.service;
 
+import net.oneblog.api.interfaces.VoteType;
 import net.oneblog.article.entity.ArticleEntity;
 import net.oneblog.article.entity.LabelEntity;
 import net.oneblog.article.exception.ArticleNotFoundException;
@@ -47,6 +48,8 @@ class ArticleServiceTest {
     private ArticleMapper articleMapper;
     @Mock
     private UserMapper userMapper; // ide doesn't see the dependence
+    @Mock
+    private VoteManagerService voteManagerService;
 
     @InjectMocks
     private ArticleServiceImpl articleService;
@@ -65,7 +68,8 @@ class ArticleServiceTest {
         LabelEntity fetchedLabel = LabelEntity.builder().labelId(2L).build();
 
         ArticleEntity articleFromMapper = ArticleEntity.builder()
-            .labelEntities(List.of(LabelEntity.builder().labelId(2L).build())) // Pass a list with a mock entity
+            .labelEntities(List.of(
+                LabelEntity.builder().labelId(2L).build())) // Pass a list with a mock entity
             .userEntity(UserEntity.builder().userId(1L).build())
             .build();
 
@@ -76,7 +80,8 @@ class ArticleServiceTest {
         when(userService.findById(userModel.userId())).thenReturn(userModel);
         when(userMapper.map(userModel)).thenReturn(fetchedUser);
 
-        when(labelService.findById(labelModel.getLabelId())).thenReturn(fetchedLabel); // Use the variable with the ID
+        when(labelService.findById(labelModel.getLabelId())).thenReturn(
+            fetchedLabel); // Use the variable with the ID
         when(articleRepository.save(any(ArticleEntity.class))).thenReturn(savedArticle);
 
         when(articleMapper.map(savedArticle)).thenReturn(savedDto);
@@ -90,6 +95,23 @@ class ArticleServiceTest {
         verify(userMapper).map(userModel);
         verify(labelService).findById(labelModel.getLabelId());
         verify(articleRepository).save(any(ArticleEntity.class));
+    }
+
+    @Test
+    void findByArticleId_ShouldIncludeLikeAndDislikeCount() {
+        ArticleEntity entity = ArticleEntity.builder().articleId(1L).build();
+        ArticleModel dto = ArticleModel.builder().articleId(1L).build();
+
+        when(articleRepository.findById(1L)).thenReturn(Optional.of(entity));
+        when(articleMapper.map(entity)).thenReturn(dto);
+        when(voteManagerService.countByArticleIdAndVoteType(1L, VoteType.LIKE)).thenReturn(5L);
+        when(voteManagerService.countByArticleIdAndVoteType(1L, VoteType.DISLIKE)).thenReturn(2L);
+
+        ArticleModel result = articleService.findByArticleId(1L);
+
+        assertNotNull(result);
+        verify(voteManagerService).countByArticleIdAndVoteType(1L, VoteType.LIKE);
+        verify(voteManagerService).countByArticleIdAndVoteType(1L, VoteType.DISLIKE);
     }
 
 
@@ -113,16 +135,23 @@ class ArticleServiceTest {
     }
 
     @Test
-    void findByUserId_Success() {
-        List<ArticleEntity> entities = List.of(new ArticleEntity());
-        ArticleModel dto = new ArticleModel();
+    void findByUserId_ShouldIncludeLikeAndDislikeCount() {
+        ArticleEntity entity = ArticleEntity.builder().articleId(1L).build();
+        List<ArticleEntity> entities = List.of(entity);
+        ArticleModel dto = ArticleModel.builder().articleId(1L).build();
 
         when(articleRepository.findByUserId(1L)).thenReturn(entities);
-        when(articleMapper.map(any(ArticleEntity.class))).thenReturn(dto);
+        when(articleMapper.map(entity)).thenReturn(dto);
+        when(voteManagerService.countByArticleIdAndVoteType(1L, VoteType.LIKE)).thenReturn(3L);
+        when(voteManagerService.countByArticleIdAndVoteType(1L, VoteType.DISLIKE)).thenReturn(1L);
 
         List<ArticleModel> result = articleService.findByUserId(1L);
 
         assertEquals(1, result.size());
+        assertEquals(3L, result.getFirst().getLikes());
+        assertEquals(1L, result.getFirst().getDislikes());
+        verify(voteManagerService).countByArticleIdAndVoteType(1L, VoteType.LIKE);
+        verify(voteManagerService).countByArticleIdAndVoteType(1L, VoteType.DISLIKE);
     }
 
     @Test
@@ -134,16 +163,23 @@ class ArticleServiceTest {
     }
 
     @Test
-    void findAll_Success() {
-        Page<ArticleEntity> entityPage = new PageImpl<>(List.of(new ArticleEntity()));
-        ArticleModel dto = new ArticleModel();
+    void findAll_ShouldIncludeLikeAndDislikeCount() {
+        ArticleEntity entity = ArticleEntity.builder().articleId(1L).build();
+        Page<ArticleEntity> entityPage = new PageImpl<>(List.of(entity));
+        ArticleModel dto = ArticleModel.builder().articleId(1L).build();
 
         when(articleRepository.findAll(any(PageRequest.class))).thenReturn(entityPage);
-        when(articleMapper.map(any(ArticleEntity.class))).thenReturn(dto);
+        when(articleMapper.map(entity)).thenReturn(dto);
+        when(voteManagerService.countByArticleIdAndVoteType(1L, VoteType.LIKE)).thenReturn(4L);
+        when(voteManagerService.countByArticleIdAndVoteType(1L, VoteType.DISLIKE)).thenReturn(2L);
 
         Page<ArticleModel> result = articleService.findAll(0, 10);
 
         assertFalse(result.isEmpty());
+        assertEquals(4L, result.getContent().getFirst().getLikes());
+        assertEquals(2L, result.getContent().getFirst().getDislikes());
+        verify(voteManagerService).countByArticleIdAndVoteType(1L, VoteType.LIKE);
+        verify(voteManagerService).countByArticleIdAndVoteType(1L, VoteType.DISLIKE);
     }
 
     @Test
