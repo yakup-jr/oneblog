@@ -30,6 +30,8 @@ public interface ArticleService {
      */
     ArticleModel findByArticleId(Long id);
 
+    ArticleModel getReferenceByArticleId(Long articleId);
+
     /**
      * Find by user id list.
      *

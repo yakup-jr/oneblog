@@ -1,0 +1,54 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-t_vote_seq
+      author: yakup_jr
+      changes:
+        - createSequence:
+            sequenceName: t_vote_seq
+            startValue: 10
+            incrementBy: 10
+  - changeSet:
+      id: create-t_vote
+      author: yakup_jr
+      changes:
+        - createTable:
+            tableName: t_vote
+            columns:
+              - column:
+                  name: vote_id
+                  type: bigserial
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: article_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: vote_type
+                  type: varchar
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: t_vote
+            baseColumnNames: article_id
+            referencedTableName: t_article
+            referencedColumnNames: article_id
+            constraintName: fk_article_vote
+            onDelete: CASCADE
+        - addForeignKeyConstraint:
+            baseTableName: t_vote
+            baseColumnNames: user_id
+            referencedTableName: t_user
+            referencedColumnNames: user_id
+            constraintName: fk_user_vote
+        - addUniqueConstraint:
+            tableName: t_vote
+            columnNames: user_id, article_id
+            constraintName: uk_vote_user_article

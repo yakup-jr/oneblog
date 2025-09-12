@@ -1,6 +1,7 @@
 package net.oneblog.article.models;
 
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -10,6 +11,7 @@ import org.springframework.hateoas.server.core.Relation;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 /**
  * The type Article dto.
@@ -35,10 +37,20 @@ public class ArticleModel {
     private String body;
 
     @NotNull
+    @Min(0)
+    private Long likes;
+
+    @NotNull
+    @Min(0)
+    private Long dislikes;
+
+    @Valid
+    private Set<VoteModel> votes;
+
+    @NotNull
     private LocalDateTime createdAt;
 
     private String previewBody;
-
 
     @NotNull
     private List<LabelModel> labels;

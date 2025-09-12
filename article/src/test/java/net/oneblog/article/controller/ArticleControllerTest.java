@@ -106,13 +106,26 @@ class ArticleControllerTest {
     }
 
     @Test
-    void findArticleByArticleId_ReturnArticle() throws Exception {
-        mockMvc.perform(get("/api/v1/article/2"))
+    void findArticleByArticleId_ReturnArticleWithVoteCounts() throws Exception {
+        mockMvc.perform(get("/api/v1/article/1"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.articleId", is(2)))
-            .andExpect(jsonPath("$.previewBody", notNullValue()))
-            .andExpect(jsonPath("$.labels", hasSize(greaterThan(0))))
+            .andExpect(jsonPath("$.articleId", is(1)))
+            .andExpect(jsonPath("$.likes", notNullValue()))
+            .andExpect(jsonPath("$.dislikes", notNullValue()))
+            .andExpect(jsonPath("$.likes", greaterThanOrEqualTo(0)))
+            .andExpect(jsonPath("$.dislikes", greaterThanOrEqualTo(0)))
             .andExpect(jsonPath("$._links.self.href", notNullValue()));
+    }
+
+    @Test
+    void findArticlesByUserId_ReturnArticlesWithVoteCounts() throws Exception {
+        mockMvc.perform(get("/api/v1/article/user/1"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$._embedded.articles", hasSize(greaterThan(0))))
+            .andExpect(jsonPath("$._embedded.articles[0].likes", notNullValue()))
+            .andExpect(jsonPath("$._embedded.articles[0].dislikes", notNullValue()))
+            .andExpect(jsonPath("$._embedded.articles[0].likes", greaterThanOrEqualTo(0)))
+            .andExpect(jsonPath("$._embedded.articles[0].dislikes", greaterThanOrEqualTo(0)));
     }
 
     @Test
@@ -122,11 +135,14 @@ class ArticleControllerTest {
     }
 
     @Test
-    void findAllArticles_ReturnArticles() throws Exception {
+    void findAllArticles_ReturnArticlesWithVoteCounts() throws Exception {
         mockMvc.perform(get("/api/v1/articles?page=0&size=3"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$._embedded.articles", hasSize(greaterThan(0))))
-            .andExpect(jsonPath("$._embedded.articles[0].articleId", notNullValue()));
+            .andExpect(jsonPath("$._embedded.articles[0].likes", notNullValue()))
+            .andExpect(jsonPath("$._embedded.articles[0].dislikes", notNullValue()))
+            .andExpect(jsonPath("$._embedded.articles[0].likes", greaterThanOrEqualTo(0)))
+            .andExpect(jsonPath("$._embedded.articles[0].dislikes", greaterThanOrEqualTo(0)));
     }
 
     @Test

@@ -210,7 +210,6 @@ databaseChangeLog:
   - changeSet:
       id: 4-data-user-roles
       author: Dmitry
-      context: dev
       changes:
         # Link auth_id to role_id in t_user_role
         - insert:
@@ -289,7 +288,6 @@ databaseChangeLog:
   - changeSet:
       id: 5-data-articles
       author: Dmitry
-      context: dev
       changes:
         - insert:
             tableName: t_article
@@ -463,3 +461,19 @@ databaseChangeLog:
               - column:
                   name: label_id
                   value: "7"
+  - changeSet:
+      id: 9-data-votes
+      author: Dmitry
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO t_vote (vote_id, user_id, article_id, vote_type) VALUES
+              (1, 1, 1, 'LIKE'::vote_type),
+              (2, 2, 1, 'LIKE'::vote_type),
+              (3, 3, 1, 'DISLIKE'::vote_type),
+              (4, 1, 2, 'LIKE'::vote_type),
+              (5, 4, 2, 'LIKE'::vote_type),
+              (6, 5, 3, 'DISLIKE'::vote_type),
+              (7, 2, 4, 'LIKE'::vote_type),
+              (8, 3, 5, 'LIKE'::vote_type);
+              

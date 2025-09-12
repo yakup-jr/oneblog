@@ -34,6 +34,8 @@ public interface UserService {
      */
     ValidatedUserModel findById(Long id);
 
+    ValidatedUserModel getReferenceByUserId(Long userId);
+
     /**
      * Find by nickname user.
      *

@@ -104,3 +104,15 @@ VALUES (1, 1),
        (4, 5),
        (5, 6),
        (5, 7);
+
+-- Data for t_vote
+INSERT INTO t_vote (vote_id, user_id, article_id, vote_type)
+VALUES (1, 1, 1, 'LIKE'),
+       (2, 2, 1, 'LIKE'),
+       (3, 3, 1, 'DISLIKE'),
+       (4, 1, 2, 'LIKE'),
+       (5, 4, 2, 'LIKE'),
+       (6, 5, 3, 'DISLIKE'),
+       (7, 2, 4, 'LIKE'),
+       (8, 3, 5, 'LIKE');
+
