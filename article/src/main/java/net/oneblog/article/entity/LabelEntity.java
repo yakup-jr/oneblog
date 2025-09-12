@@ -14,17 +14,17 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "T_LABEL")
+@Table(name = "t_label")
 @Entity
 public class LabelEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "label_seq")
     @SequenceGenerator(name = "label_seq", sequenceName = "t_label_seq", allocationSize = 10,
         initialValue = 10)
-    @Column(name = "LABEL_ID", nullable = false, updatable = false, unique = true)
+    @Column(name = "label_id", nullable = false, updatable = false, unique = true)
     private Long labelId;
 
-    @Column(name = "NAME", nullable = false, unique = true)
+    @Column(name = "name", nullable = false, unique = true)
     @Enumerated(EnumType.STRING)
     private LabelName name;
 

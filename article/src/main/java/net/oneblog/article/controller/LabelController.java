@@ -2,6 +2,7 @@ package net.oneblog.article.controller;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import lombok.AllArgsConstructor;
 import net.oneblog.article.entity.LabelEntity;
 import net.oneblog.article.links.LabelLink;
 import net.oneblog.article.links.LabelModelAssembler;
@@ -24,37 +25,14 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("/api/v1/articles")
+@AllArgsConstructor
 public class LabelController {
 
     private final LabelMapper labelMapper;
-
     private final LabelService labelService;
-
     private final LabelLink labelLink;
-
     private final LabelModelAssembler labelModelAssembler;
-
     private final PagedResourcesAssembler<LabelModel> pagedResourcesAssembler;
-
-    /**
-     * Instantiates a new Label controller.
-     *
-     * @param labelMapper             the label mapper
-     * @param labelService            the label service
-     * @param labelLink               the label link
-     * @param labelModelAssembler     the label model assembler
-     * @param pagedResourcesAssembler the paged resources assembler
-     */
-    public LabelController(
-        LabelMapper labelMapper, LabelService labelService, LabelLink labelLink,
-        LabelModelAssembler labelModelAssembler,
-        PagedResourcesAssembler<LabelModel> pagedResourcesAssembler) {
-        this.labelMapper = labelMapper;
-        this.labelService = labelService;
-        this.labelLink = labelLink;
-        this.labelModelAssembler = labelModelAssembler;
-        this.pagedResourcesAssembler = pagedResourcesAssembler;
-    }
 
     /**
      * Save label response entity.
