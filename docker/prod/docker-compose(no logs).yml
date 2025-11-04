@@ -1,0 +1,132 @@
+version: "3.9"
+
+services:
+  haproxy:
+    image: haproxy:lts
+    hostname: proxy
+    depends_on:
+      - app
+    ports:
+      - target: 80
+        published: 80
+        protocol: tcp
+        mode: host
+      - target: 443
+        published: 443
+        protocol: tcp
+        mode: host
+    networks:
+      - app-network
+    configs:
+      - source: haproxy
+        target: /usr/local/etc/haproxy/haproxy.cfg
+    secrets:
+      - source: ssl_cert
+        target: /run/secrets/ssl_cert.pem
+        mode: 0444
+    deploy:
+      update_config:
+        order: start-first
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 64M
+        reservations:
+          cpus: "0.1"
+          memory: 32M
+
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER_FILE: /run/secrets/db_username
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+      POSTGRES_DB: oneblog
+    ports: [ ]
+    networks:
+      - app-network
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$(cat /run/secrets/db_username) -d oneblog"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 5s
+    secrets:
+      - db_username
+      - db_password
+    deploy:
+      update_config:
+        order: start-first
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+        reservations:
+          cpus: "0.25"
+          memory: 128M
+
+  app:
+    image: whtoy/oneblog:dev-latest
+    hostname: oneblog
+    depends_on:
+      - db
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      DATASOURCE_URL: jdbc:postgresql://db:5432/oneblog
+      JWT_ACCESS_TOKEN_EXPIRATION: 3600
+      JWT_REFRESH_TOKEN_EXPIRATION: 604800
+    networks:
+      - app-network
+    secrets:
+      - db_username
+      - db_password
+      - oauth_google_client_id
+      - oauth_google_client_secret
+      - mail_username
+      - mail_password
+      - jwt_secret_key
+    deploy:
+      update_config:
+        order: start-first
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+        reservations:
+          cpus: "0.25"
+          memory: 128M
+
+networks:
+  app-network:
+
+volumes:
+  db-data:
+
+configs:
+  haproxy:
+    external: true
+
+secrets:
+  ssl_cert:
+    external: true
+  db_username:
+    external: true
+  db_password:
+    external: true
+  oauth_google_client_id:
+    external: true
+  oauth_google_client_secret:
+    external: true
+  mail_username:
+    external: true
+  mail_password:
+    external: true
+  jwt_secret_key:
+    external: true
