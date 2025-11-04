@@ -1,6 +1,7 @@
 [versions]
 springBoot = "3.3.1"
 springDependencyManagement = "1.1.5"
+springdoc = "2.6.0"
 jjwt = "0.13.0"
 mapstruct = "1.6.3"
 liquibase = "4.33.0"
@@ -22,6 +23,7 @@ apache-compress = { module = "org.apache.commons:commons-compress", version.ref 
 apache-lang3 = { module = "org.apache.commons:commons-lang3", version.ref = "apacheLang3" }
 
 spring-hateoas = { module = "org.springframework.hateoas:spring-hateoas" }
+spring-openapi-starter-webmvc-ui = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui", version.ref = "springdoc" }
 
 jjwt-api = { module = "io.jsonwebtoken:jjwt-api", version.ref = "jjwt" }
 jjwt-impl = { module = "io.jsonwebtoken:jjwt-impl", version.ref = "jjwt" }

@@ -32,6 +32,7 @@ dependencies {
 
     implementation(libs.spring.boot.starter)
     implementation(libs.spring.boot.starter.data.jpa)
+    implementation(libs.spring.openapi.starter.webmvc.ui)
     implementation(libs.spring.boot.starter.actuator)
 }
 
