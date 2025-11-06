@@ -4,22 +4,22 @@ spring:
       mode: always
   datasource:
     url: ${DATASOURCE_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    username: ${file(/run/secrets/db_username)}
+    password: ${file(/run/secrets/db_password)}
     driver-class-name: org.postgresql.Driver
   security:
     oauth2:
       client:
         registration:
           google:
-            client-id: ${OAUTH_GOOGLE_CLIENT_ID}
-            client-secret: ${OAUTH_GOOGLE_CLIENT_SECRET}
+            client-id: ${file(/run/secrets/oauth_google_client_id}
+            client-secret: ${file(/run/secrets/oauth_google_client_secret)}
             scope: email,profile
   mail:
     host: smtp.resend.com
     port: 587
-    username: ${MAIL_USERNAME}
-    password: ${MAIL_PASSWORD}
+    username: ${file(/run/secrets/mail_username)}
+    password: ${file(/run/secrets/mail_password)}
     properties:
       mail:
         smtp:
@@ -31,7 +31,7 @@ spring:
     name: oneblog
 security:
   jwt:
-    secret_key: ${JWT_SECRET_KEY}
+    secret_key: ${file(/run/secrets/jwt_secret_key)}
     access_token_expiration: ${JWT_ACCESS_TOKEN_EXPIRATION}
     refresh_token_expiration: ${JWT_REFRESH_TOKEN_EXPIRATION}
 management:

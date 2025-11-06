@@ -43,7 +43,6 @@ services:
       POSTGRES_USER_FILE: /run/secrets/db_username
       POSTGRES_PASSWORD_FILE: /run/secrets/db_password
       POSTGRES_DB: oneblog
-    ports: [ ]
     networks:
       - app-network
     volumes:
