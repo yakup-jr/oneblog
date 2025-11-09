@@ -15,6 +15,9 @@ spring:
             client-id: ${file(/run/secrets/oauth_google_client_id)}
             client-secret: ${file(/run/secrets/oauth_google_client_secret)}
             scope: email,profile
+  liquibase:
+    contexts: prod
+    change-log: db/changelog/db.changelog-master-prod.yml
   mail:
     host: smtp.resend.com
     port: 587

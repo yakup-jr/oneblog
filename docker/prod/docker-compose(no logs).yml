@@ -31,11 +31,11 @@ services:
       replicas: 1
       resources:
         limits:
-          cpus: "0.25"
-          memory: 64M
+          cpus: "0.5"      # Increased CPU limit (was 0.25)
+          memory: 512M     # Increased memory limit (was 256M)
         reservations:
-          cpus: "0.1"
-          memory: 32M
+          cpus: "0.2"      # Increased CPU reservation (was 0.1)
+          memory: 256M     # Increased memory reservation (was 128M)
 
   db:
     image: postgres:15
@@ -56,6 +56,8 @@ services:
     secrets:
       - db_username
       - db_password
+    ports:
+      - "5432:5432"
     deploy:
       update_config:
         order: start-first
@@ -63,11 +65,11 @@ services:
       replicas: 1
       resources:
         limits:
-          cpus: "0.5"
-          memory: 256M
+          cpus: "0.75"
+          memory: 768M
         reservations:
-          cpus: "0.25"
-          memory: 128M
+          cpus: "0.5"
+          memory: 512M
 
   app:
     image: whtoy/oneblog:dev-latest
@@ -96,11 +98,11 @@ services:
       replicas: 1
       resources:
         limits:
-          cpus: "0.5"
-          memory: 256M
+          cpus: "1.0"
+          memory: 1536M
         reservations:
-          cpus: "0.25"
-          memory: 128M
+          cpus: "0.5"
+          memory: 1024M
 
 networks:
   app-network:
