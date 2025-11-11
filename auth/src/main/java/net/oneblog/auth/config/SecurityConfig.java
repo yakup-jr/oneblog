@@ -110,7 +110,7 @@ public class SecurityConfig {
                             "/api/v1/article/{articleId}",
                             "/api/v1/articles/label/{labelId}")
                         .hasRole(admin)
-                        .requestMatchers(HttpMethod.GET, "/api/v1/user/", "/api/v1/articles/labels").hasRole("USER")
+                        .requestMatchers(HttpMethod.GET, "/api/v1/user/").hasRole("USER")
                         .anyRequest().permitAll();
                 });
 
