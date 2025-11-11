@@ -1,0 +1,76 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1-data-labels
+      author: Dmitry
+      changes:
+        - insert:
+            tableName: t_label
+            columns:
+              - column:
+                  name: name
+                  value: ASSEMBLER
+        - insert:
+            tableName: t_label
+            columns:
+              - column:
+                  name: name
+                  value: PROGRAMMING_LANGUAGES
+        - insert:
+            tableName: t_label
+            columns:
+              - column:
+                  name: name
+                  value: JAVA
+        - insert:
+            tableName: t_label
+            columns:
+              - column:
+                  name: name
+                  value: PYTHON
+        - insert:
+            tableName: t_label
+            columns:
+              - column:
+                  name: name
+                  value: C_PLUS_PLUS
+        - insert:
+            tableName: t_label
+            columns:
+              - column:
+                  name: name
+                  value: C_SHARP
+        - insert:
+            tableName: t_label
+            columns:
+              - column:
+                  name: name
+                  value: C
+        - insert:
+            tableName: t_label
+            columns:
+              - column:
+                  name: name
+                  value: GO
+        - insert:
+            tableName: t_label
+            columns:
+              - column:
+                  name: name
+                  value: KOTLIN
+
+  - changeSet:
+      id: 3-data-roles
+      author: Dmitry
+      changes:
+        - insert:
+            tableName: t_role
+            columns:
+              - column:
+                  name: name
+                  value: 'ROLE_ADMIN'
+        - insert:
+            tableName: t_role
+            columns:
+              - column:
+                  name: name
+                  value: 'ROLE_USER'
